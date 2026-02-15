@@ -1,0 +1,547 @@
+/* 
+ * Regency Care Group – Classic Newport Elegance Theme
+ *
+ * This stylesheet defines a refined, warm visual system inspired by classic
+ * Newport luxury. The palette revolves around deep navy, soft gold and
+ * ivory neutrals. Generous spacing, elegant typography and subtle accents
+ * create a high‑trust atmosphere without overwhelming visitors. All core
+ * components—navigation, hero, trust strip, pillar grid, timeline, service
+ * categories, testimonials, call‑to‑action panels and footer—are styled here.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
+
+/* Colour and typographic variables */
+:root {
+  --navy: #002e5d;          /* primary deep navy */
+  --gold: #b59c77;          /* muted warm gold */
+  --gold-hover: #a6895b;    /* darker gold for hovers */
+  --ivory: #f5f2ec;         /* warm off‑white background */
+  --stone: #ebe6dd;         /* light stone panel backgrounds */
+  --text-color: var(--navy);
+  --heading-font: 'Playfair Display', serif;
+  --body-font: 'Open Sans', sans-serif;
+}
+
+/* Reset and base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--ivory);
+  color: var(--text-color);
+  font-family: var(--body-font);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Navigation bar */
+nav {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  /* Slightly taller nav for larger logo */
+  padding: 14px 28px;
+  background: rgba(0, 46, 93, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1000;
+}
+
+nav .logo img {
+  /* Larger logo to improve legibility on desktop */
+  height: 56px;
+  width: auto;
+  display: block;
+  /* Add a subtle shadow to lift the crest */
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.10));
+}
+
+nav ul {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+nav ul li a {
+  color: #ffffff;
+  font-weight: 600;
+  padding: 0.25rem 0;
+  position: relative;
+}
+
+nav ul li a.active,
+nav ul li a:hover {
+  color: var(--gold);
+}
+
+/* Primary CTA in the nav */
+.nav-cta {
+  margin-left: 1.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--gold);
+  color: var(--navy);
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.nav-cta:hover {
+  background: var(--gold-hover);
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  background-image: url('assets/hero.jpg'); /* hero photograph of coastal lighthouse */
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+  overflow: hidden;
+}
+
+/* Overlay to ensure contrast */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 46, 93, 0.65);
+  z-index: 0;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+.hero h1 {
+  font-family: var(--heading-font);
+  font-size: 2.8rem;
+  margin-bottom: 0.6rem;
+}
+
+.hero p {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-bullets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 1.2rem 0;
+}
+
+.hero-bullets li {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+.hero .microline {
+  font-size: 0.8rem;
+  margin-top: 0.8rem;
+  color: #dcdcdc;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--navy);
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--gold-hover);
+}
+
+.btn-secondary {
+  display: inline-block;
+  background: transparent;
+  color: var(--navy);
+  border: 2px solid var(--gold);
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* Generic section wrapper */
+section {
+  padding: 4rem 2rem;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+section h2 {
+  font-family: var(--heading-font);
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--navy);
+}
+
+/* Trust strip styles */
+.trust-strip {
+  background: var(--stone);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.trust-strip .trust-item {
+  padding: 0.3rem 0.5rem;
+  border-right: 1px solid var(--gold);
+}
+
+.trust-strip .trust-item:last-child {
+  border-right: none;
+}
+
+/* Pillar section */
+.pillars .pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.pillar-item {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.pillar-item .fa {
+  font-size: 2.2rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.pillar-item h3 {
+  font-family: var(--heading-font);
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  color: var(--navy);
+}
+
+.pillar-item p {
+  font-size: 1rem;
+  color: var(--navy);
+}
+
+/* Timeline preview */
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.step {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.step-number {
+  display: inline-block;
+  font-size: 1.2rem;
+  font-weight: 700;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--navy);
+  margin-bottom: 0.5rem;
+}
+
+.step h3 {
+  font-family: var(--heading-font);
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  color: var(--navy);
+}
+
+.step p {
+  font-size: 0.95rem;
+  color: var(--navy);
+}
+
+/* Who We Serve */
+.who-serve .serve-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.serve-item {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.serve-item .fa {
+  font-size: 2rem;
+  color: var(--gold);
+  margin-bottom: 0.8rem;
+}
+
+.serve-item h3 {
+  font-family: var(--heading-font);
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: var(--navy);
+}
+
+.serve-item p {
+  font-size: 0.95rem;
+  color: var(--navy);
+}
+
+/* Testimonials */
+.testimonials .testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.testimonials blockquote {
+  background: #ffffff;
+  border-left: 4px solid var(--gold);
+  padding: 1.5rem;
+  border-radius: 4px;
+  font-style: italic;
+  position: relative;
+  color: var(--navy);
+}
+
+.testimonials cite {
+  display: block;
+  margin-top: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+
+/* Contact call to action */
+.contact-cta {
+  background: var(--stone);
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.contact-cta h2 {
+  font-family: var(--heading-font);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: var(--navy);
+}
+
+.contact-cta p {
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--navy);
+}
+
+.contact-cta .cta-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.contact-cta .btn-primary,
+.contact-cta .btn-secondary {
+  margin: 0;
+}
+
+/* Footer */
+footer {
+  background: var(--navy);
+  color: #ffffff;
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.9rem;
+}
+
+footer p {
+  margin-bottom: 0.5rem;
+}
+
+footer small {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+}
+
+footer a {
+  color: var(--gold);
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2rem; }
+  .hero p { font-size: 1rem; }
+  nav ul { gap: 1rem; }
+  nav a { font-size: 0.9rem; }
+  .pillar-item, .step, .serve-item, .testimonials blockquote { padding: 1.5rem; }
+  section { padding: 3rem 1rem; }
+
+  /* Shrink logo on tablet */
+  nav .logo img { height: 44px; }
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  /* Further reduce logo size on small phones */
+  nav .logo img { height: 38px; }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Decorated panel system for elegant content layouts                        */
+/* These classes provide soft backgrounds, subtle borders and blurred glass */
+/* effects for text areas. They work best with the panel grid defined below */
+/* to create organized two‑column layouts.                                  */
+
+.panel {
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(31, 43, 58, 0.10);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 12px 30px rgba(13, 24, 38, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+/* Tighter padding for smaller side panels */
+.panel--tight {
+  padding: 22px;
+}
+
+/* Wider padding for prominent content panels */
+.panel--wide {
+  padding: 34px;
+}
+
+/* Gold divider used beneath panel titles */
+.panel-divider {
+  height: 2px;
+  width: 54px;
+  background: var(--gold);
+  opacity: 0.85;
+  border-radius: 99px;
+  margin: 10px 0 16px 0;
+}
+
+/* Prose container to control text width and rhythm */
+.prose {
+  max-width: 68ch;
+}
+
+.prose p {
+  margin: 0 0 14px 0;
+  line-height: 1.75;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* Two‑column grid layout for pages */
+.panel-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 22px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------------------- */
+/* Watermark: subtle logo crest in the background                            */
+/* Apply class="watermark" to the <body> element on each page to enable this */
+
+.watermark {
+  position: relative;
+  overflow: hidden;
+}
+
+.watermark::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("assets/logo.png");
+  background-repeat: no-repeat;
+  background-position: 85% 55%;
+  background-size: 520px auto;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 0;
+  filter: grayscale(20%);
+}
+
+main, nav, header, footer {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .watermark::before {
+    background-size: 360px auto;
+    background-position: 60% 60%;
+    opacity: 0.03;
+  }
+}
