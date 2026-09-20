@@ -650,31 +650,121 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .hero-inner { grid-template-columns: 1fr; }
   .hero-mockup { display: none; }
 }
+
+/* ── Mobile Toolkit (< 900px) ── */
 @media (max-width: 900px) {
+
+  /* Layout */
   .tk-layout { grid-template-columns: 1fr; }
+
+  /* Sidebar becomes a fixed bottom tab bar */
   .tk-sidebar {
     position: fixed; bottom: 0; left: 0; right: 0; height: auto;
     flex-direction: row; z-index: 200;
-    box-shadow: 0 -4px 20px rgba(0,0,0,.3);
+    background: #0f172a;
+    border-top: 1px solid rgba(255,255,255,.1);
+    box-shadow: 0 -8px 32px rgba(0,0,0,.4);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   .tk-brand, .tk-nav-section, .tk-nav-footer { display: none; }
-  .tk-nav { display: flex; overflow-x: auto; padding: 0; flex: 1; scrollbar-width: none; }
+
+  /* Horizontal scrollable nav */
+  .tk-nav { display: flex; overflow-x: auto; padding: 0; flex: 1; scrollbar-width: none; -ms-overflow-style: none; }
   .tk-nav::-webkit-scrollbar { display: none; }
+
+  /* Nav items — larger touch targets */
   .tk-nav-item {
-    flex-direction: column; padding: .55rem .7rem; font-size: .62rem;
-    gap: .2rem; border-left: none; border-top: 3px solid transparent;
-    white-space: nowrap; min-width: 56px; justify-content: center;
+    flex-direction: column; padding: .6rem .75rem .5rem;
+    font-size: .6rem; font-weight: 700; letter-spacing: .02em;
+    gap: .18rem; border-left: none; border-top: 2px solid transparent;
+    white-space: nowrap; min-width: 60px; max-width: 80px;
+    justify-content: center; align-items: center;
+    color: rgba(255,255,255,.45);
   }
-  .tk-nav-item.active { border-left: none; border-top-color: var(--blue); background: rgba(37,99,235,.15); }
-  .tk-nav-item .nav-icon { font-size: 1.1rem; width: auto; }
-  .tk-panel { padding: 1rem; padding-bottom: 5rem; }
-  .form-grid, .form-grid-3, .results-row, .meas-grid { grid-template-columns: 1fr; }
-  .tracker-stats { grid-template-columns: 1fr 1fr; }
+  .tk-nav-item:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.8); }
+  .tk-nav-item.active {
+    border-left: none; border-top-color: #60a5fa;
+    background: rgba(96,165,250,.12); color: #93c5fd;
+  }
+  .tk-nav-item .nav-icon { font-size: 1.25rem; width: auto; line-height: 1; }
+
+  /* Panels */
+  .tk-panel {
+    padding: 1rem 1rem 6rem;
+    min-height: 100dvh;
+  }
+
+  /* Panel header */
+  .panel-header { margin-bottom: 1.25rem; }
+  .panel-header h2 { font-size: 1.2rem; gap: .4rem; }
+  .panel-header .subtitle { font-size: .83rem; }
+
+  /* Cards — tighter padding */
+  .tk-card { padding: 1.1rem; margin-bottom: .85rem; border-radius: 10px; }
+  .tk-card h3 { margin-bottom: .75rem; }
+
+  /* Home grid — 2 columns */
+  .home-grid { grid-template-columns: 1fr 1fr; gap: .65rem; }
+  .home-tool-card { padding: 1rem; }
+  .home-tool-card .ht-icon { font-size: 1.3rem; margin-bottom: .4rem; }
+  .home-tool-card h4 { font-size: .82rem; }
+  .home-tool-card p { font-size: .72rem; }
+
+  /* Stacked grids */
+  .form-grid, .form-grid-3, .meas-grid { grid-template-columns: 1fr; gap: .65rem; }
   .tracker-add-form { grid-template-columns: 1fr; }
   .transform-block { grid-template-columns: 1fr; }
   .transform-arrow { transform: rotate(90deg); text-align: center; }
   .demo-form-row, .demo-results { grid-template-columns: 1fr; }
-}
-@media (max-width: 768px) {
-  .tk-panel { padding: .75rem; padding-bottom: 5rem; }
+
+  /* Results — 3 cols but compact */
+  .results-row { gap: .5rem; margin-top: .85rem; }
+  .result-chip { padding: .75rem .5rem; }
+  .result-chip .rc-val { font-size: 1.25rem; }
+  .result-chip .rc-label { font-size: .62rem; }
+  .result-chip .rc-sub { font-size: .68rem; }
+
+  /* Tracker */
+  .tracker-stats { grid-template-columns: 1fr 1fr; gap: .5rem; }
+  .tracker-stat { padding: .7rem .5rem; }
+  .tracker-stat .ts-num { font-size: 1.25rem; }
+
+  /* Script grid — single col */
+  .script-grid { grid-template-columns: 1fr; }
+
+  /* Tabs — wrap and smaller */
+  .tabs { gap: .25rem; padding-bottom: .6rem; }
+  .tab-btn { padding: .32rem .7rem; font-size: .75rem; }
+
+  /* Inputs — bigger touch targets */
+  input[type=text], input[type=number], input[type=date], select, textarea {
+    padding: .7rem .9rem; font-size: 1rem;
+  }
+
+  /* Safety meter */
+  .safety-meter { gap: 1rem; padding: 1rem; }
+  .safety-score { font-size: 2rem; min-width: 3rem; }
+
+  /* Output box */
+  .output-box { max-height: 220px; font-size: .82rem; }
+
+  /* Tip callout */
+  .tip-callout { padding: .75rem .9rem; }
+
+  /* Day grid */
+  .day-grid { grid-template-columns: 1fr; }
+
+  /* Schedule table — allow horizontal scroll */
+  .sched-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Tracker table scroll */
+  .tracker-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Platform pills — smaller */
+  .platform-pills { gap: .3rem; }
+  .platform-pill { padding: .28rem .65rem; font-size: .74rem; }
+
+  /* Audit score */
+  .audit-score-wrap { padding: .85rem 1rem; gap: 1rem; }
+  .audit-score-circle { width: 58px; height: 58px; font-size: 1.1rem; }
 }
