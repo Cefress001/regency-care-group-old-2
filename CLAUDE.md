@@ -68,5 +68,5 @@ Everything persists to `localStorage` under an `sk_` prefix; there is no backend
 ## Gotchas
 
 - **Stripe is not wired up.** `checkout.html` ships a commented-out `<stripe-buy-button>` and a visible `.stripe-placeholder` div in its place. Real keys go in that comment block; the placeholder div gets deleted at the same time. Nothing currently takes payment.
-- **The advertised tool count is stale.** `index.html` says "11 tools" in five places (lines 51, 205, 280, 565, 603) while `toolkit.html` ships 13. Update both sides together.
+- **The tool count appears in four files.** When the count changes, update: `index.html` (hero badge, hero stat, two CTAs, section heading, FAQ, sticky CTA), `checkout.html` (order line, feature list), `success.html` (two strings), and the Stripe product description on the Stripe Dashboard (a fifth copy outside the repo). `index.html` also has a derived string ("N more") — keep it consistent with the count minus 3 tools named inline.
 - **`toolkit.html` overrides global nav styles.** The `.tk-*` rules exist partly to undo landing-page nav styling that otherwise turned the dark sidebar white (`a44f685`). Be careful when editing shared nav selectors in `styles.css`.
