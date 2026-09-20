@@ -649,7 +649,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .hero-inner { grid-template-columns: 1fr; }
   .hero-mockup { display: none; }
 }
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .tk-layout { grid-template-columns: 1fr; }
   .tk-sidebar {
     position: fixed; bottom: 0; left: 0; right: 0; height: auto;
@@ -673,4 +673,7 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .transform-block { grid-template-columns: 1fr; }
   .transform-arrow { transform: rotate(90deg); text-align: center; }
   .demo-form-row, .demo-results { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .tk-panel { padding: .75rem; padding-bottom: 5rem; }
 }
