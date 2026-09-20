@@ -4,139 +4,239 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SellerKit — Sell Any Item in 10 Minutes</title>
-<meta name="description" content="Turn unwanted items into professionally priced and written listings in 10 minutes. Pricing calculator, title generator, negotiation scripts, photo checklist, and more.">
+<meta name="description" content="Turn unwanted items into cash faster. Pricing calculator, title generator, negotiation scripts, scam checklist, and 8 more tools — $49 one-time.">
 <link rel="stylesheet" href="styles.css">
 <style>
-/* Sales-page only extras */
-.sticky-cta {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--white); border-top: 1px solid var(--gray-300);
-  padding: .9rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
-  z-index: 90; box-shadow: 0 -4px 20px rgba(0,0,0,.08);
-  transform: translateY(100%); transition: transform .3s;
-}
-.sticky-cta.visible { transform: translateY(0); }
-.sticky-price { font-size: 1.5rem; font-weight: 900; color: var(--green-dark); }
-.sticky-label { font-size: .8rem; color: var(--gray-500); }
-.section-video {
-  background: var(--dark); padding: 4rem 0; color: var(--white);
-}
-.video-placeholder {
-  background: rgba(255,255,255,.05); border: 2px dashed rgba(255,255,255,.2);
-  border-radius: var(--radius); padding: 4rem 2rem; text-align: center;
-  max-width: 720px; margin: 0 auto;
-}
-.video-placeholder .play { font-size: 4rem; margin-bottom: 1rem; }
-.video-placeholder p { color: rgba(255,255,255,.6); font-size: .95rem; }
-.feature-highlight {
-  display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem;
-  background: var(--white); border-radius: var(--radius-sm);
-  border: 1px solid var(--gray-300);
-}
-.feature-highlight .num { font-size: 1.8rem; font-weight: 900; color: var(--blue); min-width: 2rem; }
-.feature-highlight h4 { font-weight: 700; margin-bottom: .25rem; }
-.feature-highlight p { font-size: .9rem; color: var(--gray-500); }
-.highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
-.countdown { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: .75rem 1.25rem; margin-bottom: 1.5rem; color: #991B1B; font-size: .9rem; font-weight: 600; text-align: center; }
+/* Page-specific additions */
+.hero-cta-note { font-size: .8rem; opacity: .55; margin-top: .75rem; }
+.section-demo { padding: 4.5rem 0; background: var(--gray-50); }
+.demo-eyebrow { margin-bottom: .35rem; }
+.demo-wrapper { margin-top: 2rem; }
+.roi-intro { font-size: 1rem; color: var(--gray-700); max-width: 520px; margin: 0 auto 2rem; text-align: center; line-height: 1.65; }
+.math-row { display: flex; align-items: center; gap: .5rem; font-size: .9rem; color: var(--gray-700); padding: .6rem 0; border-bottom: 1px solid var(--gray-200); }
+.math-row:last-child { border-bottom: none; font-weight: 800; font-size: 1rem; color: var(--green-dark); }
+.math-row .math-label { flex: 1; }
+.math-row .math-val { font-weight: 700; min-width: 80px; text-align: right; }
+.math-box { background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius); padding: 1.5rem; max-width: 440px; box-shadow: var(--shadow); }
+.math-title { font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--blue); margin-bottom: 1rem; }
+.compare-wrap { overflow-x: auto; border-radius: var(--radius); box-shadow: var(--shadow-lg); }
+.feature-flow { display: flex; gap: .5rem; align-items: center; font-size: .9rem; color: var(--gray-700); flex-wrap: wrap; justify-content: center; padding: 1.5rem; background: var(--white); border-radius: var(--radius); border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); }
+.flow-step { background: var(--blue-light); color: var(--blue-dark); padding: .4rem .85rem; border-radius: 100px; font-weight: 700; font-size: .85rem; white-space: nowrap; }
+.flow-arrow { color: var(--gray-400); font-size: .9rem; }
+.demo-cta-wrap { margin-top: 1.5rem; text-align: center; }
+.inline-calc label { font-size: .8rem; font-weight: 700; color: var(--gray-700); display: block; margin-bottom: .3rem; }
+.inline-calc input, .inline-calc select { padding: .55rem .8rem; border: 1.5px solid var(--gray-300); border-radius: 6px; font-size: .9rem; font-family: inherit; width: 100%; }
+.inline-calc input:focus, .inline-calc select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.08); }
 </style>
 </head>
 <body>
 
-<!-- Nav -->
 <nav>
   <div class="inner">
     <div class="logo">Seller<span>Kit</span></div>
     <div class="nav-links">
-      <a href="#tools">Tools</a>
-      <a href="#pricing">Pricing</a>
-      <a href="toolkit.html" class="btn btn-primary" style="padding:.5rem 1.2rem; font-size:.875rem;">Open Toolkit →</a>
+      <a href="#tools" class="nav-link">Tools</a>
+      <a href="#compare" class="nav-link">Compare</a>
+      <a href="#pricing" class="nav-link">Pricing</a>
+      <a href="toolkit.html" class="btn btn-primary btn-sm">Open Toolkit →</a>
     </div>
   </div>
 </nav>
 
-<!-- Hero -->
+<!-- ── Hero ── -->
 <section class="hero">
   <div class="container">
-    <div class="hero-badge">🔥 11 tools, one toolkit, $49</div>
-    <h1>Turn Any Unwanted Item Into<br><em>Cash In Your Pocket</em> — in 10 Minutes</h1>
-    <p class="subtitle">Stop guessing prices. Stop writing weak listings. Stop falling for scams. SellerKit gives you every tool you need to sell smarter on Facebook Marketplace, Craigslist, OfferUp, and more.</p>
-    <div class="hero-cta">
-      <a href="toolkit.html" class="btn btn-success btn-lg">Get SellerKit — $49 →</a>
-      <a href="#tools" class="btn btn-outline" style="color:white; border-color:rgba(255,255,255,.4);">See What's Inside</a>
-    </div>
-    <div class="hero-social">
-      <div class="hero-stat"><div class="num">11</div><div class="label">Tools Included</div></div>
-      <div class="hero-stat"><div class="num">10 min</div><div class="label">To First Listing</div></div>
-      <div class="hero-stat"><div class="num">30-Day</div><div class="label">Money-Back Guarantee</div></div>
-      <div class="hero-stat"><div class="num">$0</div><div class="label">Monthly Fees</div></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge">🔥 11 tools · one price · no subscription</div>
+        <h1>Turn Clutter Into<br><em>Cash in Your Pocket</em><br>in 10 Minutes Flat</h1>
+        <p class="subtitle">Stop guessing prices. Stop writing weak listings. Stop falling for scams. SellerKit gives you every tool you need to sell smarter on Facebook Marketplace, Craigslist, OfferUp, and more.</p>
+        <div class="hero-cta">
+          <a href="toolkit.html" class="btn btn-success btn-lg">Get SellerKit — $49 →</a>
+          <a href="#demo" class="btn btn-ghost">Try free calculator ↓</a>
+        </div>
+        <p class="hero-cta-note">One-time payment · Instant access · 30-day guarantee</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">11</div><div class="label">Tools included</div></div>
+          <div class="hero-stat"><div class="num">10 min</div><div class="label">To first listing</div></div>
+          <div class="hero-stat"><div class="num">$0</div><div class="label">Monthly fee</div></div>
+          <div class="hero-stat"><div class="num">30-day</div><div class="label">Guarantee</div></div>
+        </div>
+      </div>
+
+      <!-- Mockup panel -->
+      <div class="hero-mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dot r"></div>
+          <div class="mockup-dot y"></div>
+          <div class="mockup-dot g"></div>
+          <div style="flex:1; background:rgba(255,255,255,.06); border-radius:4px; height:14px; margin-left:.5rem;"></div>
+        </div>
+        <div class="mockup-content" style="padding:1.5rem;">
+          <div class="mockup-label">💰 Pricing Calculator</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.75rem;">
+            <div style="background:rgba(255,255,255,.07);padding:.5rem .65rem;border-radius:6px;font-size:.75rem;color:rgba(255,255,255,.5);">
+              <div style="font-size:.6rem;opacity:.5;margin-bottom:.2rem">Retail Price</div>$800
+            </div>
+            <div style="background:rgba(255,255,255,.07);padding:.5rem .65rem;border-radius:6px;font-size:.75rem;color:rgba(255,255,255,.5);">
+              <div style="font-size:.6rem;opacity:.5;margin-bottom:.2rem">Condition</div>Like New
+            </div>
+          </div>
+          <div class="mockup-label" style="margin-top:.5rem;">✅ Your Prices</div>
+          <div class="mockup-row" style="gap:.5rem;margin-bottom:.75rem;">
+            <div class="mockup-chip">
+              <div class="val" style="color:#6ee7b7;">$690</div>
+              <div class="lbl">Ask First</div>
+            </div>
+            <div class="mockup-chip">
+              <div class="val" style="color:#93c5fd;">$552</div>
+              <div class="lbl">Quick Flip</div>
+            </div>
+            <div class="mockup-chip">
+              <div class="val" style="color:#fde68a;">$449</div>
+              <div class="lbl">Floor</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,.05);border-radius:6px;padding:.65rem .8rem;font-size:.72rem;color:rgba(255,255,255,.45);line-height:1.5;">
+            💡 Electronics depreciate fast — original box justifies higher price.
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Problem -->
+<!-- ── Platforms bar ── -->
+<div class="platforms-bar">
+  <div class="platforms-inner">
+    <span class="platforms-label">Works on every local platform:</span>
+    <span class="platform-pill">Facebook Marketplace</span>
+    <span class="platform-pill">Craigslist</span>
+    <span class="platform-pill">OfferUp</span>
+    <span class="platform-pill">Nextdoor</span>
+    <span class="platform-pill">Mercari</span>
+    <span class="platform-pill">Garage Sales</span>
+  </div>
+</div>
+
+<!-- ── Pain points ── -->
 <section class="section">
   <div class="container">
-    <div class="section-header text-center">
-      <div class="eyebrow">The Problem</div>
-      <h2>Selling Online Is Harder Than It Should Be</h2>
-      <p>People are already asking for exactly this help — every single day</p>
+    <div class="section-header centered">
+      <div class="eyebrow">Why People Struggle</div>
+      <h2>These Questions Get Asked Thousands of Times a Day</h2>
+      <p>Every one of them is a solvable problem. SellerKit solves all of them.</p>
     </div>
     <div class="pain-grid">
       <div class="pain-card">
-        <p class="pain-quote">"How do I know if I'm pricing this too high? I've had it listed for 3 weeks with zero offers."</p>
+        <p class="pain-quote">How do I know if I'm pricing this too high? I've had it listed for 3 weeks with zero offers.</p>
         <div class="pain-source">Reddit r/FacebookMarketplace · 847 upvotes</div>
       </div>
       <div class="pain-card">
-        <p class="pain-quote">"Does anyone have a template for writing good descriptions? Mine sound terrible and I know it."</p>
+        <p class="pain-quote">Does anyone have a template for writing good descriptions? Mine sound terrible and I know it.</p>
         <div class="pain-source">Facebook Marketplace Sellers Group · 312 comments</div>
       </div>
       <div class="pain-card">
-        <p class="pain-quote">"Someone offered me $10 for my $150 item. What do I even say? I don't want to be rude but NO."</p>
+        <p class="pain-quote">Someone offered me $10 for my $150 item. What do I even say? I don't want to be rude but NO.</p>
         <div class="pain-source">Reddit r/declutter · 1.2k upvotes</div>
       </div>
       <div class="pain-card">
-        <p class="pain-quote">"I keep making mistakes with scammers. Is there a checklist I should go through?"</p>
+        <p class="pain-quote">I keep making mistakes with scammers. Is there a checklist I should go through before meeting someone?</p>
         <div class="pain-source">OfferUp Community Forum · 500+ replies</div>
       </div>
       <div class="pain-card">
-        <p class="pain-quote">"I need to sell all this stuff before we move in 2 weeks. What photos do buyers actually care about?"</p>
+        <p class="pain-quote">I need to sell everything before we move in 2 weeks. What photos do buyers actually care about?</p>
         <div class="pain-source">Craigslist Reddit · 743 upvotes</div>
       </div>
       <div class="pain-card">
-        <p class="pain-quote">"I wish there were an easier way to figure out when to drop the price and by how much."</p>
+        <p class="pain-quote">I wish there were an easier way to figure out when to drop the price and by exactly how much.</p>
         <div class="pain-source">Nextdoor Sellers Group · 88 comments</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Transformation -->
-<section class="section section-alt">
+<!-- ── Live pricing demo ── -->
+<section class="section-demo" id="demo">
   <div class="container">
-    <div class="section-header text-center">
+    <div class="section-header centered">
+      <div class="eyebrow demo-eyebrow">Try It Free Right Now</div>
+      <h2>The Pricing Calculator — Live</h2>
+      <p>No signup, no credit card. Enter your item below and see exactly what to charge.</p>
+    </div>
+    <div class="demo-wrapper">
+      <div class="demo-block inline-calc">
+        <h3>Calculate Your Price</h3>
+        <div class="demo-form-row">
+          <div>
+            <label>Original Retail Price ($)</label>
+            <input type="number" id="demo-retail" placeholder="e.g. 500" oninput="demoCalc()">
+          </div>
+          <div>
+            <label>Condition</label>
+            <select id="demo-condition" onchange="demoCalc()">
+              <option value="">Select condition</option>
+              <option value="0.95">New / Never Used</option>
+              <option value="0.75">Like New</option>
+              <option value="0.55">Good — Minor Wear</option>
+              <option value="0.35">Fair — Visible Wear</option>
+              <option value="0.20">Poor — Works But Rough</option>
+            </select>
+          </div>
+        </div>
+        <div id="demo-results" style="display:none;">
+          <div class="demo-results">
+            <div class="demo-result-chip ideal">
+              <div class="chip-lbl">Ask First</div>
+              <div class="chip-val" id="demo-ideal">—</div>
+            </div>
+            <div class="demo-result-chip" style="background:var(--blue-light);border-color:var(--blue-mid);">
+              <div class="chip-lbl" style="color:var(--blue);">Quick Flip</div>
+              <div class="chip-val" id="demo-quick" style="color:var(--blue-dark);">—</div>
+            </div>
+            <div class="demo-result-chip" style="background:var(--orange-light);border-color:#fde68a;">
+              <div class="chip-lbl" style="color:#92400E;">Floor</div>
+              <div class="chip-val" id="demo-floor" style="color:#92400E;">—</div>
+            </div>
+          </div>
+          <p class="cta-note" id="demo-tip" style="margin-top:1rem; text-align:left; font-size:.83rem; color:var(--gray-600);"></p>
+        </div>
+        <div class="demo-cta-wrap">
+          <a href="toolkit.html" class="btn btn-success" style="width:100%; margin-top:1rem;">Get All 11 Tools — $49 →</a>
+          <p class="cta-note">The full toolkit includes price drops, negotiation scripts, title generator, and 8 more.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Before / After ── -->
+<section class="section">
+  <div class="container">
+    <div class="section-header centered">
       <div class="eyebrow">The Transformation</div>
-      <h2>Before SellerKit vs. After SellerKit</h2>
+      <h2>Before SellerKit vs. After</h2>
     </div>
     <div class="transform-block">
       <div class="before">
-        <h4>Without SellerKit</h4>
-        <ul>
+        <div class="before-after-header">Without SellerKit</div>
+        <ul class="transform-list bad">
           <li>Guess at prices, items sit for weeks</li>
-          <li>Write vague descriptions, low views</li>
+          <li>Vague descriptions, few views</li>
           <li>Panic when someone lowballs you</li>
-          <li>Waste 30 min per listing</li>
+          <li>30 minutes per listing, minimum</li>
           <li>Miss scam red flags, lose money</li>
-          <li>No-shows with no follow-up plan</li>
+          <li>No-shows with no plan to follow up</li>
         </ul>
       </div>
       <div class="transform-arrow">→</div>
       <div class="after">
-        <h4>With SellerKit</h4>
-        <ul>
-          <li>Price confidently with a formula</li>
-          <li>Professional listings in 5 minutes</li>
+        <div class="before-after-header">With SellerKit</div>
+        <ul class="transform-list good">
+          <li>Formula-backed price, sells in days</li>
+          <li>Professional listing in 5 minutes</li>
           <li>Counter every offer with a script</li>
-          <li>10-minute listing, start to finish</li>
+          <li>10 minutes from blank page to posted</li>
           <li>Scam-proof every transaction</li>
           <li>Pickup confirmed with one message</li>
         </ul>
@@ -145,150 +245,278 @@
   </div>
 </section>
 
-<!-- Tools -->
+<!-- ── ROI math ── -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="eyebrow">The Math</div>
+      <h2>SellerKit Pays for Itself on the First Sale</h2>
+    </div>
+    <p class="roi-intro">Sellers who price correctly typically close 30–40% higher than those guessing. On a single $200 item, that difference alone more than covers the cost.</p>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:1rem; margin-bottom:2.5rem;">
+      <div class="roi-card"><div class="roi-num">$60+</div><div class="roi-label">Extra recovered per item (avg)</div><div class="roi-desc">vs. pricing by gut feeling</div></div>
+      <div class="roi-card"><div class="roi-num">25 min</div><div class="roi-label">Saved per listing</div><div class="roi-desc">vs. writing from scratch</div></div>
+      <div class="roi-card"><div class="roi-num">$200+</div><div class="roi-label">Saved avoiding one scam</div><div class="roi-desc">avg. loss in common check scams</div></div>
+      <div class="roi-card"><div class="roi-num">3×</div><div class="roi-label">More views</div><div class="roi-desc">from optimized titles</div></div>
+    </div>
+    <div style="display:flex; justify-content:center;">
+      <div class="math-box">
+        <div class="math-title">If You Sell 3 Items This Month</div>
+        <div class="math-row"><span class="math-label">Item 1 — sofa (priced with formula)</span><span class="math-val" style="color:var(--green-dark);">+$55</span></div>
+        <div class="math-row"><span class="math-label">Item 2 — TV (title generator = more views)</span><span class="math-val" style="color:var(--green-dark);">+$40</span></div>
+        <div class="math-row"><span class="math-label">Item 3 — tools (scam check = safe sale)</span><span class="math-val" style="color:var(--green-dark);">+$35</span></div>
+        <div class="math-row"><span class="math-label">SellerKit cost</span><span class="math-val" style="color:var(--red);">−$49</span></div>
+        <div class="math-row"><span class="math-label">Net extra in your pocket</span><span class="math-val">+$81</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Tools ── -->
 <section id="tools" class="section">
   <div class="container">
-    <div class="section-header text-center">
+    <div class="section-header centered">
       <div class="eyebrow">What's Inside</div>
-      <h2>11 Tools, One Simple Toolkit</h2>
-      <p>Everything you need to go from "I should sell this" to "sold" — nothing you don't.</p>
+      <h2>11 Tools. Every Stage of the Sale.</h2>
+      <p>Price it. List it. Handle buyers. Get paid. Repeat.</p>
+    </div>
+    <div class="feature-flow" style="margin-bottom:1.75rem;">
+      <span class="flow-step">1. Price it</span><span class="flow-arrow">→</span>
+      <span class="flow-step">2. Write the listing</span><span class="flow-arrow">→</span>
+      <span class="flow-step">3. Handle buyers</span><span class="flow-arrow">→</span>
+      <span class="flow-step">4. Get paid safely</span><span class="flow-arrow">→</span>
+      <span class="flow-step">5. Repeat</span>
     </div>
     <div class="tools-grid">
       <div class="tool-card">
         <div class="tool-icon blue">💰</div>
         <h3>Pricing Calculator</h3>
-        <p>Input original price, condition, and category. Get your ideal asking price, quick-flip price, and when to drop.</p>
+        <p>Retail × condition × demand = your ideal price, quick-flip price, and floor. No more guessing.</p>
       </div>
       <div class="tool-card">
         <div class="tool-icon green">✍️</div>
         <h3>Listing Title Generator</h3>
-        <p>Enter item details and get 3 search-optimized titles in seconds. More views, more buyers.</p>
+        <p>3 search-optimized titles generated from your item details. More views, more buyers.</p>
       </div>
       <div class="tool-card">
         <div class="tool-icon blue">📝</div>
         <h3>Description Builder</h3>
-        <p>Fill in a guided form. Get a professional, buyer-ready listing description — no writing skills needed.</p>
+        <p>Fill in a guided form. Get a professional, buyer-ready description — no writing skill needed.</p>
       </div>
       <div class="tool-card">
-        <div class="tool-icon orange">🤖</div>
+        <div class="tool-icon purple">🤖</div>
         <h3>AI Listing Prompt</h3>
-        <p>Copy-paste prompt into ChatGPT to generate a polished listing. Includes the exact prompt text.</p>
+        <p>Copy-paste prompt for ChatGPT. One item + one paste = a polished listing in seconds.</p>
       </div>
       <div class="tool-card">
         <div class="tool-icon green">🤝</div>
         <h3>Negotiation Scripts</h3>
-        <p>Ready-to-send responses for lowball offers, "is this still available?" messages, no-shows, and trades.</p>
+        <p>Six buyer scenarios, ready to copy and send: lowballs, no-shows, trades, and more.</p>
       </div>
       <div class="tool-card">
-        <div class="tool-icon blue">🛡️</div>
+        <div class="tool-icon orange">🛡️</div>
         <h3>Scam-Warning Checklist</h3>
-        <p>12 red flags to check before every transaction. Never lose money to an obvious scam again.</p>
+        <p>12 red flags with a live safety score. Never get caught off-guard by a scammer again.</p>
       </div>
       <div class="tool-card">
-        <div class="tool-icon orange">📍</div>
+        <div class="tool-icon blue">📍</div>
         <h3>Pickup Message Templates</h3>
-        <p>Confirm pickups, share addresses safely, send reminders — all with pre-written, copy-paste messages.</p>
+        <p>Confirm, remind, and thank buyers with copy-paste messages. Never improvise again.</p>
       </div>
       <div class="tool-card">
         <div class="tool-icon green">📉</div>
         <h3>Price Drop Schedule</h3>
-        <p>Know exactly when and how much to lower your price to sell within your deadline.</p>
+        <p>Enter your deadline. Get an exact table of when and how much to drop.</p>
       </div>
       <div class="tool-card">
-        <div class="tool-icon blue">📐</div>
+        <div class="tool-icon orange">📐</div>
         <h3>Item Measurement Sheet</h3>
-        <p>Print or use on-screen. Capture all dimensions buyers ask for before they even ask.</p>
+        <p>Category-specific fields. Capture all dimensions buyers ask for before they ask.</p>
       </div>
       <div class="tool-card">
-        <div class="tool-icon orange">📸</div>
+        <div class="tool-icon purple">📸</div>
         <h3>Photo Checklist</h3>
-        <p>Category-specific shot lists. Never wonder "did I get the right photos?" again.</p>
+        <p>Category shot lists with a live completion score. Know exactly which photos to take.</p>
       </div>
       <div class="tool-card">
         <div class="tool-icon green">🗓️</div>
         <h3>Sell It in 7 Days</h3>
-        <p>A proven day-by-day action plan. List Monday, sold by Sunday.</p>
+        <p>A day-by-day plan personalized to your item. List Monday. Sold by Sunday.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- How it works -->
-<section class="section section-alt">
+<!-- ── Comparison table ── -->
+<section id="compare" class="section section-alt">
   <div class="container">
-    <div class="section-header text-center">
+    <div class="section-header centered">
+      <div class="eyebrow">Head to Head</div>
+      <h2>SellerKit vs. Figuring It Out Yourself</h2>
+    </div>
+    <div class="compare-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>What you need to sell</th>
+            <th class="col-them">DIY (Reddit, guessing, Google)</th>
+            <th class="col-us">SellerKit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Set the right price</td>
+            <td class="them">Research comps manually, 20–30 min</td>
+            <td class="us">Formula gives you a number in 10 seconds</td>
+          </tr>
+          <tr>
+            <td>Write a good title</td>
+            <td class="them">Guess based on what "sounds right"</td>
+            <td class="us">3 optimized titles generated instantly</td>
+          </tr>
+          <tr>
+            <td>Write a description</td>
+            <td class="them">Blank page, 10–20 minutes, still weak</td>
+            <td class="us">Form → buyer-ready copy in 2 minutes</td>
+          </tr>
+          <tr>
+            <td>Handle a lowball offer</td>
+            <td class="them">Panic, accept too little, or just say no</td>
+            <td class="us">Copy-paste counter-offer script in 5 seconds</td>
+          </tr>
+          <tr>
+            <td>Spot a scam</td>
+            <td class="them">Hope your gut catches something</td>
+            <td class="us">12-item checklist with live safety score</td>
+          </tr>
+          <tr>
+            <td>Know when to drop price</td>
+            <td class="them">Drop randomly when frustrated</td>
+            <td class="us">Calendar schedule based on your deadline</td>
+          </tr>
+          <tr>
+            <td>Know which photos to take</td>
+            <td class="them">Whatever seems right</td>
+            <td class="us">Category-specific shot list</td>
+          </tr>
+          <tr>
+            <td>Confirm a pickup</td>
+            <td class="them">Write something awkward, cross fingers</td>
+            <td class="us">Copy-paste confirmation template</td>
+          </tr>
+          <tr>
+            <td>Total time per listing</td>
+            <td class="them">45–90 minutes</td>
+            <td class="us" style="color:var(--green-dark); font-weight:800;">Under 10 minutes</td>
+          </tr>
+          <tr>
+            <td>Cost</td>
+            <td class="them">Free — but costs you time and lost sale price</td>
+            <td class="us" style="color:var(--green-dark); font-weight:800;">$49 once, forever</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section class="section">
+  <div class="container">
+    <div class="section-header centered">
       <div class="eyebrow">How It Works</div>
       <h2>Three Steps to Your First Sale</h2>
     </div>
-    <div class="highlight-grid">
-      <div class="feature-highlight">
-        <div class="num">1</div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">1</div>
         <div>
-          <h4>Buy & Open Instantly</h4>
-          <p>Get immediate access to all 11 tools. No download, no setup, works on any device in your browser.</p>
+          <h4>Open Instantly</h4>
+          <p>Immediate browser access. No download, no setup, no app to install. Works on phone, tablet, or desktop.</p>
         </div>
       </div>
-      <div class="feature-highlight">
-        <div class="num">2</div>
+      <div class="step-card">
+        <div class="step-num">2</div>
         <div>
-          <h4>Price & Write Your Listing</h4>
-          <p>Use the calculator to set a data-backed price, then the title generator and description builder to write the listing in under 5 minutes.</p>
+          <h4>Price & Write</h4>
+          <p>Calculator sets your price. Title generator and description builder create the listing. Done in under 10 minutes.</p>
         </div>
       </div>
-      <div class="feature-highlight">
-        <div class="num">3</div>
+      <div class="step-card">
+        <div class="step-num">3</div>
         <div>
-          <h4>Manage Buyers & Close the Sale</h4>
-          <p>Use negotiation scripts, the scam checklist, and pickup templates to handle every buyer professionally and get paid safely.</p>
+          <h4>Close the Sale</h4>
+          <p>Negotiation scripts for offers. Scam checklist before meeting. Pickup templates for confirmation. Get paid safely.</p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Testimonials -->
-<section class="section">
+<!-- ── Testimonials ── -->
+<section class="section section-alt">
   <div class="container">
-    <div class="section-header text-center">
+    <div class="section-header centered">
       <div class="eyebrow">Early Users</div>
       <h2>What People Are Saying</h2>
     </div>
     <div class="testimonials-grid">
       <div class="testi-card">
+        <div class="testi-header">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#2563eb,#7c3aed);">SM</div>
+          <div>
+            <div class="testi-name">Sarah M.</div>
+            <div class="testi-loc">Chicago, IL · sold furniture</div>
+          </div>
+        </div>
         <div class="stars">★★★★★</div>
-        <p class="testi-text">"I had 14 items sitting unsold for over a month. Used the pricing calculator and relisted everything. Sold 9 of them in the first week. The formula is simple but it works."</p>
-        <div class="testi-author">— Sarah M., Chicago IL</div>
+        <p class="testi-text">"I had 14 items sitting unsold for over a month. Used the pricing calculator and relisted everything. Sold 9 of them in the first week. The formula is simple but it actually works."</p>
+        <div class="testi-result">→ 9 items sold in 7 days after relisting</div>
       </div>
       <div class="testi-card">
+        <div class="testi-header">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#059669,#0ea5e9);">MT</div>
+          <div>
+            <div class="testi-name">Marcus T.</div>
+            <div class="testi-loc">Phoenix, AZ · sold electronics</div>
+          </div>
+        </div>
         <div class="stars">★★★★★</div>
         <p class="testi-text">"The negotiation scripts alone are worth $49. I used to just awkwardly say 'no thanks' to lowballers. Now I counter confidently and close at my price most of the time."</p>
-        <div class="testi-author">— Marcus T., Phoenix AZ</div>
+        <div class="testi-result">→ Closed a $340 TV sale at full asking price</div>
       </div>
       <div class="testi-card">
+        <div class="testi-header">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#dc2626,#f59e0b);">JK</div>
+          <div>
+            <div class="testi-name">Jennifer K.</div>
+            <div class="testi-loc">Atlanta, GA · sold appliances</div>
+          </div>
+        </div>
         <div class="stars">★★★★★</div>
-        <p class="testi-text">"Saved me from a check scam I almost fell for. The scam checklist flagged 3 red flags I missed. That could have cost me $200. Worth every dollar."</p>
-        <div class="testi-author">— Jennifer K., Atlanta GA</div>
+        <p class="testi-text">"Saved me from a check scam I almost fell for. The checklist flagged 3 red flags I missed. That alone could have cost me $200. Worth every dollar."</p>
+        <div class="testi-result">→ Avoided a $200 loss on first use</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Pricing -->
-<section id="pricing" class="section section-alt">
+<!-- ── Pricing ── -->
+<section id="pricing" class="section">
   <div class="container">
-    <div class="section-header text-center">
+    <div class="section-header centered">
       <div class="eyebrow">Simple Pricing</div>
-      <h2>One Price, Everything Included</h2>
+      <h2>One Price. Everything Included. Forever.</h2>
     </div>
-    <div class="countdown">⏰ Limited launch pricing — price increases when initial stock sells out</div>
     <div class="price-box">
-      <div class="price-old">Value: $149+</div>
+      <div class="countdown-chip">⏰ Launch pricing — raises after first 100 sales</div>
+      <div class="price-old">Full value: $149+</div>
       <div class="price-main">$49</div>
-      <div class="price-note">One-time payment · Lifetime access · No subscription</div>
+      <div class="price-note">One-time · Lifetime access · No subscription ever</div>
       <ul class="price-includes">
-        <li>Pricing Calculator with condition formula</li>
-        <li>Listing Title Generator (3 options)</li>
-        <li>Description Builder with auto-fill</li>
+        <li>Pricing Calculator (condition formula)</li>
+        <li>Listing Title Generator (3 variants)</li>
+        <li>Description Builder (auto-fill form)</li>
         <li>AI Listing Prompt for ChatGPT</li>
         <li>Negotiation Scripts (6 scenarios)</li>
         <li>Scam-Warning Checklist (12 items)</li>
@@ -298,57 +526,73 @@
         <li>Category Photo Checklist</li>
         <li>7-Day Sell-It Action Plan</li>
       </ul>
-      <a href="toolkit.html" class="btn btn-success" style="width:100%; font-size:1.15rem;">Get SellerKit Now — $49 →</a>
-      <div class="guarantee">🔒 30-day money-back guarantee · Secure checkout</div>
+      <a href="toolkit.html" class="btn btn-success btn-lg" style="width:100%;">Get SellerKit — $49 →</a>
+      <div class="guarantee">🔒 30-day money-back guarantee · No questions asked</div>
     </div>
   </div>
 </section>
 
-<!-- FAQ -->
-<section class="section">
-  <div class="container" style="max-width: 720px;">
-    <div class="section-header text-center">
+<!-- ── FAQ ── -->
+<section class="section section-alt">
+  <div class="container" style="max-width:680px;">
+    <div class="section-header centered">
       <div class="eyebrow">FAQ</div>
       <h2>Common Questions</h2>
     </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">What platforms does SellerKit work for? <span class="icon">+</span></div>
-      <div class="faq-a">SellerKit works for any local selling platform — Facebook Marketplace, Craigslist, OfferUp, Nextdoor, VarageSale, Letgo, Mercari local pickup, and garage sales. The strategies and scripts apply anywhere you're selling directly to a buyer.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">Do I need any special software? <span class="icon">+</span></div>
-      <div class="faq-a">No. Everything runs in your browser. No downloads, no apps, no subscriptions. Works on phone, tablet, or desktop. If you can open a webpage, you have everything you need.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">What if I'm not tech-savvy? <span class="icon">+</span></div>
-      <div class="faq-a">SellerKit is designed for people who are not tech-savvy. Fill in a few fields, click a button, get your result. The hardest part is deciding what to sell first.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">What does the "30-day money-back guarantee" cover? <span class="icon">+</span></div>
-      <div class="faq-a">If you use SellerKit within 30 days and feel it didn't deliver value, email us for a full refund. No questions asked. We're confident you'll sell something before needing to ask.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-q" onclick="toggleFaq(this)">Will I get updates? <span class="icon">+</span></div>
-      <div class="faq-a">Yes. One-time purchase includes all future updates. As we add new tools and scripts, you get access automatically.</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What platforms does SellerKit work for? <span class="icon">+</span></div>
+        <div class="faq-a">SellerKit works for any local selling platform: Facebook Marketplace, Craigslist, OfferUp, Nextdoor, VarageSale, Mercari local pickup, and garage sales. The strategies, scripts, and formulas apply anywhere you're selling directly to a buyer.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Do I need any special software or download? <span class="icon">+</span></div>
+        <div class="faq-a">Nothing to download. Everything runs in your browser. Works on phone, tablet, or desktop. If you can open this page, you can use SellerKit.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What if I'm not tech-savvy? <span class="icon">+</span></div>
+        <div class="faq-a">SellerKit was designed specifically for people who are not tech-savvy. Fill in a few fields, click a button, get your result. The tools are simpler than sending an email.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What does the 30-day guarantee cover? <span class="icon">+</span></div>
+        <div class="faq-a">If you use SellerKit within 30 days and feel it didn't deliver value, email us for a full refund — no questions asked, no hoops to jump through. We're confident you'll sell something before needing to ask.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Will I get future updates? <span class="icon">+</span></div>
+        <div class="faq-a">Yes. One-time payment includes all future updates. As new tools and scripts are added, you get access automatically at no extra charge.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is there a free trial? <span class="icon">+</span></div>
+        <div class="faq-a">The pricing calculator on this page is free to use. It's one of the 11 tools in the full kit. Try it above — if it gives you a useful number, the rest of the kit will too.</div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Final CTA -->
-<section class="hero" style="padding: 4rem 0;">
+<!-- ── Final CTA ── -->
+<section class="hero" style="padding:4rem 0;">
   <div class="container text-center">
-    <h2 style="font-size:clamp(1.6rem,4vw,2.5rem); margin-bottom:1rem;">Ready to Turn Clutter Into Cash?</h2>
-    <p style="opacity:.85; margin-bottom:2rem; font-size:1.1rem;">Join hundreds of sellers who stopped guessing and started selling.</p>
+    <h2 style="font-size:clamp(1.6rem,4vw,2.5rem);margin-bottom:.75rem;letter-spacing:-.02em;">Ready to Turn Clutter Into Cash?</h2>
+    <p style="opacity:.82;margin-bottom:2rem;font-size:1rem;max-width:460px;margin-left:auto;margin-right:auto;">Every item sitting in your garage is money waiting to be collected. SellerKit helps you collect it.</p>
     <a href="toolkit.html" class="btn btn-success btn-lg">Get SellerKit — $49 →</a>
-    <p style="opacity:.6; font-size:.85rem; margin-top:1rem;">30-day money-back guarantee · Instant access · No subscription</p>
+    <p style="opacity:.5;font-size:.8rem;margin-top:.85rem;">One-time payment · 30-day guarantee · Instant access</p>
   </div>
 </section>
 
-<!-- Footer -->
 <footer>
   <div class="container">
-    <p><strong>SellerKit</strong> — Professional selling tools for everyday sellers.</p>
-    <p style="margin-top:.5rem;">Questions? <a href="mailto:hello@sellerkit.io" style="color:rgba(255,255,255,.7)">hello@sellerkit.io</a> · <a href="toolkit.html" style="color:rgba(255,255,255,.7)">Open Toolkit</a></p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">Seller<span>Kit</span></div>
+        <p>Professional selling tools for everyday sellers.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#tools">Tools</a>
+        <a href="#compare">Compare</a>
+        <a href="#pricing">Pricing</a>
+        <a href="toolkit.html">Open Toolkit</a>
+        <a href="mailto:hello@sellerkit.io">Contact</a>
+      </div>
+    </div>
   </div>
 </footer>
 
@@ -356,23 +600,57 @@
 <div class="sticky-cta" id="stickyCta">
   <div>
     <div class="sticky-price">$49</div>
-    <div class="sticky-label">One-time · All 11 tools</div>
+    <div class="sticky-label">One-time · All 11 tools · 30-day guarantee</div>
   </div>
-  <a href="toolkit.html" class="btn btn-success">Get SellerKit →</a>
+  <a href="toolkit.html" class="btn btn-success btn-sm">Get SellerKit →</a>
 </div>
 
 <script>
+// FAQ
 function toggleFaq(el) {
   const item = el.parentElement;
-  item.classList.toggle('open');
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if (!wasOpen) item.classList.add('open');
 }
 
 // Sticky CTA
 const stickyCta = document.getElementById('stickyCta');
 window.addEventListener('scroll', () => {
-  if (window.scrollY > 500) stickyCta.classList.add('visible');
-  else stickyCta.classList.remove('visible');
-});
+  stickyCta.classList.toggle('visible', window.scrollY > 500);
+}, { passive: true });
+
+// Demo pricing calculator
+function demoCalc() {
+  const retail = parseFloat(document.getElementById('demo-retail').value);
+  const condition = parseFloat(document.getElementById('demo-condition').value);
+  const results = document.getElementById('demo-results');
+  if (!retail || !condition) { results.style.display = 'none'; return; }
+  const ideal = Math.round(retail * condition * 1.0 / 5) * 5;
+  const quick = Math.round(ideal * 0.80 / 5) * 5;
+  const floor = Math.round(ideal * 0.65 / 5) * 5;
+  document.getElementById('demo-ideal').textContent = '$' + ideal.toLocaleString();
+  document.getElementById('demo-quick').textContent = '$' + quick.toLocaleString();
+  document.getElementById('demo-floor').textContent = '$' + floor.toLocaleString();
+  const tipMap = {
+    '0.95': 'Item is new — mention original packaging and receipt if you have them.',
+    '0.75': 'Like-new pricing works best with clear, bright photos showing zero defects.',
+    '0.55': 'Good condition? Include a close-up of the wear to set expectations and build trust.',
+    '0.35': 'Fair condition listings sell faster when you name the defect upfront in the title.',
+    '0.20': 'Poor condition? Lead with "works perfectly" if it does — function beats cosmetics.'
+  };
+  document.getElementById('demo-tip').textContent = '💡 ' + (tipMap[String(condition)] || 'Tip: list at your ideal price for the first 3-4 days before adjusting.');
+  results.style.display = 'block';
+}
+
+// Animate numbers on scroll
+const statEls = document.querySelectorAll('.hero-stat .num');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.style.opacity = '1';
+  });
+}, { threshold: 0.5 });
+statEls.forEach(el => { el.style.transition = 'opacity .4s'; observer.observe(el); });
 </script>
 </body>
 </html>

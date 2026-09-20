@@ -5,94 +5,175 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SellerKit — Toolkit</title>
 <link rel="stylesheet" href="styles.css">
-<style>
-.measurement-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.measurement-field { display: flex; align-items: center; gap: .75rem; background: var(--gray-100); padding: .65rem .9rem; border-radius: 6px; }
-.measurement-field label { margin: 0; min-width: 110px; font-weight: 600; font-size: .85rem; }
-.measurement-field input { flex: 1; background: var(--white); border: 1px solid var(--gray-300); padding: .4rem .6rem; border-radius: 4px; font-size: .9rem; }
-.photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: .75rem; }
-.photo-item { background: var(--gray-100); border-radius: 6px; padding: .85rem; }
-.photo-item label { font-size: .85rem; font-weight: 400; }
-.score-display { font-size: 3rem; font-weight: 900; }
-.score-bar { height: 12px; border-radius: 100px; background: var(--gray-300); overflow: hidden; margin: .5rem 0 .25rem; }
-.score-fill { height: 100%; border-radius: 100px; transition: width .4s ease; }
-.tip-box { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 6px; padding: 1rem 1.25rem; margin-top: 1rem; }
-.tip-box h4 { font-size: .85rem; font-weight: 700; color: #92400E; margin-bottom: .35rem; }
-.tip-box p { font-size: .85rem; color: #78350F; }
-.range-row { display: flex; justify-content: space-between; align-items: center; }
-</style>
 </head>
 <body>
 
 <div class="tk-layout">
 
-  <!-- Sidebar -->
+  <!-- ── Sidebar ── -->
   <aside class="tk-sidebar">
-    <div class="brand">
+    <div class="tk-brand">
       <a href="index.html" class="logo">Seller<span>Kit</span></a>
-      <div style="font-size:.75rem; color:rgba(255,255,255,.45); margin-top:.25rem;">Your Selling Toolkit</div>
+      <div class="tagline">Your selling toolkit</div>
     </div>
-    <nav id="sidebarNav">
-      <div class="tk-nav-item active" onclick="showPanel('pricing')" data-panel="pricing">
+    <nav class="tk-nav">
+      <div class="tk-nav-section">Overview</div>
+      <div class="tk-nav-item active" data-panel="home" onclick="showPanel('home')">
+        <span class="nav-icon">🏠</span>All Tools
+      </div>
+      <div class="tk-nav-section">Listing</div>
+      <div class="tk-nav-item" data-panel="pricing" onclick="showPanel('pricing')">
         <span class="nav-icon">💰</span>Pricing Calc
       </div>
-      <div class="tk-nav-item" onclick="showPanel('titles')" data-panel="titles">
+      <div class="tk-nav-item" data-panel="titles" onclick="showPanel('titles')">
         <span class="nav-icon">✍️</span>Title Gen
       </div>
-      <div class="tk-nav-item" onclick="showPanel('description')" data-panel="description">
+      <div class="tk-nav-item" data-panel="description" onclick="showPanel('description')">
         <span class="nav-icon">📝</span>Description
       </div>
-      <div class="tk-nav-item" onclick="showPanel('aiprompt')" data-panel="aiprompt">
+      <div class="tk-nav-item" data-panel="aiprompt" onclick="showPanel('aiprompt')">
         <span class="nav-icon">🤖</span>AI Prompt
       </div>
-      <div class="tk-nav-item" onclick="showPanel('scripts')" data-panel="scripts">
+      <div class="tk-nav-section">Buyers</div>
+      <div class="tk-nav-item" data-panel="scripts" onclick="showPanel('scripts')">
         <span class="nav-icon">🤝</span>Scripts
       </div>
-      <div class="tk-nav-item" onclick="showPanel('scam')" data-panel="scam">
+      <div class="tk-nav-item" data-panel="scam" onclick="showPanel('scam')">
         <span class="nav-icon">🛡️</span>Scam Check
       </div>
-      <div class="tk-nav-item" onclick="showPanel('pickup')" data-panel="pickup">
+      <div class="tk-nav-item" data-panel="pickup" onclick="showPanel('pickup')">
         <span class="nav-icon">📍</span>Pickup Msgs
       </div>
-      <div class="tk-nav-item" onclick="showPanel('pricedrop')" data-panel="pricedrop">
+      <div class="tk-nav-section">Planning</div>
+      <div class="tk-nav-item" data-panel="pricedrop" onclick="showPanel('pricedrop')">
         <span class="nav-icon">📉</span>Price Drop
       </div>
-      <div class="tk-nav-item" onclick="showPanel('measurements')" data-panel="measurements">
+      <div class="tk-nav-item" data-panel="measurements" onclick="showPanel('measurements')">
         <span class="nav-icon">📐</span>Measurements
       </div>
-      <div class="tk-nav-item" onclick="showPanel('photos')" data-panel="photos">
-        <span class="nav-icon">📸</span>Photos
+      <div class="tk-nav-item" data-panel="photos" onclick="showPanel('photos')">
+        <span class="nav-icon">📸</span>Photo List
       </div>
-      <div class="tk-nav-item" onclick="showPanel('sevenday')" data-panel="sevenday">
+      <div class="tk-nav-item" data-panel="sevenday" onclick="showPanel('sevenday')">
         <span class="nav-icon">🗓️</span>7-Day Plan
       </div>
     </nav>
+    <div class="tk-nav-footer">
+      <a href="index.html">← Back to site</a>
+    </div>
   </aside>
 
-  <!-- Main -->
+  <!-- ── Main ── -->
   <main class="tk-main">
 
-    <!-- ── 1. PRICING CALCULATOR ── -->
-    <div class="tk-panel active" id="panel-pricing">
-      <h2>💰 Pricing Calculator</h2>
-      <p class="subtitle">Set a data-backed price — not a gut-feeling guess.</p>
+    <!-- ══ HOME DASHBOARD ══ -->
+    <div class="tk-panel active" id="panel-home">
+      <div class="panel-header">
+        <h2>🏠 All Tools</h2>
+        <div class="subtitle">Pick a tool to get started. Use them in order or jump to what you need.</div>
+      </div>
+
+      <div class="tk-card" style="margin-bottom:.75rem; background:linear-gradient(135deg,#eff6ff,#f0fdf4);">
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+          <div style="font-size:1.5rem;">💡</div>
+          <div>
+            <strong style="font-size:.9rem;">Selling something new?</strong>
+            <div style="font-size:.82rem;color:var(--gray-600);margin-top:.1rem;">
+              Start with <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('pricing')">Pricing Calc</span> →
+              then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('titles')">Title Gen</span> →
+              then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('description')">Description</span>.
+              Takes about 10 minutes total.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:.75rem; padding: .6rem .9rem; background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-sm); font-size:.78rem; color:var(--gray-500);">
+        📌 Your inputs are saved automatically — close and reopen this page and your work will be here.
+      </div>
+
+      <div class="home-grid">
+        <div class="home-tool-card" onclick="showPanel('pricing')">
+          <div class="ht-icon">💰</div>
+          <h4>Pricing Calc</h4>
+          <p>Ideal price, quick-flip, and floor — from a formula, not a guess</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('titles')">
+          <div class="ht-icon">✍️</div>
+          <h4>Title Generator</h4>
+          <p>3 search-optimized listing titles generated instantly</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('description')">
+          <div class="ht-icon">📝</div>
+          <h4>Description Builder</h4>
+          <p>Fill a form, get buyer-ready listing copy in 2 minutes</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('aiprompt')">
+          <div class="ht-icon">🤖</div>
+          <h4>AI Listing Prompt</h4>
+          <p>Copy-paste prompt for ChatGPT — polished listing in one paste</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('scripts')">
+          <div class="ht-icon">🤝</div>
+          <h4>Negotiation Scripts</h4>
+          <p>Ready responses for lowballs, no-shows, trades, and more</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('scam')">
+          <div class="ht-icon">🛡️</div>
+          <h4>Scam Checklist</h4>
+          <p>12 red flags with a live safety score before every meetup</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('pickup')">
+          <div class="ht-icon">📍</div>
+          <h4>Pickup Messages</h4>
+          <p>Confirm, remind, and thank buyers — all copy-paste</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('pricedrop')">
+          <div class="ht-icon">📉</div>
+          <h4>Price Drop Schedule</h4>
+          <p>Exact table of when and how much to drop based on your deadline</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('measurements')">
+          <div class="ht-icon">📐</div>
+          <h4>Measurement Sheet</h4>
+          <p>Category fields → formatted text buyers can use instantly</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('photos')">
+          <div class="ht-icon">📸</div>
+          <h4>Photo Checklist</h4>
+          <p>Category-specific shot list with live completion score</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('sevenday')">
+          <div class="ht-icon">🗓️</div>
+          <h4>7-Day Plan</h4>
+          <p>Personalized day-by-day action plan to close the sale</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 1. PRICING CALCULATOR ══ -->
+    <div class="tk-panel" id="panel-pricing">
+      <div class="panel-header">
+        <h2>💰 Pricing Calculator</h2>
+        <div class="subtitle">Set a data-backed price — not a gut-feeling guess.</div>
+      </div>
 
       <div class="tk-card">
-        <h3>Enter Item Details</h3>
+        <h3>Item Details</h3>
         <div class="form-grid">
           <div class="form-row">
             <label>Item Name</label>
-            <input type="text" id="pc-name" placeholder="e.g. Samsung 65 TV" oninput="calcPrice()">
+            <input type="text" id="pc-name" placeholder="e.g. Samsung 65″ TV" oninput="calcPrice(); saveLS('pc')">
           </div>
           <div class="form-row">
             <label>Original Retail Price ($)</label>
-            <input type="number" id="pc-retail" placeholder="e.g. 800" oninput="calcPrice()">
+            <input type="number" id="pc-retail" placeholder="e.g. 800" oninput="calcPrice(); saveLS('pc')">
           </div>
         </div>
         <div class="form-grid">
           <div class="form-row">
             <label>Condition</label>
-            <select id="pc-condition" onchange="calcPrice()">
+            <select id="pc-condition" onchange="calcPrice(); saveLS('pc')">
               <option value="">Select condition</option>
               <option value="0.95">New / Never Used (95%)</option>
               <option value="0.75">Like New / Barely Used (75%)</option>
@@ -103,7 +184,7 @@
           </div>
           <div class="form-row">
             <label>Local Demand</label>
-            <select id="pc-demand" onchange="calcPrice()">
+            <select id="pc-demand" onchange="calcPrice(); saveLS('pc')">
               <option value="">Select demand</option>
               <option value="1.15">High — Lots of buyers searching</option>
               <option value="1.0">Normal — Steady interest</option>
@@ -112,8 +193,8 @@
           </div>
         </div>
         <div class="form-row">
-          <label>Category</label>
-          <select id="pc-category" onchange="calcPrice()">
+          <label>Category (for tips)</label>
+          <select id="pc-category" onchange="calcPrice(); saveLS('pc')">
             <option value="">Select category</option>
             <option value="electronics">Electronics</option>
             <option value="furniture">Furniture</option>
@@ -126,69 +207,84 @@
           </select>
         </div>
 
-        <div id="pc-results" style="display:none">
-          <div class="results-grid">
-            <div class="result-box result-green">
-              <div class="result-label">Ideal Ask Price</div>
-              <div class="result-value" id="pc-ideal">—</div>
-              <div class="result-sub">List at this price first</div>
+        <div id="pc-results" style="display:none;">
+          <div class="results-row">
+            <div class="result-chip ideal">
+              <div class="rc-label">Ask First</div>
+              <div class="rc-val" id="pc-ideal">—</div>
+              <div class="rc-sub">List at this price first</div>
             </div>
-            <div class="result-box">
-              <div class="result-label">Quick-Flip Price</div>
-              <div class="result-value" id="pc-quickflip">—</div>
-              <div class="result-sub">Accept to sell same day</div>
+            <div class="result-chip quick">
+              <div class="rc-label">Quick Flip</div>
+              <div class="rc-val" id="pc-quickflip">—</div>
+              <div class="rc-sub">Accept to sell same day</div>
             </div>
-            <div class="result-box result-orange">
-              <div class="result-label">Walk-Away Floor</div>
-              <div class="result-value" id="pc-floor">—</div>
-              <div class="result-sub">Never go below this</div>
+            <div class="result-chip floor">
+              <div class="rc-label">Floor Price</div>
+              <div class="rc-val" id="pc-floor">—</div>
+              <div class="rc-sub">Never go below this</div>
             </div>
           </div>
-          <div class="tip-box" id="pc-tip">
-            <h4>💡 Pricing Tip</h4>
-            <p id="pc-tip-text"></p>
+          <div class="price-viz">
+            <div class="price-viz-label">Price Range Visualizer</div>
+            <div class="price-viz-track">
+              <div class="price-viz-fill" id="pc-viz-fill" style="width:65%;"></div>
+            </div>
+            <div class="price-viz-markers">
+              <span id="pc-viz-min">Floor</span>
+              <span id="pc-viz-mid">Quick Flip</span>
+              <span id="pc-viz-max">Ask Price</span>
+            </div>
+          </div>
+          <div class="tip-callout" id="pc-tip" style="display:none;">
+            <span class="tip-icon">💡</span>
+            <div class="tip-body"><h4>Category Tip</h4><p id="pc-tip-text"></p></div>
           </div>
         </div>
       </div>
 
       <div class="tk-card">
-        <h3>💡 The Pricing Formula</h3>
-        <div style="background:var(--gray-100); padding:1rem; border-radius:6px; font-family:monospace; font-size:.9rem;">
+        <h3>The Formula</h3>
+        <div style="font-family:monospace; font-size:.875rem; background:var(--gray-50); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--gray-200); line-height:2;">
           Ask Price = Retail × Condition% × Demand Factor<br>
-          Quick Flip = Ask Price × 0.80<br>
-          Floor Price = Ask Price × 0.65
+          Quick Flip = Ask × 0.80<br>
+          Floor = Ask × 0.65
         </div>
-        <p style="font-size:.85rem; color:var(--gray-500); margin-top:.75rem;">
-          <strong>Condition factors:</strong> New 95% · Like New 75% · Good 55% · Fair 35% · Poor 20%<br>
-          <strong>Demand factors:</strong> High 1.15× · Normal 1.0× · Low 0.85×
-        </p>
+        <div style="margin-top:.85rem; font-size:.82rem; color:var(--gray-500); display:grid; grid-template-columns:1fr 1fr; gap:.35rem .5rem;">
+          <span><strong>New:</strong> 95% &nbsp;·&nbsp; <strong>Like New:</strong> 75%</span>
+          <span><strong>Good:</strong> 55% &nbsp;·&nbsp; <strong>Fair:</strong> 35%</span>
+          <span><strong>High demand:</strong> ×1.15</span>
+          <span><strong>Low demand:</strong> ×0.85</span>
+        </div>
       </div>
     </div>
 
-    <!-- ── 2. TITLE GENERATOR ── -->
+    <!-- ══ 2. TITLE GENERATOR ══ -->
     <div class="tk-panel" id="panel-titles">
-      <h2>✍️ Listing Title Generator</h2>
-      <p class="subtitle">Get 3 search-optimized titles in seconds. More views, more buyers.</p>
+      <div class="panel-header">
+        <h2>✍️ Listing Title Generator</h2>
+        <div class="subtitle">3 search-optimized titles generated from your item details.</div>
+      </div>
 
       <div class="tk-card">
         <div class="form-row">
-          <label>Item Name</label>
-          <input type="text" id="tg-item" placeholder="e.g. KitchenAid Stand Mixer">
+          <label>Item Name *</label>
+          <input type="text" id="tg-item" placeholder="e.g. KitchenAid Stand Mixer" oninput="saveLS('tg')">
         </div>
         <div class="form-grid">
           <div class="form-row">
             <label>Brand (optional)</label>
-            <input type="text" id="tg-brand" placeholder="e.g. KitchenAid">
+            <input type="text" id="tg-brand" placeholder="e.g. KitchenAid" oninput="saveLS('tg')">
           </div>
           <div class="form-row">
             <label>Model / Size / Color</label>
-            <input type="text" id="tg-model" placeholder="e.g. 5-Qt, Empire Red">
+            <input type="text" id="tg-model" placeholder="e.g. 5-Qt, Empire Red" oninput="saveLS('tg')">
           </div>
         </div>
         <div class="form-grid">
           <div class="form-row">
             <label>Condition</label>
-            <select id="tg-condition">
+            <select id="tg-condition" onchange="saveLS('tg')">
               <option value="New">New</option>
               <option value="Like New" selected>Like New</option>
               <option value="Excellent">Excellent</option>
@@ -198,547 +294,417 @@
           </div>
           <div class="form-row">
             <label>Key Selling Point</label>
-            <input type="text" id="tg-feature" placeholder="e.g. all attachments included">
+            <input type="text" id="tg-feature" placeholder="e.g. all attachments included" oninput="saveLS('tg')">
           </div>
         </div>
-        <button class="btn btn-primary mt-4" onclick="genTitles()">Generate Titles →</button>
+        <button class="btn btn-primary" onclick="genTitles()">Generate 3 Titles →</button>
 
         <div id="tg-output" style="display:none; margin-top:1.5rem;">
-          <h3 style="margin-bottom:1rem;">Your 3 Optimized Titles</h3>
-          <div style="display:flex; flex-direction:column; gap:.75rem;">
-            <div class="tk-card" style="padding:1rem; margin-bottom:0; border:1px solid var(--gray-300);">
-              <div style="font-size:.75rem; font-weight:700; text-transform:uppercase; color:var(--blue); letter-spacing:1px; margin-bottom:.35rem;">Title Option 1 — Search-First</div>
-              <div id="tg-t1" style="font-size:.95rem; font-weight:600;"></div>
-              <button class="copy-btn" onclick="copyText('tg-t1', this)">📋 Copy</button>
+          <div style="display:flex;flex-direction:column;gap:.75rem;">
+            <div class="tk-card" style="padding:1rem;margin-bottom:0;border:1.5px solid var(--gray-200);">
+              <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:.35rem;">Option 1 — Search-First</div>
+              <div id="tg-t1" style="font-size:.95rem;font-weight:700;line-height:1.5;"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;">
+                <span class="char-count" id="tg-c1"></span>
+                <button class="copy-btn" onclick="copyText('tg-t1',this)">📋 Copy</button>
+              </div>
             </div>
-            <div class="tk-card" style="padding:1rem; margin-bottom:0; border:1px solid var(--gray-300);">
-              <div style="font-size:.75rem; font-weight:700; text-transform:uppercase; color:var(--green-dark); letter-spacing:1px; margin-bottom:.35rem;">Title Option 2 — Value-Forward</div>
-              <div id="tg-t2" style="font-size:.95rem; font-weight:600;"></div>
-              <button class="copy-btn" onclick="copyText('tg-t2', this)">📋 Copy</button>
+            <div class="tk-card" style="padding:1rem;margin-bottom:0;border:1.5px solid var(--gray-200);">
+              <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--green-dark);margin-bottom:.35rem;">Option 2 — Value-Forward</div>
+              <div id="tg-t2" style="font-size:.95rem;font-weight:700;line-height:1.5;"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;">
+                <span class="char-count" id="tg-c2"></span>
+                <button class="copy-btn" onclick="copyText('tg-t2',this)">📋 Copy</button>
+              </div>
             </div>
-            <div class="tk-card" style="padding:1rem; margin-bottom:0; border:1px solid var(--gray-300);">
-              <div style="font-size:.75rem; font-weight:700; text-transform:uppercase; color:#92400E; letter-spacing:1px; margin-bottom:.35rem;">Title Option 3 — Urgency</div>
-              <div id="tg-t3" style="font-size:.95rem; font-weight:600;"></div>
-              <button class="copy-btn" onclick="copyText('tg-t3', this)">📋 Copy</button>
+            <div class="tk-card" style="padding:1rem;margin-bottom:0;border:1.5px solid var(--gray-200);">
+              <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#92400E;margin-bottom:.35rem;">Option 3 — Urgency</div>
+              <div id="tg-t3" style="font-size:.95rem;font-weight:700;line-height:1.5;"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;">
+                <span class="char-count" id="tg-c3"></span>
+                <button class="copy-btn" onclick="copyText('tg-t3',this)">📋 Copy</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="tk-card">
-        <h3>📐 Title Best Practices</h3>
-        <ul style="display:flex; flex-direction:column; gap:.5rem; font-size:.9rem; color:var(--gray-700); list-style:none;">
-          <li>✓ Lead with the brand + item name — that's what people search</li>
-          <li>✓ Include size, color, or model when buyers filter by it</li>
-          <li>✓ Add condition as a keyword (buyers search "like new TV")</li>
-          <li>✓ Keep under 80 characters so it doesn't get cut off</li>
-          <li>✗ Don't write ALL CAPS — looks like spam</li>
-          <li>✗ Don't use vague filler like "great deal" or "nice item"</li>
-        </ul>
+        <h3>Title Best Practices</h3>
+        <div style="display:flex;flex-direction:column;gap:.45rem;font-size:.875rem;color:var(--gray-700);">
+          <div>✓ Lead with Brand + Item — that's what buyers search for</div>
+          <div>✓ Include size, color, or model when buyers filter by it</div>
+          <div>✓ Add condition as a keyword ("like new TV" gets searched)</div>
+          <div>✓ Target 50–80 characters — readable on mobile</div>
+          <div>✗ No ALL CAPS — looks like spam, hurts trust</div>
+          <div>✗ No vague words like "nice" or "great deal" — they mean nothing in search</div>
+        </div>
       </div>
     </div>
 
-    <!-- ── 3. DESCRIPTION BUILDER ── -->
+    <!-- ══ 3. DESCRIPTION BUILDER ══ -->
     <div class="tk-panel" id="panel-description">
-      <h2>📝 Description Builder</h2>
-      <p class="subtitle">Fill in the fields. Get a buyer-ready listing description — no writing skills needed.</p>
+      <div class="panel-header">
+        <h2>📝 Description Builder</h2>
+        <div class="subtitle">Fill in the form. Get a professional listing description in 2 minutes.</div>
+      </div>
 
       <div class="tk-card">
         <div class="form-grid">
-          <div class="form-row">
-            <label>Item Name</label>
-            <input type="text" id="db-item" placeholder="KitchenAid Stand Mixer">
-          </div>
-          <div class="form-row">
-            <label>Brand</label>
-            <input type="text" id="db-brand" placeholder="KitchenAid">
-          </div>
+          <div class="form-row"><label>Item Name *</label><input type="text" id="db-item" placeholder="KitchenAid Stand Mixer" oninput="saveLS('db')"></div>
+          <div class="form-row"><label>Brand</label><input type="text" id="db-brand" placeholder="KitchenAid" oninput="saveLS('db')"></div>
         </div>
         <div class="form-grid">
-          <div class="form-row">
-            <label>Model / Series</label>
-            <input type="text" id="db-model" placeholder="Artisan Series 5-Qt">
-          </div>
+          <div class="form-row"><label>Model / Series</label><input type="text" id="db-model" placeholder="Artisan 5-Qt" oninput="saveLS('db')"></div>
           <div class="form-row">
             <label>Condition</label>
-            <select id="db-condition">
+            <select id="db-condition" onchange="saveLS('db')">
               <option value="Brand new, never used">Brand new, never used</option>
-              <option value="Like new — barely used, no scratches">Like new — barely used, no scratches</option>
-              <option value="Excellent — minor signs of use, fully functional">Excellent — minor signs of use, fully functional</option>
-              <option value="Good — some wear visible but works perfectly">Good — some wear visible but works perfectly</option>
-              <option value="Fair — noticeable wear, fully functional">Fair — noticeable wear, fully functional</option>
+              <option value="Like new — barely used, no scratches">Like new — barely used</option>
+              <option value="Excellent — minor signs of use, fully functional">Excellent — minor use</option>
+              <option value="Good — some wear visible but works perfectly">Good — some wear, works perfectly</option>
+              <option value="Fair — noticeable wear, fully functional">Fair — noticeable wear</option>
             </select>
           </div>
         </div>
         <div class="form-row">
           <label>Key Features (one per line)</label>
-          <textarea id="db-features" placeholder="5-quart bowl&#10;10 speed settings&#10;Tilt-head design&#10;Comes with 3 attachments (dough hook, flat beater, whisk)"></textarea>
+          <textarea id="db-features" placeholder="5-quart stainless bowl&#10;10 speed settings&#10;Tilt-head design&#10;Includes 3 attachments" oninput="saveLS('db')"></textarea>
         </div>
         <div class="form-grid">
-          <div class="form-row">
-            <label>Dimensions / Size (optional)</label>
-            <input type="text" id="db-dims" placeholder='e.g. 14"H × 8"W × 14"D'>
-          </div>
-          <div class="form-row">
-            <label>What's Included</label>
-            <input type="text" id="db-includes" placeholder="Original box, manual, 3 attachments">
-          </div>
-        </div>
-        <div class="form-row">
-          <label>Reason for Selling (optional — builds trust)</label>
-          <input type="text" id="db-reason" placeholder="Upgrading to a larger model / Moving / Got as a gift, don't bake">
+          <div class="form-row"><label>Dimensions (optional)</label><input type="text" id="db-dims" placeholder='14"H × 8"W × 14"D' oninput="saveLS('db')"></div>
+          <div class="form-row"><label>What's Included</label><input type="text" id="db-includes" placeholder="Original box, manual, all attachments" oninput="saveLS('db')"></div>
         </div>
         <div class="form-grid">
+          <div class="form-row"><label>Reason for Selling (builds trust)</label><input type="text" id="db-reason" placeholder="Upgrading / Moving / Got as a gift" oninput="saveLS('db')"></div>
           <div class="form-row">
-            <label>Pickup / Meeting Preference</label>
-            <select id="db-pickup">
+            <label>Payment / Pickup</label>
+            <select id="db-pickup" onchange="saveLS('db')">
               <option value="Local pickup only — no shipping.">Local pickup only</option>
-              <option value="Cash only — no Venmo, PayPal, or checks.">Cash only accepted</option>
-              <option value="Cash or Venmo accepted.">Cash or Venmo accepted</option>
-              <option value="Will meet at a public location for safety.">Public meetup location</option>
+              <option value="Cash only — no Venmo, PayPal, or checks.">Cash only</option>
+              <option value="Cash or Venmo accepted.">Cash or Venmo</option>
+              <option value="Will meet at a public location for safety.">Public meetup</option>
             </select>
           </div>
-          <div class="form-row">
-            <label>Bundle Deal (optional)</label>
-            <input type="text" id="db-bundle" placeholder="e.g. Buy all three kitchen items for $100">
-          </div>
         </div>
-        <button class="btn btn-primary mt-4" onclick="buildDescription()">Build Description →</button>
+        <div class="form-row"><label>Bundle Deal (optional)</label><input type="text" id="db-bundle" placeholder="Buy all three kitchen items for $100" oninput="saveLS('db')"></div>
+        <button class="btn btn-primary" onclick="buildDescription()">Build Description →</button>
       </div>
 
       <div id="db-output" style="display:none;" class="tk-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem;">
-          <h3 style="margin:0;">Your Listing Description</h3>
-          <button class="copy-btn" onclick="copyText('db-result', this)">📋 Copy All</button>
+        <div class="output-header">
+          <strong>Your Listing Description</strong>
+          <button class="copy-btn" onclick="copyText('db-result',this)">📋 Copy All</button>
         </div>
-        <div class="output-area" id="db-result"></div>
+        <div class="output-box" id="db-result"></div>
+        <div class="copy-btn-row">
+          <button class="print-btn" onclick="printSection('db-result')">🖨️ Print</button>
+        </div>
       </div>
     </div>
 
-    <!-- ── 4. AI PROMPT ── -->
+    <!-- ══ 4. AI PROMPT ══ -->
     <div class="tk-panel" id="panel-aiprompt">
-      <h2>🤖 AI Listing Prompt</h2>
-      <p class="subtitle">Copy this prompt into ChatGPT (or any AI) to generate a polished listing in seconds.</p>
+      <div class="panel-header">
+        <h2>🤖 AI Listing Prompt</h2>
+        <div class="subtitle">Copy this prompt into ChatGPT (free) to generate a polished listing in seconds.</div>
+      </div>
 
       <div class="tk-card">
-        <h3>Fill In Your Item Details</h3>
+        <h3>Fill In Your Item</h3>
         <div class="form-grid">
-          <div class="form-row">
-            <label>Item Name</label>
-            <input type="text" id="ai-item" placeholder="Sony 65-inch 4K TV">
-          </div>
-          <div class="form-row">
-            <label>Brand & Model</label>
-            <input type="text" id="ai-brand" placeholder="Sony X90K">
-          </div>
+          <div class="form-row"><label>Item Name *</label><input type="text" id="ai-item" placeholder="Sony 65-inch 4K TV" oninput="saveLS('ai')"></div>
+          <div class="form-row"><label>Brand & Model</label><input type="text" id="ai-brand" placeholder="Sony X90K" oninput="saveLS('ai')"></div>
         </div>
         <div class="form-grid">
           <div class="form-row">
             <label>Condition</label>
-            <select id="ai-condition">
-              <option>New</option>
-              <option>Like New</option>
-              <option>Good</option>
-              <option>Fair</option>
+            <select id="ai-condition" onchange="saveLS('ai')">
+              <option>New</option><option>Like New</option><option>Good</option><option>Fair</option>
             </select>
           </div>
-          <div class="form-row">
-            <label>Asking Price ($)</label>
-            <input type="number" id="ai-price" placeholder="450">
-          </div>
+          <div class="form-row"><label>Asking Price ($)</label><input type="number" id="ai-price" placeholder="450" oninput="saveLS('ai')"></div>
         </div>
         <div class="form-row">
-          <label>Key Details (features, what's included, defects if any)</label>
-          <textarea id="ai-details" placeholder="65 inches, 4K HDR, Google TV, remote included, no stand (wall-mounted). Small scratch on back panel, not visible when mounted."></textarea>
+          <label>Key Details (features, included accessories, any defects)</label>
+          <textarea id="ai-details" placeholder="65-inch, 4K HDR, Google TV, remote included, no stand. Small scratch on back, not visible when mounted." oninput="saveLS('ai')"></textarea>
         </div>
-        <button class="btn btn-primary mt-4" onclick="genAIPrompt()">Generate Prompt →</button>
+        <button class="btn btn-primary" onclick="genAIPrompt()">Build ChatGPT Prompt →</button>
       </div>
 
       <div id="ai-output" style="display:none;" class="tk-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.75rem;">
-          <h3 style="margin:0;">Your ChatGPT Prompt</h3>
-          <button class="copy-btn" onclick="copyText('ai-prompt-result', this)">📋 Copy Prompt</button>
+        <div class="output-header">
+          <strong>Your ChatGPT Prompt — copy and paste this</strong>
+          <button class="copy-btn" onclick="copyText('ai-prompt-result',this)">📋 Copy Prompt</button>
         </div>
-        <div class="output-area" id="ai-prompt-result"></div>
-        <div class="tip-box" style="margin-top:1rem;">
-          <h4>How to use this prompt</h4>
-          <p>1. Copy the prompt above.<br>2. Open ChatGPT, Claude, or any AI assistant.<br>3. Paste and press Enter.<br>4. Copy the generated listing and paste it into your marketplace post.</p>
+        <div class="output-box" id="ai-prompt-result"></div>
+        <div class="info-callout">
+          <strong>How to use:</strong> Open ChatGPT.com (free), paste this prompt, and press Enter. Copy the generated listing and paste it into your marketplace. Takes about 30 seconds.
         </div>
       </div>
 
       <div class="tk-card">
-        <h3>🎯 Bonus: Quick Prompts to Copy</h3>
-        <div style="display:flex; flex-direction:column; gap:.75rem; margin-top:.5rem;">
+        <h3>Bonus Quick Prompts</h3>
+        <div style="display:flex;flex-direction:column;gap:.85rem;">
           <div>
-            <div style="font-size:.8rem; font-weight:700; color:var(--gray-500); margin-bottom:.35rem;">Make my description more appealing:</div>
-            <div class="output-area" id="bonus-1" style="font-size:.85rem;">"Rewrite this marketplace listing to make it sound more appealing and buyer-friendly. Keep all the facts accurate but make the tone warm and professional. Here's my draft: [paste your description]"</div>
-            <button class="copy-btn" onclick="copyText('bonus-1', this)">📋 Copy</button>
+            <div style="font-size:.75rem;font-weight:700;color:var(--gray-500);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.5px;">Polish my draft:</div>
+            <div class="output-box" id="bp1" style="font-size:.82rem;">"Rewrite this marketplace listing to sound more appealing and professional. Keep all facts accurate. Here is my draft: [paste your description]"</div>
+            <div class="copy-btn-row"><button class="copy-btn" onclick="copyText('bp1',this)">📋 Copy</button></div>
           </div>
           <div>
-            <div style="font-size:.8rem; font-weight:700; color:var(--gray-500); margin-bottom:.35rem;">Suggest a price range:</div>
-            <div class="output-area" id="bonus-2" style="font-size:.85rem;">"I'm selling a [ITEM] in [CONDITION] condition on Facebook Marketplace in [CITY]. The original retail price was $[PRICE]. What price range should I list it at, and why?"</div>
-            <button class="copy-btn" onclick="copyText('bonus-2', this)">📋 Copy</button>
+            <div style="font-size:.75rem;font-weight:700;color:var(--gray-500);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.5px;">Suggest a price range:</div>
+            <div class="output-box" id="bp2" style="font-size:.82rem;">"I'm selling a [ITEM] in [CONDITION] condition on Facebook Marketplace in [CITY]. Original retail price was $[PRICE]. What should I list it for, and why?"</div>
+            <div class="copy-btn-row"><button class="copy-btn" onclick="copyText('bp2',this)">📋 Copy</button></div>
           </div>
           <div>
-            <div style="font-size:.8rem; font-weight:700; color:var(--gray-500); margin-bottom:.35rem;">Write a counter-offer response:</div>
-            <div class="output-area" id="bonus-3" style="font-size:.85rem;">"I'm selling a [ITEM] for $[MY PRICE]. A buyer offered $[THEIR OFFER]. Write me a polite but firm counter-offer message that proposes $[MY COUNTER] as a compromise."</div>
-            <button class="copy-btn" onclick="copyText('bonus-3', this)">📋 Copy</button>
+            <div style="font-size:.75rem;font-weight:700;color:var(--gray-500);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.5px;">Write a counter-offer:</div>
+            <div class="output-box" id="bp3" style="font-size:.82rem;">"I'm selling a [ITEM] for $[MY PRICE]. A buyer offered $[THEIR OFFER]. Write a polite but firm counter-offer message proposing $[COUNTER] as a compromise."</div>
+            <div class="copy-btn-row"><button class="copy-btn" onclick="copyText('bp3',this)">📋 Copy</button></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── 5. NEGOTIATION SCRIPTS ── -->
+    <!-- ══ 5. NEGOTIATION SCRIPTS ══ -->
     <div class="tk-panel" id="panel-scripts">
-      <h2>🤝 Negotiation Scripts</h2>
-      <p class="subtitle">Ready-to-send responses for every buyer situation. Copy and paste.</p>
+      <div class="panel-header">
+        <h2>🤝 Negotiation Scripts</h2>
+        <div class="subtitle">Ready-to-send responses for every buyer situation. Copy, fill in the brackets, send.</div>
+      </div>
 
       <div class="tk-card">
         <div class="tabs">
-          <button class="tab-btn active" onclick="switchTab('scripts', 'lowball', this)">Lowball Offer</button>
-          <button class="tab-btn" onclick="switchTab('scripts', 'available', this)">"Still Available?"</button>
-          <button class="tab-btn" onclick="switchTab('scripts', 'noshow', this)">No-Show</button>
-          <button class="tab-btn" onclick="switchTab('scripts', 'trade', this)">Trade Request</button>
-          <button class="tab-btn" onclick="switchTab('scripts', 'haggle', this)">Persistent Haggler</button>
-          <button class="tab-btn" onclick="switchTab('scripts', 'sold', this)">Already Sold</button>
+          <button class="tab-btn active" onclick="switchTab('scripts','lowball',this)">Lowball Offer</button>
+          <button class="tab-btn" onclick="switchTab('scripts','available',this)">Still Available?</button>
+          <button class="tab-btn" onclick="switchTab('scripts','noshow',this)">No-Show</button>
+          <button class="tab-btn" onclick="switchTab('scripts','trade',this)">Trade Request</button>
+          <button class="tab-btn" onclick="switchTab('scripts','haggle',this)">Persistent Haggler</button>
+          <button class="tab-btn" onclick="switchTab('scripts','sold',this)">Already Sold</button>
         </div>
 
         <div class="tab-content active" id="scripts-lowball">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>Polite Counter (recommended)</h4>
-              <p>"Thanks for the offer! I'm firm at $[PRICE] for now — it's priced fairly based on condition and what similar ones are selling for. Happy to hold it for you if that works?"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Soft Counter — Meet in Middle</h4>
-              <p>"Appreciate the offer, but I can't go that low. Best I can do is $[COUNTER]. That's my bottom line — let me know if you'd like to make it happen!"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Firm No — No Counter</h4>
-              <p>"Thanks for reaching out! The price is $[PRICE] firm. Let me know if you change your mind — it's going to the first person who wants it at that price."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Polite Counter ✓</h4><p>"Thanks for the offer! I'm firm at $[PRICE] for now — it's priced fairly based on condition and similar items selling in the area. Happy to hold it for you if that works?"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Meet in the Middle</h4><p>"Appreciate the offer — I can't go quite that low. Best I can do is $[COUNTER]. That's my bottom line. Let me know if you'd like to make it happen!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Firm No</h4><p>"Thanks for reaching out! The price is $[PRICE] firm. I'll let you know if that changes — but it's going to the first person at that price."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
 
         <div class="tab-content" id="scripts-available">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>Quick Qualifier</h4>
-              <p>"Yes, still available! Are you able to pick up this week? The asking price is $[PRICE]."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>With Urgency</h4>
-              <p>"Still available! I have a few people looking at it — if you're interested, let me know and I can hold it for 24 hours with a confirmed pickup time."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Ask a Qualifying Question</h4>
-              <p>"Yes, still here! Are you local to [AREA]? And do you have a car that can fit it? Just want to make sure it works before we set a time."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Quick Qualifier</h4><p>"Yes, still available! Are you able to pick up this week? Asking price is $[PRICE]."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>With Urgency</h4><p>"Still available! I have a few people looking at it — if you're interested, I can hold it 24 hours with a confirmed pickup time."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Qualifying Question</h4><p>"Yes, still here! Are you local to [AREA]? And do you have a vehicle that fits it? Just want to make sure it works before we set a time."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
 
         <div class="tab-content" id="scripts-noshow">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>First Follow-Up (30 min after)</h4>
-              <p>"Hey — just checking in, we had a pickup scheduled for [TIME]. Still planning to come? I can hold it another 30 minutes before I reach out to other buyers."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Re-List Notice</h4>
-              <p>"Hi! Since you weren't able to make it today, I'm going to open it back up to other buyers. Feel free to reach out if you'd still like it — first to confirm a new time gets it."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Second Chance Offer</h4>
-              <p>"No worries — things come up! Still interested? I have [DATE/TIME] available. Just confirm and I'll hold it for you."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>30-Min Check-In</h4><p>"Hey — just checking, we had a pickup scheduled for [TIME]. Still planning to come? I can hold it another 30 minutes before reaching out to other buyers."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Re-List Notice</h4><p>"Hi! Since you weren't able to make it, I'm opening it back up to other buyers. Feel free to reach out if you'd still like it — first to confirm a new time gets it."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Second Chance</h4><p>"No worries — things come up! Still interested? I have [DAY/TIME] available. Confirm and I'll hold it."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
 
         <div class="tab-content" id="scripts-trade">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>Polite Decline</h4>
-              <p>"Thanks for the offer! I'm looking for cash only right now — not set up for trades. If you're able to pay the asking price, I'd love to make it happen!"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Open to Hearing It</h4>
-              <p>"What are you looking to trade? I'm open to the right offer — just depends on what you have. Cash is preferred, but I'll take a look."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Polite Decline</h4><p>"Thanks for the offer! I'm looking for cash only right now — not set up for trades. If you're able to pay the asking price, I'd love to make it happen!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Open to Hearing It</h4><p>"What are you looking to trade? I'm open to the right offer. Cash is preferred, but I'll take a look at what you have."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
 
         <div class="tab-content" id="scripts-haggle">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>The Final Offer Line</h4>
-              <p>"I appreciate your interest, but $[PRICE] is truly my final offer. I'm not in a rush to sell, and other buyers have shown interest at that price. Let me know if you'd like it at that!"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>The Social Proof Close</h4>
-              <p>"I've had a lot of interest at this price — I'm going with whoever commits first. If $[PRICE] works, I can confirm a pickup time right now for you."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Final Offer Line</h4><p>"I appreciate the interest, but $[PRICE] is truly my final offer. I'm not in a rush, and other buyers have shown interest at this price. Let me know if you'd like it!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Social Proof Close</h4><p>"I've had a lot of interest at this price — going with whoever commits first. If $[PRICE] works, I can confirm a pickup time right now."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
 
         <div class="tab-content" id="scripts-sold">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>Already Sold Response</h4>
-              <p>"Hi! This one just sold — sorry about that. I do have [OTHER ITEM] listed as well if you're interested. Thanks for reaching out!"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Waitlist Response</h4>
-              <p>"This one is spoken for, but sometimes deals fall through. Want me to add you to my list? I'll message you immediately if it becomes available again."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Already Sold</h4><p>"Hi! This one just sold — sorry about that. I do have [OTHER ITEM] listed as well if you're interested. Thanks for reaching out!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Add to Waitlist</h4><p>"This one is spoken for, but sometimes deals fall through. Want me to add you to my list? I'll message you immediately if it becomes available."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── 6. SCAM CHECKLIST ── -->
+    <!-- ══ 6. SCAM CHECKLIST ══ -->
     <div class="tk-panel" id="panel-scam">
-      <h2>🛡️ Scam-Warning Checklist</h2>
-      <p class="subtitle">Run every buyer through these 12 checks before you hand anything over.</p>
+      <div class="panel-header">
+        <h2>🛡️ Scam-Warning Checklist</h2>
+        <div class="subtitle">Run every buyer through these 12 checks before you hand anything over.</div>
+      </div>
 
       <div class="tk-card">
-        <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.5rem;">
+        <div class="safety-meter">
           <div>
-            <div class="result-label" style="color:var(--blue); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Safety Score</div>
-            <div class="score-display" id="scam-score">0/12</div>
+            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-500);margin-bottom:.2rem;">Safety Score</div>
+            <div class="safety-score" id="scam-score">0/12</div>
           </div>
           <div style="flex:1;">
-            <div class="score-bar"><div class="score-fill" id="scam-fill" style="width:0%; background:var(--red);"></div></div>
-            <div id="scam-verdict" style="font-size:.85rem; color:var(--gray-500);">Check off the items you've verified</div>
+            <div class="safety-bar"><div class="safety-fill" id="scam-fill" style="width:0%;background:var(--red);"></div></div>
+            <div class="safety-verdict" id="scam-verdict" style="color:var(--gray-500);">Check off the items you've verified</div>
           </div>
         </div>
 
         <div class="checklist-section">
-          <h4>🔴 Payment Red Flags</h4>
+          <div class="checklist-section-title">🔴 Payment Red Flags</div>
           <ul class="checklist">
             <li><input type="checkbox" id="sc1" onchange="updateScamScore()"><label for="sc1">Buyer is NOT asking to pay by check, money order, or wire transfer</label></li>
             <li><input type="checkbox" id="sc2" onchange="updateScamScore()"><label for="sc2">Buyer is NOT offering to pay "extra" for shipping or holding</label></li>
             <li><input type="checkbox" id="sc3" onchange="updateScamScore()"><label for="sc3">Buyer is NOT asking you to send them money for any reason</label></li>
-            <li><input type="checkbox" id="sc4" onchange="updateScamScore()"><label for="sc4">If using Venmo/Zelle — it shows as "completed" in YOUR app before releasing item</label></li>
+            <li><input type="checkbox" id="sc4" onchange="updateScamScore()"><label for="sc4">If Venmo/Zelle — payment shows as "completed" in YOUR app before you release the item</label></li>
           </ul>
         </div>
-
         <div class="checklist-section">
-          <h4>🟡 Identity Red Flags</h4>
+          <div class="checklist-section-title">🟡 Identity Red Flags</div>
           <ul class="checklist">
             <li><input type="checkbox" id="sc5" onchange="updateScamScore()"><label for="sc5">Buyer's profile has been active for more than 30 days</label></li>
-            <li><input type="checkbox" id="sc6" onchange="updateScamScore()"><label for="sc6">Profile has reviews, posts, or a real photo (not stock art)</label></li>
-            <li><input type="checkbox" id="sc7" onchange="updateScamScore()"><label for="sc7">Buyer is NOT messaging from a brand-new account with no history</label></li>
-            <li><input type="checkbox" id="sc8" onchange="updateScamScore()"><label for="sc8">Communication is direct — no vague "my assistant/driver will pick up"</label></li>
+            <li><input type="checkbox" id="sc6" onchange="updateScamScore()"><label for="sc6">Profile has reviews, posts, or a real photo — not a stock image</label></li>
+            <li><input type="checkbox" id="sc7" onchange="updateScamScore()"><label for="sc7">Buyer is NOT messaging from a brand-new account with zero history</label></li>
+            <li><input type="checkbox" id="sc8" onchange="updateScamScore()"><label for="sc8">Communication is direct — no "my driver/assistant will pick up for me"</label></li>
           </ul>
         </div>
-
         <div class="checklist-section">
-          <h4>🟢 Pickup Safety</h4>
+          <div class="checklist-section-title">🟢 Pickup Safety</div>
           <ul class="checklist">
-            <li><input type="checkbox" id="sc9" onchange="updateScamScore()"><label for="sc9">You are meeting in a public place OR have someone home with you</label></li>
-            <li><input type="checkbox" id="sc10" onchange="updateScamScore()"><label for="sc10">You will NOT hand over item before confirming payment in full</label></li>
-            <li><input type="checkbox" id="sc11" onchange="updateScamScore()"><label for="sc11">You have NOT shared personal info (SSN, bank account, full address to a stranger)</label></li>
-            <li><input type="checkbox" id="sc12" onchange="updateScamScore()"><label for="sc12">Your gut says this is a real person — it doesn't feel off</label></li>
+            <li><input type="checkbox" id="sc9" onchange="updateScamScore()"><label for="sc9">Meeting in a public place OR someone is home with you</label></li>
+            <li><input type="checkbox" id="sc10" onchange="updateScamScore()"><label for="sc10">You will NOT hand over the item until payment is confirmed in full</label></li>
+            <li><input type="checkbox" id="sc11" onchange="updateScamScore()"><label for="sc11">You have NOT shared sensitive info (SSN, bank account, full address to a stranger)</label></li>
+            <li><input type="checkbox" id="sc12" onchange="updateScamScore()"><label for="sc12">Your gut says this is a real person — nothing feels off</label></li>
           </ul>
         </div>
-
-        <button class="btn btn-outline mt-4" onclick="resetChecklist()">Reset Checklist</button>
+        <div style="display:flex;gap:.75rem;margin-top:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="resetChecklist()">Reset</button>
+        </div>
       </div>
 
       <div class="tk-card">
-        <h3>🚨 Common Scam Patterns to Know</h3>
+        <h3>Common Scam Patterns</h3>
         <div class="script-grid">
-          <div class="script-card">
-            <h4>The Overpayment Check</h4>
-            <p>Buyer sends a check for more than the price, asks you to deposit it and send back the difference. Check bounces days later — you lose both the item and the money.</p>
-          </div>
-          <div class="script-card">
-            <h4>The Fake Payment Screenshot</h4>
-            <p>Buyer sends a Venmo/PayPal screenshot that looks real. Never release an item based on a screenshot — only what shows in your actual account.</p>
-          </div>
-          <div class="script-card">
-            <h4>The Shipping Scam</h4>
-            <p>Buyer says they'll pay shipping but needs you to ship first. You ship, payment never arrives. Always collect full payment before shipping anything.</p>
-          </div>
-          <div class="script-card">
-            <h4>The "Google Voice" Scam</h4>
-            <p>Buyer asks for your phone number to "verify," sends you a Google Voice code. They're actually claiming YOUR phone number for fraud. Never share verification codes.</p>
-          </div>
+          <div class="script-card"><h4>Overpayment Check</h4><p>Buyer sends a check for MORE than the price, asks you to deposit and wire back the difference. Check bounces days later — you lose the item and the money.</p></div>
+          <div class="script-card"><h4>Fake Payment Screenshot</h4><p>Buyer sends a Venmo/PayPal screenshot that looks real. Only release an item when the payment shows as completed in YOUR actual account — never based on a screenshot.</p></div>
+          <div class="script-card"><h4>Shipping Scam</h4><p>Buyer wants you to ship first, pays "after you ship." You ship, payment never arrives. Full payment before shipping, always — no exceptions.</p></div>
+          <div class="script-card"><h4>Google Voice Code Scam</h4><p>Buyer asks for your number to "verify," sends you a Google Voice code. They're claiming your number for fraud. Never share any verification code with a buyer.</p></div>
         </div>
       </div>
     </div>
 
-    <!-- ── 7. PICKUP MESSAGES ── -->
+    <!-- ══ 7. PICKUP MESSAGES ══ -->
     <div class="tk-panel" id="panel-pickup">
-      <h2>📍 Pickup Message Templates</h2>
-      <p class="subtitle">Pre-written messages for every stage of the pickup process. Fill in the brackets and send.</p>
+      <div class="panel-header">
+        <h2>📍 Pickup Message Templates</h2>
+        <div class="subtitle">Pre-written messages for every stage. Fill in the brackets and send.</div>
+      </div>
 
       <div class="tk-card">
         <div class="tabs">
-          <button class="tab-btn active" onclick="switchTab('pickup', 'confirm', this)">Confirm Pickup</button>
-          <button class="tab-btn" onclick="switchTab('pickup', 'address', this)">Share Address</button>
-          <button class="tab-btn" onclick="switchTab('pickup', 'reminder', this)">Day-Of Reminder</button>
-          <button class="tab-btn" onclick="switchTab('pickup', 'thankyou', this)">After Sale</button>
+          <button class="tab-btn active" onclick="switchTab('pickup','confirm',this)">Confirm Pickup</button>
+          <button class="tab-btn" onclick="switchTab('pickup','address',this)">Share Address</button>
+          <button class="tab-btn" onclick="switchTab('pickup','reminder',this)">Day-Of Reminder</button>
+          <button class="tab-btn" onclick="switchTab('pickup','thankyou',this)">After Sale</button>
         </div>
 
         <div class="tab-content active" id="pickup-confirm">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>Initial Confirmation</h4>
-              <p>"Sounds good! Let's plan for [DAY] at [TIME]. Once you confirm, I'll send you the pickup address. Payment is $[PRICE] in cash / Venmo / Zelle. Does that work?"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Confirm + Hold Policy</h4>
-              <p>"I can hold it for you until [DATE/TIME]. After that I'll need to re-open it to other buyers. Confirmed pickup on your end? Just want to make sure we're on the same page before I turn others away."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Multiple Buyers — First Response Wins</h4>
-              <p>"I have a few people interested. It goes to whoever confirms a pickup time first. Are you available [DAY] at [TIME] or [DAY] at [TIME]?"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Initial Confirmation</h4><p>"Sounds good! Let's plan for [DAY] at [TIME]. Once you confirm, I'll send the address. Payment is $[PRICE] in cash / Venmo / Zelle. Does that work?"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>With Hold Policy</h4><p>"I can hold it until [DATE/TIME]. After that I'll need to open it to other buyers. Confirming pickup on your end? Just want to make sure before I turn others away."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>First Come First Served</h4><p>"I have a few people interested — goes to whoever confirms a pickup time first. Are you available [DAY] at [TIME] or [DAY] at [TIME]?"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
 
         <div class="tab-content" id="pickup-address">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>Safe Address Sharing</h4>
-              <p>"Great — confirmed for [DAY] at [TIME]! Address is [ADDRESS]. Park on the street/driveway. I'll bring it out to you — just text when you're close."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Public Meetup Version</h4>
-              <p>"I prefer to meet in a public spot. Can we do the [STARBUCKS/PARKING LOT/POLICE STATION SAFE EXCHANGE] at [CROSS STREETS]? Works well for both of us. See you [DAY] at [TIME]!"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Address After Payment Confirmation</h4>
-              <p>"Once payment is confirmed I'll send the address. Are you planning cash or [VENMO/ZELLE]? If Venmo/Zelle, send first and I'll confirm receipt before sharing. Sound good?"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Standard Address Share</h4><p>"Great — confirmed for [DAY] at [TIME]. Address is [ADDRESS]. Park on the street/driveway. I'll bring it out — just text me when you're close."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Public Meetup</h4><p>"I prefer to meet in a public spot — can we do [STARBUCKS/PARKING LOT] at [CROSS STREETS]? See you [DAY] at [TIME]!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Payment First Policy</h4><p>"Once payment is confirmed I'll send the address. Planning cash or Venmo/Zelle? If digital, send first and I'll confirm receipt before sharing. Sound good?"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
 
         <div class="tab-content" id="pickup-reminder">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>Day-Before Reminder</h4>
-              <p>"Hey! Just a quick reminder — we're set for tomorrow ([DAY]) at [TIME] at [ADDRESS]. Still good? Let me know if anything changes so I can plan accordingly."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Morning-Of Check-In</h4>
-              <p>"Good morning! Confirming our pickup today at [TIME]. I'll be home / I'll be at [LOCATION]. Just text me when you're on your way. Looking forward to it!"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Running Late Buffer</h4>
-              <p>"No problem if you're running a little late — just text me an updated ETA so I know to expect you. I'm flexible by about [30 MIN / 1 HOUR]."</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Day-Before Reminder</h4><p>"Hey! Quick reminder — we're set for tomorrow ([DAY]) at [TIME] at [ADDRESS]. Still good? Let me know if anything changes."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Morning-Of Check-In</h4><p>"Good morning! Confirming our pickup today at [TIME]. Text me when you're on your way. Looking forward to it!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Running Late Buffer</h4><p>"No problem if you're running a bit late — just text me an updated ETA so I know to expect you. I'm flexible by about [30 MIN]."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
 
         <div class="tab-content" id="pickup-thankyou">
           <div class="script-grid">
-            <div class="script-card">
-              <h4>Post-Sale Thank You</h4>
-              <p>"Thanks again! Hope you enjoy it. Feel free to reach out if you have any questions about it. Good luck!"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
-            <div class="script-card">
-              <h4>Ask for a Rating (Marketplace)</h4>
-              <p>"Thanks for the smooth transaction! If you have a moment, a positive rating on Marketplace means a lot. Hope to sell to you again sometime!"</p>
-              <button class="copy-btn" onclick="copyScript(this)">📋 Copy</button>
-            </div>
+            <div class="script-card"><h4>Post-Sale Thank You</h4><p>"Thanks again! Hope you enjoy it. Feel free to reach out if you have any questions. Good luck!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Ask for a Rating</h4><p>"Thanks for the smooth transaction! If you have a moment, a positive rating on Marketplace means a lot to me. Hope to see you again!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ── 8. PRICE DROP SCHEDULE ── -->
+    <!-- ══ 8. PRICE DROP SCHEDULE ══ -->
     <div class="tk-panel" id="panel-pricedrop">
-      <h2>📉 Price Drop Schedule</h2>
-      <p class="subtitle">Know exactly when and how much to lower your price. No more guessing.</p>
+      <div class="panel-header">
+        <h2>📉 Price Drop Schedule</h2>
+        <div class="subtitle">Know exactly when and how much to drop. No more guessing or random slashes.</div>
+      </div>
 
       <div class="tk-card">
         <div class="form-grid">
+          <div class="form-row"><label>Your Asking Price ($)</label><input type="number" id="pd-price" placeholder="200" oninput="calcPriceDrop(); saveLS('pd')"></div>
           <div class="form-row">
-            <label>Your Asking Price ($)</label>
-            <input type="number" id="pd-price" placeholder="200" oninput="calcPriceDrop()">
-          </div>
-          <div class="form-row">
-            <label>Your Deadline (days to sell)</label>
-            <select id="pd-deadline" onchange="calcPriceDrop()">
+            <label>Deadline (days to sell)</label>
+            <select id="pd-deadline" onchange="calcPriceDrop(); saveLS('pd')">
               <option value="">Select deadline</option>
-              <option value="7">7 days (one week)</option>
-              <option value="14">14 days (two weeks)</option>
-              <option value="21">21 days (three weeks)</option>
-              <option value="30">30 days (one month)</option>
-              <option value="60">60 days (no real rush)</option>
+              <option value="7">7 days — urgent</option>
+              <option value="14">14 days — two weeks</option>
+              <option value="21">21 days — three weeks</option>
+              <option value="30">30 days — one month</option>
+              <option value="60">60 days — no rush</option>
             </select>
           </div>
         </div>
-        <div class="form-row">
-          <label>Floor Price — Won't Go Below ($)</label>
-          <input type="number" id="pd-floor" placeholder="Leave blank to auto-calculate" oninput="calcPriceDrop()">
-        </div>
+        <div class="form-row"><label>Floor Price — won't go below ($) — leave blank to auto-calculate</label><input type="number" id="pd-floor" placeholder="Auto-calculated at 45% of asking price" oninput="calcPriceDrop(); saveLS('pd')"></div>
 
         <div id="pd-results" style="display:none; margin-top:1rem;">
-          <h3 style="margin-bottom:1rem;">Your Price Drop Schedule</h3>
-          <table class="schedule-table" id="pd-table">
-            <thead><tr><th>Day</th><th>Action</th><th>New Price</th><th>% of Original</th><th>Status</th></tr></thead>
-            <tbody id="pd-tbody"></tbody>
-          </table>
-          <div class="tip-box" style="margin-top:1rem;">
-            <h4>💡 How to execute a price drop</h4>
-            <p>Edit your listing and lower the price exactly on the scheduled day. Most marketplace algorithms treat price edits as "recently updated" and show your listing to fresh buyers. Always drop at the scheduled time — not when buyers pressure you.</p>
+          <div class="output-header"><strong>Your Price Drop Schedule</strong></div>
+          <div style="overflow-x:auto;">
+            <table class="sched-table" id="pd-table">
+              <thead><tr><th>Day</th><th>Date</th><th>Action</th><th>Price</th><th>% of Original</th><th>Status</th></tr></thead>
+              <tbody id="pd-tbody"></tbody>
+            </table>
+          </div>
+          <div class="tip-callout" style="margin-top:1rem;">
+            <span class="tip-icon">💡</span>
+            <div class="tip-body">
+              <h4>Execution tip</h4>
+              <p>Edit your listing price exactly on the scheduled day — don't wait. Marketplace algorithms treat price edits as "recently updated" and show your item to fresh buyers. A Sunday evening price drop gets peak weekend traffic.</p>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="tk-card">
-        <h3>📊 Price Drop Principles</h3>
-        <ul style="list-style:none; display:flex; flex-direction:column; gap:.6rem; font-size:.9rem; color:var(--gray-700);">
-          <li>✓ <strong>Drop in steps of 10-15%</strong> — big enough to trigger re-engagement, small enough to protect value</li>
-          <li>✓ <strong>Drop on the same day each week</strong> — Sunday evening drops see the most engagement</li>
-          <li>✓ <strong>Never drop when someone is actively negotiating</strong> — wait until the deal dies before dropping</li>
-          <li>✓ <strong>Re-post after a big price drop</strong> — fresh listing = fresh visibility</li>
-          <li>✗ <strong>Don't drop more than 2× in one week</strong> — signals desperation, invites lowball offers</li>
-        </ul>
+        <h3>Price Drop Rules</h3>
+        <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.875rem;color:var(--gray-700);">
+          <div>✓ <strong>Drop in 10–15% steps</strong> — big enough to trigger re-engagement, small enough to protect value</div>
+          <div>✓ <strong>Drop on the same day of the week</strong> — Sunday evening sees peak buyer activity</div>
+          <div>✓ <strong>Wait until a negotiation is fully dead</strong> before dropping — never drop mid-deal</div>
+          <div>✓ <strong>Re-post after a big drop</strong> — fresh listing visibility = fresh buyer eyes</div>
+          <div>✗ <strong>Never drop more than twice in one week</strong> — signals desperation and invites lowball offers</div>
+        </div>
       </div>
     </div>
 
-    <!-- ── 9. MEASUREMENTS ── -->
+    <!-- ══ 9. MEASUREMENTS ══ -->
     <div class="tk-panel" id="panel-measurements">
-      <h2>📐 Item Measurement Sheet</h2>
-      <p class="subtitle">Capture all dimensions buyers ask about before they ask. Check the category that fits.</p>
+      <div class="panel-header">
+        <h2>📐 Item Measurement Sheet</h2>
+        <div class="subtitle">Capture all dimensions buyers ask about before they ask. Print-ready.</div>
+      </div>
 
-      <div class="tk-card">
-        <div class="form-row">
-          <label>Item Name</label>
-          <input type="text" id="ms-name" placeholder="e.g. Sectional Couch">
-        </div>
+      <div class="tk-card" id="print-measurements">
+        <div class="form-row"><label>Item Name</label><input type="text" id="ms-name" placeholder="e.g. IKEA Kallax Shelf" oninput="saveLS('ms')"></div>
         <div class="form-row">
           <label>Category</label>
-          <select id="ms-category" onchange="loadMeasurements()">
+          <select id="ms-category" onchange="loadMeasurements(); saveLS('ms')">
             <option value="">Select a category</option>
             <option value="furniture">Furniture (sofa, table, dresser, desk)</option>
             <option value="appliance">Large Appliance (fridge, washer, TV)</option>
@@ -750,26 +716,26 @@
             <option value="generic">Generic Item</option>
           </select>
         </div>
-
-        <div id="ms-fields" style="margin-top:1.25rem; display:none;">
-          <div class="measurement-grid" id="ms-grid"></div>
-          <button class="btn btn-primary mt-4" onclick="buildMeasurementText()">Build Measurement Text →</button>
-        </div>
-
-        <div id="ms-output" style="display:none; margin-top:1rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
-            <strong>Copy-Paste Measurement Text:</strong>
-            <button class="copy-btn" onclick="copyText('ms-result', this)">📋 Copy</button>
+        <div id="ms-fields" style="margin-top:1.25rem;display:none;">
+          <div class="meas-grid" id="ms-grid"></div>
+          <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="buildMeasurementText()">Build Copy-Paste Text →</button>
+            <button class="print-btn" onclick="window.print()">🖨️ Print Sheet</button>
           </div>
-          <div class="output-area" id="ms-result"></div>
+        </div>
+        <div id="ms-output" style="display:none;margin-top:1rem;">
+          <div class="output-header"><strong>Copy-Paste Measurement Text</strong><button class="copy-btn" onclick="copyText('ms-result',this)">📋 Copy</button></div>
+          <div class="output-box" id="ms-result"></div>
         </div>
       </div>
     </div>
 
-    <!-- ── 10. PHOTO CHECKLIST ── -->
+    <!-- ══ 10. PHOTO CHECKLIST ══ -->
     <div class="tk-panel" id="panel-photos">
-      <h2>📸 Photo Checklist</h2>
-      <p class="subtitle">Never miss a shot. More complete photos = faster sales = fewer buyer questions.</p>
+      <div class="panel-header">
+        <h2>📸 Photo Checklist</h2>
+        <div class="subtitle">Category-specific shot list. Never miss a photo that costs you a sale.</div>
+      </div>
 
       <div class="tk-card">
         <div class="form-row">
@@ -787,124 +753,94 @@
           </select>
         </div>
 
-        <div id="ph-list" style="display:none; margin-top:1rem;"></div>
+        <div id="ph-list" style="display:none;margin-top:1rem;"></div>
 
-        <div id="ph-score" style="display:none; margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--gray-300);">
-          <div style="display:flex; align-items:center; gap:1rem;">
-            <div style="font-size:1.5rem; font-weight:800;" id="ph-score-num">0%</div>
-            <div style="flex:1;">
-              <div class="progress-bar"><div class="progress-fill" id="ph-progress" style="width:0%"></div></div>
-              <div id="ph-status" style="font-size:.8rem; color:var(--gray-500);">Check off photos as you take them</div>
-            </div>
+        <div id="ph-score" style="display:none;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--gray-200);">
+          <div class="progress-wrap">
+            <div style="font-size:1.3rem;font-weight:900;min-width:3rem;" id="ph-score-num">0%</div>
+            <div class="progress-bar"><div class="progress-fill" id="ph-progress" style="width:0%"></div></div>
           </div>
+          <div id="ph-status" style="font-size:.82rem;color:var(--gray-500);margin-top:.35rem;">Check off photos as you take them</div>
         </div>
       </div>
 
       <div class="tk-card">
-        <h3>📷 Universal Photo Tips</h3>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:.75rem; font-size:.875rem; color:var(--gray-700);">
-          <div>✓ Natural light — near a window, not under harsh overhead lights</div>
-          <div>✓ Clean background — clear floor, white wall, or outdoor patio</div>
-          <div>✓ Hold your phone horizontally for landscape items</div>
-          <div>✓ Get close enough to fill the frame — don't leave dead space</div>
-          <div>✓ Turn the item on and take a screenshot of it working</div>
-          <div>✓ Photograph any defects clearly — builds buyer trust</div>
-          <div>✗ Don't use blurry, dark, or heavily filtered photos</div>
-          <div>✗ Don't include your car, pets, or family in the background</div>
+        <h3>Universal Tips — Every Category</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem;font-size:.85rem;color:var(--gray-700);">
+          <div>✓ Natural light — near a window</div>
+          <div>✓ Clean background — clear floor or white wall</div>
+          <div>✓ Horizontal hold for wide items</div>
+          <div>✓ Fill the frame — don't waste space</div>
+          <div>✓ Power it on and screenshot it working</div>
+          <div>✓ Photograph defects clearly — builds trust</div>
+          <div>✗ No blurry, dark, or filtered photos</div>
+          <div>✗ No cars, pets, or people in background</div>
         </div>
       </div>
     </div>
 
-    <!-- ── 11. 7-DAY PLAN ── -->
+    <!-- ══ 11. 7-DAY PLAN ══ -->
     <div class="tk-panel" id="panel-sevenday">
-      <h2>🗓️ Sell It in 7 Days</h2>
-      <p class="subtitle">A proven day-by-day action plan. List Monday, sold by Sunday.</p>
+      <div class="panel-header">
+        <h2>🗓️ Sell It in 7 Days</h2>
+        <div class="subtitle">A day-by-day action plan personalized to your item and start date.</div>
+      </div>
 
       <div class="tk-card">
         <div class="form-grid">
-          <div class="form-row">
-            <label>Item You're Selling</label>
-            <input type="text" id="sd-item" placeholder="e.g. IKEA Dresser">
-          </div>
-          <div class="form-row">
-            <label>Start Date</label>
-            <input type="date" id="sd-date" value="">
-          </div>
+          <div class="form-row"><label>Item You're Selling</label><input type="text" id="sd-item" placeholder="e.g. IKEA Dresser" oninput="saveLS('sd')"></div>
+          <div class="form-row"><label>Start Date</label><input type="date" id="sd-date" oninput="saveLS('sd')"></div>
         </div>
-        <button class="btn btn-primary mt-4" onclick="buildSevenDay()">Build My 7-Day Plan →</button>
+        <button class="btn btn-primary" onclick="buildSevenDay()">Build My 7-Day Plan →</button>
       </div>
 
-      <div id="sd-output" style="display:none;" class="tk-card">
-        <h3 id="sd-title" style="margin-bottom:1.25rem;"></h3>
-        <div class="day-grid" id="sd-days"></div>
-        <div class="tip-box" style="margin-top:1.25rem;">
-          <h4>🎯 The Most Important Rule</h4>
-          <p>List it at the right price on Day 1 — use the Pricing Calculator to set a fair, data-backed price. An overpriced listing wastes all 7 days. Start right and close fast.</p>
+      <div id="sd-output" style="display:none;" class="tk-card" id="print-sevenday">
+        <div class="output-header">
+          <strong id="sd-title"></strong>
+          <button class="print-btn" onclick="window.print()">🖨️ Print Plan</button>
+        </div>
+        <div class="day-grid" id="sd-days" style="margin-top:1rem;"></div>
+        <div class="tip-callout" style="margin-top:1.25rem;">
+          <span class="tip-icon">🎯</span>
+          <div class="tip-body">
+            <h4>The single most important rule</h4>
+            <p>List at the right price on Day 1. Use the Pricing Calculator — an overpriced listing wastes all 7 days. Start right, close fast.</p>
+          </div>
         </div>
       </div>
 
       <div class="tk-card">
-        <h3>Universal 7-Day Strategy</h3>
+        <h3>The Standard 7-Day Strategy</h3>
         <div class="day-grid">
           <div class="day-card">
-            <div class="day-num">Day 1 — Monday</div>
-            <h4>List It Right</h4>
-            <ul>
-              <li>Calculate your price</li>
-              <li>Take 8-12 photos</li>
-              <li>Write optimized title + description</li>
-              <li>Post to 2-3 platforms</li>
-            </ul>
+            <div class="day-label" style="color:var(--blue);">Day 1 — List It Right</div>
+            <h4>Create & Post</h4>
+            <ul><li>Calculate your price</li><li>Take 8–12 photos</li><li>Write optimized title + description</li><li>Post on 2–3 platforms</li></ul>
           </div>
           <div class="day-card">
-            <div class="day-num">Day 2-3 — Tue/Wed</div>
-            <h4>Respond Fast</h4>
-            <ul>
-              <li>Reply to ALL inquiries within 1 hr</li>
-              <li>Qualify buyers with 1-2 questions</li>
-              <li>Schedule first pickups</li>
-              <li>Don't negotiate — hold price</li>
-            </ul>
+            <div class="day-label" style="color:var(--blue);">Days 2-3 — Respond Fast</div>
+            <h4>Qualify Buyers</h4>
+            <ul><li>Reply to ALL messages within 1 hr</li><li>Ask qualifying questions</li><li>Schedule first pickups</li><li>Hold your price — no negotiating yet</li></ul>
           </div>
           <div class="day-card">
-            <div class="day-num">Day 4 — Thursday</div>
-            <h4>Check & Adjust</h4>
-            <ul>
-              <li>Review views and message count</li>
-              <li>&lt;5 views? Problem with title/photos</li>
-              <li>5+ views, 0 messages? Price too high</li>
-              <li>Many messages, no sale? Negotiate too early</li>
-            </ul>
+            <div class="day-label" style="color:var(--orange);">Day 4 — Diagnose</div>
+            <h4>Check Performance</h4>
+            <ul><li>&lt;5 views → title/photo problem</li><li>Views but no messages → price too high</li><li>Messages but no sale → qualify better</li><li>Adjust if needed</li></ul>
           </div>
           <div class="day-card">
-            <div class="day-num">Day 5 — Friday</div>
-            <h4>Push Weekend Traffic</h4>
-            <ul>
-              <li>Re-share listing to groups</li>
-              <li>Update listing (edit triggers re-index)</li>
-              <li>Schedule weekend pickups</li>
-              <li>Post in local Facebook groups</li>
-            </ul>
+            <div class="day-label" style="color:var(--orange);">Day 5 — Weekend Push</div>
+            <h4>Drive Traffic</h4>
+            <ul><li>Re-share listing to groups</li><li>Edit listing (triggers re-index)</li><li>Schedule weekend pickups</li><li>Post in local FB groups</li></ul>
           </div>
           <div class="day-card">
-            <div class="day-num">Day 6-7 — Weekend</div>
-            <h4>Close It</h4>
-            <ul>
-              <li>Most sales happen Sat-Sun</li>
-              <li>Be flexible on pickup windows</li>
-              <li>If no sale: drop price 15%</li>
-              <li>Re-post as "Price Dropped"</li>
-            </ul>
+            <div class="day-label" style="color:var(--green-dark);">Days 6-7 — Close It</div>
+            <h4>Weekend Peak</h4>
+            <ul><li>Most sales happen Sat–Sun</li><li>Be available and fast on replies</li><li>Execute pickups</li><li>If unsold: drop price 15%</li></ul>
           </div>
-          <div class="day-card" style="border-color:var(--green); border-width:2px;">
-            <div class="day-num" style="color:var(--green);">Day 8+ — Next Step</div>
-            <h4>Repeat or Regroup</h4>
-            <ul>
-              <li>Sold? Repeat with next item</li>
-              <li>Unsold? Drop 15% and re-list</li>
-              <li>Still unsold? Try a different platform</li>
-              <li>3 weeks unsold? Donate + move on</li>
-            </ul>
+          <div class="day-card" style="border-color:var(--green);border-width:2px;">
+            <div class="day-label" style="color:var(--green-dark);">Day 8+ — Regroup</div>
+            <h4>Next Steps</h4>
+            <ul><li>Sold → repeat with next item</li><li>Unsold → drop 15%, relist fresh</li><li>Still unsold → try a new platform</li><li>3 weeks unsold → donate or store</li></ul>
           </div>
         </div>
       </div>
@@ -914,19 +850,54 @@
 </div>
 
 <script>
-// ────────────────────────────────
+// ════════════════════════════════
 // Navigation
-// ────────────────────────────────
+// ════════════════════════════════
 function showPanel(id) {
   document.querySelectorAll('.tk-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tk-nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
-  document.querySelector(`[data-panel="${id}"]`).classList.add('active');
+  document.querySelectorAll(`[data-panel="${id}"]`).forEach(el => el.classList.add('active'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ────────────────────────────────
+// ════════════════════════════════
+// localStorage helpers
+// ════════════════════════════════
+function saveLS(prefix) {
+  const ids = {
+    pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category'],
+    tg: ['tg-item','tg-brand','tg-model','tg-feature'],
+    db: ['db-item','db-brand','db-model','db-condition','db-features','db-dims','db-includes','db-reason','db-pickup','db-bundle'],
+    ai: ['ai-item','ai-brand','ai-condition','ai-price','ai-details'],
+    pd: ['pd-price','pd-deadline','pd-floor'],
+    ms: ['ms-name','ms-category'],
+    sd: ['sd-item','sd-date']
+  };
+  const fields = ids[prefix] || [];
+  const saved = {};
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) saved[id] = el.value;
+  });
+  try { localStorage.setItem('sk_' + prefix, JSON.stringify(saved)); } catch(e) {}
+}
+
+function loadLS(prefix) {
+  try {
+    const raw = localStorage.getItem('sk_' + prefix);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    Object.entries(saved).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    });
+  } catch(e) {}
+}
+
+// ════════════════════════════════
 // 1. Pricing Calculator
-// ────────────────────────────────
+// ════════════════════════════════
 function calcPrice() {
   const retail = parseFloat(document.getElementById('pc-retail').value);
   const condition = parseFloat(document.getElementById('pc-condition').value);
@@ -940,23 +911,33 @@ function calcPrice() {
   document.getElementById('pc-ideal').textContent = '$' + ideal.toLocaleString();
   document.getElementById('pc-quickflip').textContent = '$' + quickflip.toLocaleString();
   document.getElementById('pc-floor').textContent = '$' + floor.toLocaleString();
+  // Update visualizer labels
+  document.getElementById('pc-viz-min').textContent = 'Floor: $' + floor.toLocaleString();
+  document.getElementById('pc-viz-mid').textContent = 'Quick: $' + quickflip.toLocaleString();
+  document.getElementById('pc-viz-max').textContent = 'Ask: $' + ideal.toLocaleString();
   const tips = {
-    electronics: 'Electronics depreciate fast — use "like new" condition if it works perfectly. Include original box to justify higher price.',
-    furniture: 'Buyers want to know exact dimensions. Measure and include in the listing.',
-    clothing: 'Brand matters a lot. Include size, measurements, and "try-on" photo.',
-    tools: 'Show it powered on and working. Include all bits, cases, and accessories.',
-    toys: 'Note if batteries are included. Show all pieces are present.',
-    sports: 'Seasonal demand matters. Bikes sell faster in spring. Ski gear in fall.',
-    appliances: 'Note the model number — buyers look up specs. Include dimensions.',
-    collectibles: 'Provenance and authenticity drives price. Include certificates if you have them.'
+    electronics: 'Electronics depreciate fast. Include original packaging to justify higher price. Photo it powered on.',
+    furniture: 'Buyers want exact dimensions. Measure and include in the listing — reduces "does it fit?" messages.',
+    clothing: 'Brand matters a lot here. Include size, measurements, and a flat-lay photo.',
+    tools: 'Show it powered on and working. Include all bits, cases, and batteries.',
+    toys: 'Note if batteries are included and all pieces are present.',
+    sports: 'Seasonal demand matters. Bikes sell fastest in spring, ski gear in fall.',
+    appliances: 'Include model number and dimensions — buyers look up specs.',
+    collectibles: 'Provenance and authenticity drive price. Include certificates if you have them.'
   };
-  document.getElementById('pc-tip-text').textContent = tips[category] || 'List at your ideal price for the first 3-4 days before making any changes.';
+  const tipEl = document.getElementById('pc-tip');
+  if (category && tips[category]) {
+    document.getElementById('pc-tip-text').textContent = tips[category];
+    tipEl.style.display = 'flex';
+  } else {
+    tipEl.style.display = 'none';
+  }
   results.style.display = 'block';
 }
 
-// ────────────────────────────────
+// ════════════════════════════════
 // 2. Title Generator
-// ────────────────────────────────
+// ════════════════════════════════
 function genTitles() {
   const item = document.getElementById('tg-item').value.trim();
   const brand = document.getElementById('tg-brand').value.trim();
@@ -967,18 +948,25 @@ function genTitles() {
   const prefix = brand ? brand + ' ' : '';
   const suffix = model ? ' ' + model : '';
   const feat = feature ? ' — ' + feature : '';
-  const t1 = `${prefix}${item}${suffix} | ${condition}${feat}`;
-  const t2 = `${condition} ${prefix}${item}${suffix}${feat} | Great Deal`;
-  const t3 = `${prefix}${item}${suffix} — ${condition} Condition — Must Sell${feat ? ' | ' + feature : ''}`;
-  document.getElementById('tg-t1').textContent = t1.substring(0, 80);
-  document.getElementById('tg-t2').textContent = t2.substring(0, 80);
-  document.getElementById('tg-t3').textContent = t3.substring(0, 80);
+  const t1 = (prefix + item + suffix + ' | ' + condition + feat).substring(0, 80);
+  const t2 = (condition + ' ' + prefix + item + suffix + feat + ' | Great Deal').substring(0, 80);
+  const t3 = (prefix + item + suffix + ' — ' + condition + ' Condition — Must Sell' + (feature ? ' | ' + feature : '')).substring(0, 80);
+  const setTitle = (id, cid, text) => {
+    document.getElementById(id).textContent = text;
+    const len = text.length;
+    const el = document.getElementById(cid);
+    el.textContent = len + '/80 chars';
+    el.className = 'char-count' + (len > 75 ? ' warn' : '') + (len > 80 ? ' over' : '');
+  };
+  setTitle('tg-t1', 'tg-c1', t1);
+  setTitle('tg-t2', 'tg-c2', t2);
+  setTitle('tg-t3', 'tg-c3', t3);
   document.getElementById('tg-output').style.display = 'block';
 }
 
-// ────────────────────────────────
+// ════════════════════════════════
 // 3. Description Builder
-// ────────────────────────────────
+// ════════════════════════════════
 function buildDescription() {
   const item = document.getElementById('db-item').value.trim();
   const brand = document.getElementById('db-brand').value.trim();
@@ -992,27 +980,24 @@ function buildDescription() {
   const bundle = document.getElementById('db-bundle').value.trim();
   if (!item) { alert('Please enter an item name.'); return; }
   const name = (brand ? brand + ' ' : '') + item + (model ? ' ' + model : '');
-  let desc = `📦 ${name}\n\n`;
-  desc += `✅ Condition: ${condition}\n\n`;
+  let desc = `📦 ${name}\n\n✅ Condition: ${condition}\n\n`;
   if (featuresRaw) {
     const feats = featuresRaw.split('\n').filter(f => f.trim());
-    if (feats.length > 0) {
-      desc += `🔹 What You Get:\n` + feats.map(f => `• ${f.trim()}`).join('\n') + '\n\n';
-    }
+    if (feats.length) desc += `🔹 What You Get:\n${feats.map(f => '• ' + f.trim()).join('\n')}\n\n`;
   }
   if (dims) desc += `📐 Dimensions: ${dims}\n\n`;
   if (includes) desc += `🎁 Includes: ${includes}\n\n`;
   if (reason) desc += `🏷️ Selling because: ${reason}\n\n`;
-  desc += `💵 ${pickup}\n`;
-  if (bundle) desc += `\n🛒 Bundle Deal: ${bundle}\n`;
-  desc += `\nFeel free to message with any questions — happy to answer. First come, first served!`;
+  desc += `💵 ${pickup}`;
+  if (bundle) desc += `\n\n🛒 Bundle Deal: ${bundle}`;
+  desc += `\n\nFeel free to message with any questions — happy to answer. First come, first served!`;
   document.getElementById('db-result').textContent = desc;
   document.getElementById('db-output').style.display = 'block';
 }
 
-// ────────────────────────────────
-// 4. AI Prompt Generator
-// ────────────────────────────────
+// ════════════════════════════════
+// 4. AI Prompt
+// ════════════════════════════════
 function genAIPrompt() {
   const item = document.getElementById('ai-item').value.trim();
   const brand = document.getElementById('ai-brand').value.trim();
@@ -1029,83 +1014,80 @@ Details: ${details || 'No additional details provided.'}
 
 Please write:
 1. An optimized title (under 80 characters, search-friendly)
-2. A full description (3-5 short paragraphs) that:
+2. A full description (3–5 short paragraphs) that:
    - Opens with the item name and condition
-   - Highlights the key features and what's included
+   - Highlights key features and what's included
    - Mentions any defects honestly (builds buyer trust)
    - Ends with payment and pickup info
    - Has a friendly, professional tone — not salesy
 
-Keep it clean and scannable. Use line breaks. Bullet points for features are fine.`;
+Keep it clean and scannable. Use line breaks and bullet points for features.`;
   document.getElementById('ai-prompt-result').textContent = prompt;
   document.getElementById('ai-output').style.display = 'block';
 }
 
-// ────────────────────────────────
+// ════════════════════════════════
 // 6. Scam Checklist
-// ────────────────────────────────
+// ════════════════════════════════
 function updateScamScore() {
-  const total = 12;
   let checked = 0;
   for (let i = 1; i <= 12; i++) {
-    if (document.getElementById('sc' + i).checked) checked++;
+    if (document.getElementById('sc' + i)?.checked) checked++;
   }
-  document.getElementById('scam-score').textContent = checked + '/' + total;
-  const pct = (checked / total) * 100;
+  document.getElementById('scam-score').textContent = checked + '/12';
+  const pct = (checked / 12) * 100;
   const fill = document.getElementById('scam-fill');
   fill.style.width = pct + '%';
-  const verdicts = [
-    [0, 3, 'var(--red)', '🚨 STOP — Do not proceed. Too many unchecked red flags.'],
-    [4, 7, 'var(--orange)', '⚠️ Proceed with caution. Verify the remaining items before meeting.'],
-    [8, 10, 'var(--blue)', '🟡 Mostly safe. Check the remaining items before completing the sale.'],
-    [11, 12, 'var(--green)', '✅ Looks safe! You\'ve done your due diligence. Proceed confidently.']
-  ];
-  for (const [min, max, color, text] of verdicts) {
-    if (checked >= min && checked <= max) {
-      fill.style.background = color;
-      document.getElementById('scam-verdict').textContent = text;
-      break;
-    }
-  }
+  const [color, text] =
+    checked < 4  ? ['var(--red)',    '🚨 STOP — Do not proceed. Too many red flags unchecked.'] :
+    checked < 8  ? ['var(--orange)', '⚠️ Proceed with caution. Verify the remaining items first.'] :
+    checked < 11 ? ['var(--blue)',   '🟡 Almost safe — check the remaining items before meeting.'] :
+                   ['var(--green)',  '✅ Looks safe! You\'ve done your due diligence.'];
+  fill.style.background = color;
+  const v = document.getElementById('scam-verdict');
+  v.textContent = text;
+  v.style.color = color;
 }
 
 function resetChecklist() {
   for (let i = 1; i <= 12; i++) {
-    document.getElementById('sc' + i).checked = false;
+    const el = document.getElementById('sc' + i);
+    if (el) el.checked = false;
   }
   updateScamScore();
 }
 
-// ────────────────────────────────
-// 8. Price Drop Calculator
-// ────────────────────────────────
+// ════════════════════════════════
+// 8. Price Drop Schedule
+// ════════════════════════════════
 function calcPriceDrop() {
   const price = parseFloat(document.getElementById('pd-price').value);
   const deadline = parseInt(document.getElementById('pd-deadline').value);
-  const floorInput = parseFloat(document.getElementById('pd-floor').value);
+  const floorIn = parseFloat(document.getElementById('pd-floor').value);
   if (!price || !deadline) { document.getElementById('pd-results').style.display = 'none'; return; }
-  const floor = floorInput || Math.round(price * 0.45 / 5) * 5;
-  const today = new Date();
+  const floor = floorIn || Math.round(price * 0.45 / 5) * 5;
   const schedules = {
-    7:  [{day:1, action:'List at asking price', pct:1.0}, {day:4, action:'First price drop', pct:0.88}, {day:7, action:'Final drop — sell or hold', pct:0.75}],
-    14: [{day:1, action:'List at asking price', pct:1.0}, {day:5, action:'First price drop', pct:0.90}, {day:10, action:'Second price drop', pct:0.80}, {day:14, action:'Final push drop', pct:0.70}],
-    21: [{day:1, action:'List at asking price', pct:1.0}, {day:7, action:'First drop (1 week review)', pct:0.90}, {day:14, action:'Second drop (2 week review)', pct:0.80}, {day:21, action:'Final drop', pct:0.72}],
-    30: [{day:1, action:'List at asking price', pct:1.0}, {day:8, action:'First drop', pct:0.90}, {day:16, action:'Second drop', pct:0.80}, {day:23, action:'Third drop', pct:0.72}, {day:30, action:'Final drop', pct:0.65}],
-    60: [{day:1, action:'List at asking price', pct:1.0}, {day:14, action:'First review', pct:0.92}, {day:28, action:'Price drop', pct:0.83}, {day:45, action:'Second drop', pct:0.75}, {day:60, action:'Final drop or donate', pct:0.65}]
+    7:  [{day:1,pct:1.0,action:'List at asking price'},{day:4,pct:.88,action:'First price drop'},{day:7,pct:.75,action:'Final push or hold'}],
+    14: [{day:1,pct:1.0,action:'List at asking price'},{day:5,pct:.90,action:'First drop'},{day:10,pct:.80,action:'Second drop'},{day:14,pct:.70,action:'Final drop'}],
+    21: [{day:1,pct:1.0,action:'List at asking price'},{day:7,pct:.90,action:'First drop (week 1 review)'},{day:14,pct:.80,action:'Second drop'},{day:21,pct:.72,action:'Final drop'}],
+    30: [{day:1,pct:1.0,action:'List at asking price'},{day:8,pct:.90,action:'First drop'},{day:16,pct:.80,action:'Second drop'},{day:23,pct:.72,action:'Third drop'},{day:30,pct:.65,action:'Final drop'}],
+    60: [{day:1,pct:1.0,action:'List at asking price'},{day:14,pct:.92,action:'First review'},{day:28,pct:.83,action:'Price drop'},{day:45,pct:.75,action:'Second drop'},{day:60,pct:.65,action:'Final or donate'}]
   };
   const steps = schedules[deadline] || schedules[30];
+  const today = new Date();
   const tbody = document.getElementById('pd-tbody');
   tbody.innerHTML = '';
-  const today2 = new Date();
   steps.forEach(step => {
     const newPrice = Math.max(Math.round(price * step.pct / 5) * 5, floor);
-    const date = new Date(today2);
-    date.setDate(today2.getDate() + step.day - 1);
-    const dateStr = date.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
-    const isFloor = newPrice <= floor;
-    const badge = step.pct === 1.0 ? '<span class="badge badge-green">Start</span>' : isFloor ? '<span class="badge badge-red">Floor</span>' : '<span class="badge badge-orange">Drop</span>';
+    const d = new Date(today);
+    d.setDate(today.getDate() + step.day - 1);
+    const dateStr = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+    const badge = step.pct === 1.0 ? '<span class="badge badge-green">Start</span>'
+                : newPrice <= floor ? '<span class="badge badge-red">Floor</span>'
+                : '<span class="badge badge-orange">Drop</span>';
     tbody.innerHTML += `<tr>
-      <td><strong>Day ${step.day}</strong><br><span style="font-size:.8rem;color:var(--gray-500)">${dateStr}</span></td>
+      <td><strong>Day ${step.day}</strong></td>
+      <td>${dateStr}</td>
       <td>${step.action}</td>
       <td><strong>$${newPrice.toLocaleString()}</strong></td>
       <td>${Math.round(step.pct * 100)}%</td>
@@ -1115,31 +1097,29 @@ function calcPriceDrop() {
   document.getElementById('pd-results').style.display = 'block';
 }
 
-// ────────────────────────────────
-// 9. Measurement Sheet
-// ────────────────────────────────
-const measurementFields = {
-  furniture: ['Width (W)', 'Depth (D)', 'Height (H)', 'Seat Height', 'Arm Height', 'Weight (approx)'],
-  appliance: ['Width (W)', 'Depth (D)', 'Height (H)', 'Cord Length', 'Weight (approx)', 'Opening/Door Width'],
-  clothing: ['Chest', 'Waist', 'Hips', 'Length (shirt)', 'Inseam (pants)', 'Shoulder Width'],
-  shoes: ['Shoe Size (US)', 'Insole Length (inches)', 'Width (narrow/regular/wide)'],
-  bike: ['Frame Size', 'Wheel Diameter', 'Seat Height (adjustable range)', 'Handlebar Width', 'Total Length'],
-  box: ['Length (L)', 'Width (W)', 'Height (H)', 'Weight (empty)', 'Max Load (if known)'],
-  art: ['Width (W)', 'Height (H)', 'Depth / Frame Thickness', 'Weight (approx)'],
-  generic: ['Length (L)', 'Width (W)', 'Height (H)', 'Weight (approx)']
+// ════════════════════════════════
+// 9. Measurements
+// ════════════════════════════════
+const MEAS_FIELDS = {
+  furniture:  ['Width (W)','Depth (D)','Height (H)','Seat Height','Arm Height','Weight (approx)'],
+  appliance:  ['Width (W)','Depth (D)','Height (H)','Cord Length','Weight (approx)','Door Opening Width'],
+  clothing:   ['Chest','Waist','Hips','Shirt Length','Inseam','Shoulder Width'],
+  shoes:      ['US Size','Insole Length (inches)','Width (N/R/W)'],
+  bike:       ['Frame Size','Wheel Size','Seat Height Range','Handlebar Width','Total Length'],
+  box:        ['Length','Width','Height','Empty Weight','Max Load'],
+  art:        ['Width','Height','Frame Depth','Weight'],
+  generic:    ['Length','Width','Height','Weight']
 };
 
 function loadMeasurements() {
   const cat = document.getElementById('ms-category').value;
   if (!cat) { document.getElementById('ms-fields').style.display = 'none'; return; }
-  const fields = measurementFields[cat] || measurementFields.generic;
-  const grid = document.getElementById('ms-grid');
-  grid.innerHTML = fields.map((f, i) => `
-    <div class="measurement-field">
+  const fields = MEAS_FIELDS[cat] || MEAS_FIELDS.generic;
+  document.getElementById('ms-grid').innerHTML = fields.map((f, i) => `
+    <div class="meas-field">
       <label for="mf-${i}">${f}</label>
       <input type="text" id="mf-${i}" data-label="${f}" placeholder='e.g. 36"'>
-    </div>
-  `).join('');
+    </div>`).join('');
   document.getElementById('ms-fields').style.display = 'block';
   document.getElementById('ms-output').style.display = 'none';
 }
@@ -1148,143 +1128,131 @@ function buildMeasurementText() {
   const name = document.getElementById('ms-name').value.trim() || 'Item';
   const inputs = document.querySelectorAll('#ms-grid input');
   let text = `📐 ${name} — Measurements\n\n`;
-  inputs.forEach(inp => {
-    if (inp.value.trim()) text += `• ${inp.dataset.label}: ${inp.value.trim()}\n`;
-  });
-  if (text.length < 30) { alert('Please fill in at least a few measurements.'); return; }
-  text += '\nAll measurements are approximate. Please message if you need exact dimensions.';
+  inputs.forEach(inp => { if (inp.value.trim()) text += `• ${inp.dataset.label}: ${inp.value.trim()}\n`; });
+  if (text.length < 30) { alert('Fill in at least a few measurements first.'); return; }
+  text += '\nAll measurements approximate. Message if you need exact dimensions.';
   document.getElementById('ms-result').textContent = text;
   document.getElementById('ms-output').style.display = 'block';
 }
 
-// ────────────────────────────────
+// ════════════════════════════════
 // 10. Photo Checklist
-// ────────────────────────────────
-const photoLists = {
+// ════════════════════════════════
+const PHOTO_LISTS = {
   electronics: {
-    'Must-Have Shots': ['Full front view powered ON (showing it works)', 'Screen close-up (no cracks, burn marks, or dead pixels)', 'All ports and connections', 'Back panel (serial number if comfortable)', 'Any defects or damage — be honest'],
-    'Nice to Have': ['Box and original accessories', 'Remote control or cables included', 'Settings/info screen showing model', 'Size comparison (next to something recognizable)']
+    'Must-Have': ['Full front — powered ON (proves it works)','Screen close-up (check for cracks/burn-in)','All ports and connections','Back panel with serial number','Any scratches, dents, or defects clearly lit'],
+    'Recommended': ['Original box and accessories','Remote or cables included','Settings screen showing model info','Size reference next to a common object']
   },
   furniture: {
-    'Must-Have Shots': ['Full front view with good lighting', 'Side profile shot', 'Close-up of fabric/material texture', 'Any scratches, stains, or wear — clearly lit', 'Dimensions written on paper, photographed next to item'],
-    'Nice to Have': ['Top-down view', 'Legs and hardware close-up', 'Photo in a styled room setting']
+    'Must-Have': ['Full front in good lighting','Side profile shot','Close-up of fabric or material texture','Any scratches, stains, or wear — well lit','Dimensions written on paper next to item'],
+    'Recommended': ['Top-down view','Legs and hardware close-up','Styled in a room setting']
   },
   clothing: {
-    'Must-Have Shots': ['Flat lay on clean white/light background', 'Close-up of label (brand + size)', 'Any stains, holes, or wear', 'Close-up of fabric texture'],
-    'Nice to Have': ['On a hanger or mannequin', 'Measurement tape next to item']
+    'Must-Have': ['Flat lay on clean light background','Label close-up (brand + size)','Any stains, holes, or wear','Fabric texture close-up'],
+    'Recommended': ['On a hanger or mannequin','Tape measure for reference']
   },
   appliances: {
-    'Must-Have Shots': ['Full front view', 'Door open showing interior', 'Model number/serial label', 'Any dents, rust, or damage', 'Running/powered on if possible'],
-    'Nice to Have': ['Inside close-ups (fridge shelves, washer drum)', 'Controls and display panel']
+    'Must-Have': ['Full front view','Door/lid open showing interior','Model and serial number label','Any dents, rust, or damage','Running or powered on if possible'],
+    'Recommended': ['Interior close-ups (shelves, drum)','Controls and display panel']
   },
   tools: {
-    'Must-Have Shots': ['Tool powered ON or in use', 'All included accessories/bits/cases', 'Brand and model label', 'Battery or cord condition', 'Any wear or damage'],
-    'Nice to Have': ['Storage case or bag', 'Full set laid out']
+    'Must-Have': ['Tool powered on or in use','All included bits, accessories, and case','Brand and model label','Battery or cord condition','Any wear or damage'],
+    'Recommended': ['Storage case laid out','Full set on a clean surface']
   },
   vehicles: {
-    'Must-Have Shots': ['Left side full view', 'Right side full view', 'Front and rear', 'Odometer or hour meter', 'Any scratches, rust, or damage', 'Tires close-up'],
-    'Nice to Have': ['Interior/seating area', 'Engine or motor', 'Any documents (title, manual)']
+    'Must-Have': ['Left side full view','Right side full view','Front and rear','Odometer/hour meter','Any scratches, rust, or damage','Tire condition close-up'],
+    'Recommended': ['Seat/interior area','Engine or motor','Any documents (title, manual)']
   },
   collectibles: {
-    'Must-Have Shots': ['All angles (360° coverage)', 'Signature or marking close-up', 'Any chips, cracks, or repairs', 'Box or packaging if original', 'Certificate of authenticity if applicable'],
-    'Nice to Have': ['Scale reference photo', 'Under UV light if applicable']
+    'Must-Have': ['All angles (front, back, both sides)','Signature or marking close-up','Any chips, cracks, or repairs','Original box or packaging','Certificate of authenticity (if any)'],
+    'Recommended': ['Scale reference photo','Under UV light if applicable']
   },
   kids: {
-    'Must-Have Shots': ['All pieces laid out / assembled', 'Working/powered on if battery operated', 'Age label or recommended age range', 'Any missing parts or damage clearly shown', 'Safety certification label'],
-    'Nice to Have': ['Packaging', 'Size comparison']
+    'Must-Have': ['All pieces laid out or assembled','Working/lit up if battery-operated','Age/safety label','Any missing parts or damage clearly shown','Safety certification sticker'],
+    'Recommended': ['Original packaging','Size comparison']
   }
 };
 
 function loadPhotoChecklist() {
   const cat = document.getElementById('ph-category').value;
-  if (!cat || !photoLists[cat]) { document.getElementById('ph-list').style.display = 'none'; return; }
-  const data = photoLists[cat];
-  let html = '';
-  let totalCount = 0;
-  Object.entries(data).forEach(([section, items]) => {
-    html += `<div class="checklist-section"><h4>${section}</h4><ul class="checklist">`;
-    items.forEach((item, i) => {
-      const id = `ph_${cat}_${totalCount}`;
-      html += `<li><input type="checkbox" id="${id}" onchange="updatePhotoScore('${cat}')"><label for="${id}">${item}</label></li>`;
-      totalCount++;
+  if (!cat || !PHOTO_LISTS[cat]) { document.getElementById('ph-list').style.display = 'none'; document.getElementById('ph-score').style.display = 'none'; return; }
+  let html = '', idx = 0;
+  Object.entries(PHOTO_LISTS[cat]).forEach(([section, items]) => {
+    html += `<div class="checklist-section"><div class="checklist-section-title">${section}</div><ul class="checklist">`;
+    items.forEach(item => {
+      html += `<li><input type="checkbox" id="ph_${idx}" onchange="updatePhotoScore()"><label for="ph_${idx}">${item}</label></li>`;
+      idx++;
     });
     html += `</ul></div>`;
   });
   document.getElementById('ph-list').innerHTML = html;
   document.getElementById('ph-list').style.display = 'block';
   document.getElementById('ph-score').style.display = 'block';
-  updatePhotoScore(cat);
+  updatePhotoScore();
 }
 
-function updatePhotoScore(cat) {
+function updatePhotoScore() {
   const all = document.querySelectorAll('#ph-list input[type=checkbox]');
   const checked = document.querySelectorAll('#ph-list input:checked').length;
-  const pct = all.length > 0 ? Math.round((checked / all.length) * 100) : 0;
+  const pct = all.length ? Math.round((checked / all.length) * 100) : 0;
   document.getElementById('ph-score-num').textContent = pct + '%';
-  document.getElementById('ph-progress').style.width = pct + '%';
-  const status = pct < 50 ? 'Keep going — more photos = more sales' : pct < 80 ? 'Good progress! A few more shots will really help.' : pct < 100 ? 'Almost there — great coverage!' : '✅ Full photo coverage — your listing is photo-complete!';
-  document.getElementById('ph-status').textContent = status;
   const fill = document.getElementById('ph-progress');
+  fill.style.width = pct + '%';
   fill.style.background = pct < 50 ? 'var(--orange)' : pct < 80 ? 'var(--blue)' : 'var(--green)';
+  document.getElementById('ph-status').textContent =
+    pct < 50 ? 'Keep going — more photos = faster sale and fewer buyer questions' :
+    pct < 80 ? 'Good progress! A few more shots will really help.' :
+    pct < 100 ? 'Almost there — excellent photo coverage!' :
+    '✅ Full coverage — your listing is photo-complete!';
 }
 
-// ────────────────────────────────
+// ════════════════════════════════
 // 11. 7-Day Plan
-// ────────────────────────────────
+// ════════════════════════════════
 function buildSevenDay() {
   const item = document.getElementById('sd-item').value.trim() || 'Your Item';
   const dateInput = document.getElementById('sd-date').value;
   const startDate = dateInput ? new Date(dateInput + 'T12:00:00') : new Date();
-  document.getElementById('sd-title').textContent = `Your 7-Day Plan: Sell "${item}" by ${getDateStr(startDate, 6)}`;
+  document.getElementById('sd-title').textContent = `7-Day Plan: "${item}" — Start ${fmt(startDate, 0)}, Sold by ${fmt(startDate, 6)}`;
   const days = [
-    { label: 'Day 1 — ' + getDateStr(startDate, 0), title: 'List It Right', tasks: ['Use Pricing Calculator — set your price', 'Take 8-12 photos with the Photo Checklist', 'Generate your title (Title Generator)', 'Build your description (Description Builder)', 'Post on 2-3 platforms: FB Marketplace, OfferUp, Craigslist'] },
-    { label: 'Day 2 — ' + getDateStr(startDate, 1), title: 'Respond Fast', tasks: ['Reply to ALL messages within 1 hour', 'Ask qualifying questions (local? have vehicle?)', 'Schedule first pickup appointments', 'Hold your price — no negotiating yet', 'Check view count — under 20 views? Fix your title'] },
-    { label: 'Day 3 — ' + getDateStr(startDate, 2), title: 'Follow Up', tasks: ['Follow up with yesterday\'s interested buyers', 'If no responses: re-examine your photos', 'Make sure listing is in the right category', 'Share listing to local Facebook groups', 'Re-run scam checklist on any buyers'] },
-    { label: 'Day 4 — ' + getDateStr(startDate, 3), title: 'Diagnose & Adjust', tasks: ['Review: views vs. messages vs. meetups', 'Lots of views, few messages → price too high', 'Few views → title or category problem', 'Use AI Prompt to refresh your description', 'Confirm any scheduled pickups with templates'] },
-    { label: 'Day 5 — ' + getDateStr(startDate, 4), title: 'Pre-Weekend Push', tasks: ['Re-share to all platforms', 'Post a "still available" update', 'Schedule weekend pickup windows', 'Reply to all pending messages', 'Review Price Drop Schedule if still unsold'] },
-    { label: 'Day 6 — ' + getDateStr(startDate, 5), title: 'Weekend Sales Day', tasks: ['Be available and responsive all day', 'Execute any pickups', 'Use negotiation scripts for offers', 'Don\'t drop price yet — weekend demand is peak', 'Take any photos buyers ask for'] },
-    { label: 'Day 7 — ' + getDateStr(startDate, 6), title: 'Close or Re-Calibrate', tasks: ['Still unsold? Drop price 15% using Price Drop Schedule', 'Re-post as a new listing with "Price Reduced"', 'Try a new platform you haven\'t listed on yet', 'Message top interested buyers with the new price', 'Sold? Mark sold everywhere immediately'] }
+    {label:'Day 1 — ' + fmt(startDate,0), color:'var(--blue)', title:'List It Right', tasks:['Pricing Calculator → set your price','Photo Checklist → take 8–12 photos','Title Generator → pick best title','Description Builder → write the listing','Post on FB Marketplace + OfferUp']},
+    {label:'Day 2 — ' + fmt(startDate,1), color:'var(--blue)', title:'Respond Fast', tasks:['Reply to ALL messages within 1 hour','Qualify buyers: local? have vehicle?','Schedule first pickup appointments','Hold your price — no negotiating yet','Under 20 views? Fix your title']},
+    {label:'Day 3 — ' + fmt(startDate,2), color:'var(--blue)', title:'Follow Up', tasks:['Follow up with interested buyers','Re-examine photos if no responses','Make sure you\'re in the right category','Share listing to local FB groups','Run scam check on any buyer']},
+    {label:'Day 4 — ' + fmt(startDate,3), color:'var(--orange)', title:'Diagnose', tasks:['Views but no messages → price too high','Few views → title or category problem','Many messages, no sale → qualify harder','Use AI Prompt to refresh description','Confirm scheduled pickups']},
+    {label:'Day 5 — ' + fmt(startDate,4), color:'var(--orange)', title:'Pre-Weekend Push', tasks:['Re-share to all platforms','Update listing (triggers re-index)','Schedule weekend pickup windows','Reply to all pending messages','Review Price Drop Schedule']},
+    {label:'Day 6 — ' + fmt(startDate,5), color:'var(--green-dark)', title:'Weekend Peak', tasks:['Be available and fast all day','Execute any pickups','Use Negotiation Scripts for offers','Don\'t drop price yet — peak demand','Send pickup reminder messages']},
+    {label:'Day 7 — ' + fmt(startDate,6), color:'var(--green-dark)', title:'Close or Re-Calibrate', tasks:['Still unsold? Drop price 15%','Re-post as a new listing "Price Reduced"','Try one new platform','Message top interested buyers','Sold? Mark sold everywhere immediately']}
   ];
-  const colors = ['var(--blue)', 'var(--blue)', 'var(--blue)', 'var(--orange)', 'var(--orange)', 'var(--green)', 'var(--green)'];
-  document.getElementById('sd-days').innerHTML = days.map((d, i) => `
-    <div class="day-card" style="border-color:${colors[i]}20; border-top:3px solid ${colors[i]};">
-      <div class="day-num" style="color:${colors[i]}">${d.label}</div>
+  document.getElementById('sd-days').innerHTML = days.map(d => `
+    <div class="day-card" style="border-top:3px solid ${d.color};">
+      <div class="day-label" style="color:${d.color};">${d.label}</div>
       <h4>${d.title}</h4>
       <ul>${d.tasks.map(t => `<li>${t}</li>`).join('')}</ul>
-    </div>
-  `).join('');
+    </div>`).join('');
   document.getElementById('sd-output').style.display = 'block';
 }
 
-function getDateStr(base, offsetDays) {
+function fmt(base, offset) {
   const d = new Date(base);
-  d.setDate(d.getDate() + offsetDays);
-  return d.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'});
+  d.setDate(d.getDate() + offset);
+  return d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
 }
 
-// Set today's date default
-document.addEventListener('DOMContentLoaded', () => {
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('sd-date').value = today;
-});
-
-// ────────────────────────────────
+// ════════════════════════════════
 // Utilities
-// ────────────────────────────────
+// ════════════════════════════════
 function switchTab(group, id, btn) {
-  const panel = btn.closest('.tk-card');
-  panel.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  panel.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  const card = btn.closest('.tk-card');
+  card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById(group + '-' + id).classList.add('active');
 }
 
-function copyText(elementId, btn) {
-  const el = document.getElementById(elementId);
-  const text = el.textContent;
+function copyText(id, btn) {
+  const text = document.getElementById(id).textContent;
   navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = '✅ Copied!';
-    btn.classList.add('copied');
+    btn.textContent = '✅ Copied!'; btn.classList.add('copied');
     setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
@@ -1292,11 +1260,31 @@ function copyText(elementId, btn) {
 function copyScript(btn) {
   const text = btn.previousElementSibling.textContent;
   navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = '✅ Copied!';
-    btn.classList.add('copied');
+    btn.textContent = '✅ Copied!'; btn.classList.add('copied');
     setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
+
+function printSection() {
+  window.print();
+}
+
+// ════════════════════════════════
+// Init — restore saved inputs
+// ════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Restore all localStorage-saved inputs
+  ['pc','tg','db','ai','pd','ms','sd'].forEach(loadLS);
+  // Set today's date default for 7-day plan if empty
+  const sdDate = document.getElementById('sd-date');
+  if (sdDate && !sdDate.value) sdDate.value = new Date().toISOString().split('T')[0];
+  // Re-run calculators if values were restored
+  calcPrice();
+  calcPriceDrop();
+  // Restore measurement fields if category was saved
+  const msCat = document.getElementById('ms-category');
+  if (msCat && msCat.value) loadMeasurements();
+});
 </script>
 </body>
 </html>
