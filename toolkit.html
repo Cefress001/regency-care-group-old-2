@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SellerKit — Toolkit</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="tk-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="tk-sidebar">
+    <div class="tk-brand">
+      <a href="index.html" class="logo">Seller<span>Kit</span></a>
+      <div class="tagline">Your selling toolkit</div>
+    </div>
+    <nav class="tk-nav">
+      <div class="tk-nav-section">Overview</div>
+      <div class="tk-nav-item active" data-panel="home" onclick="showPanel('home')">
+        <span class="nav-icon">🏠</span>All Tools
+      </div>
+      <div class="tk-nav-section">Listing</div>
+      <div class="tk-nav-item" data-panel="pricing" onclick="showPanel('pricing')">
+        <span class="nav-icon">💰</span>Pricing Calc
+      </div>
+      <div class="tk-nav-item" data-panel="titles" onclick="showPanel('titles')">
+        <span class="nav-icon">✍️</span>Title Gen
+      </div>
+      <div class="tk-nav-item" data-panel="description" onclick="showPanel('description')">
+        <span class="nav-icon">📝</span>Description
+      </div>
+      <div class="tk-nav-item" data-panel="aiprompt" onclick="showPanel('aiprompt')">
+        <span class="nav-icon">🤖</span>AI Prompt
+      </div>
+      <div class="tk-nav-section">Buyers</div>
+      <div class="tk-nav-item" data-panel="scripts" onclick="showPanel('scripts')">
+        <span class="nav-icon">🤝</span>Scripts
+      </div>
+      <div class="tk-nav-item" data-panel="scam" onclick="showPanel('scam')">
+        <span class="nav-icon">🛡️</span>Scam Check
+      </div>
+      <div class="tk-nav-item" data-panel="pickup" onclick="showPanel('pickup')">
+        <span class="nav-icon">📍</span>Pickup Msgs
+      </div>
+      <div class="tk-nav-section">Planning</div>
+      <div class="tk-nav-item" data-panel="pricedrop" onclick="showPanel('pricedrop')">
+        <span class="nav-icon">📉</span>Price Drop
+      </div>
+      <div class="tk-nav-item" data-panel="measurements" onclick="showPanel('measurements')">
+        <span class="nav-icon">📐</span>Measurements
+      </div>
+      <div class="tk-nav-item" data-panel="photos" onclick="showPanel('photos')">
+        <span class="nav-icon">📸</span>Photo List
+      </div>
+      <div class="tk-nav-item" data-panel="sevenday" onclick="showPanel('sevenday')">
+        <span class="nav-icon">🗓️</span>7-Day Plan
+      </div>
+      <div class="tk-nav-item" data-panel="audit" onclick="showPanel('audit')">
+        <span class="nav-icon">🔍</span>Listing Audit
+      </div>
+      <div class="tk-nav-item" data-panel="tracker" onclick="showPanel('tracker')">
+        <span class="nav-icon">📊</span>Sale Tracker
+      </div>
+    </nav>
+    <div class="tk-nav-footer">
+      <a href="index.html">← Back to site</a>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="tk-main">
+
+    <!-- ══ HOME DASHBOARD ══ -->
+    <div class="tk-panel active" id="panel-home">
+      <div class="panel-header">
+        <h2>🏠 All Tools</h2>
+        <div class="subtitle">Pick a tool to get started. Use them in order or jump to what you need.</div>
+      </div>
+
+      <div class="tk-card" style="margin-bottom:.75rem; background:linear-gradient(135deg,#eff6ff,#f0fdf4);">
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+          <div style="font-size:1.5rem;">💡</div>
+          <div>
+            <strong style="font-size:.9rem;">Selling something new?</strong>
+            <div style="font-size:.82rem;color:var(--gray-600);margin-top:.1rem;">
+              Start with <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('pricing')">Pricing Calc</span> →
+              then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('titles')">Title Gen</span> →
+              then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('description')">Description</span>.
+              Takes about 10 minutes total.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:.75rem; padding: .6rem .9rem; background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-sm); font-size:.78rem; color:var(--gray-500);">
+        📌 Your inputs are saved automatically — close and reopen this page and your work will be here.
+      </div>
+
+      <div class="home-grid">
+        <div class="home-tool-card" onclick="showPanel('pricing')">
+          <div class="ht-icon">💰</div>
+          <h4>Pricing Calc</h4>
+          <p>Ideal price, quick-flip, and floor — from a formula, not a guess</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('titles')">
+          <div class="ht-icon">✍️</div>
+          <h4>Title Generator</h4>
+          <p>3 search-optimized listing titles generated instantly</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('description')">
+          <div class="ht-icon">📝</div>
+          <h4>Description Builder</h4>
+          <p>Fill a form, get buyer-ready listing copy in 2 minutes</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('aiprompt')">
+          <div class="ht-icon">🤖</div>
+          <h4>AI Listing Prompt</h4>
+          <p>Copy-paste prompt for ChatGPT — polished listing in one paste</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('scripts')">
+          <div class="ht-icon">🤝</div>
+          <h4>Negotiation Scripts</h4>
+          <p>Ready responses for lowballs, no-shows, trades, and more</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('scam')">
+          <div class="ht-icon">🛡️</div>
+          <h4>Scam Checklist</h4>
+          <p>12 red flags with a live safety score before every meetup</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('pickup')">
+          <div class="ht-icon">📍</div>
+          <h4>Pickup Messages</h4>
+          <p>Confirm, remind, and thank buyers — all copy-paste</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('pricedrop')">
+          <div class="ht-icon">📉</div>
+          <h4>Price Drop Schedule</h4>
+          <p>Exact table of when and how much to drop based on your deadline</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('measurements')">
+          <div class="ht-icon">📐</div>
+          <h4>Measurement Sheet</h4>
+          <p>Category fields → formatted text buyers can use instantly</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('photos')">
+          <div class="ht-icon">📸</div>
+          <h4>Photo Checklist</h4>
+          <p>Category-specific shot list with live completion score</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('sevenday')">
+          <div class="ht-icon">🗓️</div>
+          <h4>7-Day Plan</h4>
+          <p>Personalized day-by-day action plan to close the sale</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('audit')">
+          <div class="ht-icon">🔍</div>
+          <h4>Listing Audit</h4>
+          <p>Paste your listing — get a scored quality report with specific fixes</p>
+        </div>
+        <div class="home-tool-card" onclick="showPanel('tracker')">
+          <div class="ht-icon">📊</div>
+          <h4>Sale Tracker</h4>
+          <p>Track every item you list — revenue, sell rate, best platform</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 1. PRICING CALCULATOR ══ -->
+    <div class="tk-panel" id="panel-pricing">
+      <div class="panel-header">
+        <h2>💰 Pricing Calculator</h2>
+        <div class="subtitle">Set a data-backed price — not a gut-feeling guess.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Item Details</h3>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Item Name</label>
+            <input type="text" id="pc-name" placeholder="e.g. Samsung 65″ TV" oninput="calcPrice(); saveLS('pc')">
+          </div>
+          <div class="form-row">
+            <label>Original Retail Price ($)</label>
+            <input type="number" id="pc-retail" placeholder="e.g. 800" oninput="calcPrice(); saveLS('pc')">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Condition</label>
+            <select id="pc-condition" onchange="calcPrice(); saveLS('pc')">
+              <option value="">Select condition</option>
+              <option value="0.95">New / Never Used (95%)</option>
+              <option value="0.75">Like New / Barely Used (75%)</option>
+              <option value="0.55">Good — Minor Wear (55%)</option>
+              <option value="0.35">Fair — Visible Wear (35%)</option>
+              <option value="0.20">Poor — Works But Rough (20%)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Local Demand</label>
+            <select id="pc-demand" onchange="calcPrice(); saveLS('pc')">
+              <option value="">Select demand</option>
+              <option value="1.15">High — Lots of buyers searching</option>
+              <option value="1.0">Normal — Steady interest</option>
+              <option value="0.85">Low — Niche / slow market</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Category (for tips)</label>
+          <select id="pc-category" onchange="calcPrice(); saveLS('pc')">
+            <option value="">Select category</option>
+            <option value="electronics">Electronics</option>
+            <option value="furniture">Furniture</option>
+            <option value="clothing">Clothing / Shoes</option>
+            <option value="tools">Tools / Hardware</option>
+            <option value="toys">Toys / Kids</option>
+            <option value="sports">Sports / Outdoors</option>
+            <option value="appliances">Appliances</option>
+            <option value="collectibles">Collectibles</option>
+          </select>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="calcPrice(true)">💰 Calculate My Price →</button>
+          <button class="btn btn-outline btn-sm" onclick="resetPricing()">Reset</button>
+        </div>
+        <div class="empty-hint" id="pc-empty">Fill in retail price, condition and demand — then hit Calculate.</div>
+
+        <div id="pc-results" style="display:none;">
+          <div class="results-row">
+            <div class="result-chip ideal">
+              <div class="rc-label">Ask First</div>
+              <div class="rc-val" id="pc-ideal">—</div>
+              <div class="rc-sub">List at this price first</div>
+            </div>
+            <div class="result-chip quick">
+              <div class="rc-label">Quick Flip</div>
+              <div class="rc-val" id="pc-quickflip">—</div>
+              <div class="rc-sub">Accept to sell same day</div>
+            </div>
+            <div class="result-chip floor">
+              <div class="rc-label">Floor Price</div>
+              <div class="rc-val" id="pc-floor">—</div>
+              <div class="rc-sub">Never go below this</div>
+            </div>
+          </div>
+          <div class="price-viz">
+            <div class="price-viz-label">Price Range Visualizer</div>
+            <div class="price-viz-track">
+              <div class="price-viz-fill" id="pc-viz-fill" style="width:65%;"></div>
+            </div>
+            <div class="price-viz-markers">
+              <span id="pc-viz-min">Floor</span>
+              <span id="pc-viz-mid">Quick Flip</span>
+              <span id="pc-viz-max">Ask Price</span>
+            </div>
+          </div>
+          <div id="pc-selltime" class="sell-time-block" style="display:none;">
+            <div>
+              <div class="sell-time-num" id="pc-st-days">—</div>
+              <div class="sell-time-label">Est. Days to Sell</div>
+            </div>
+            <div class="sell-time-note" id="pc-st-note"></div>
+          </div>
+          <div id="pc-comparables" style="display:none;margin-top:.5rem;">
+            <a class="comparables-link" id="pc-comp-link" target="_blank" rel="noopener">🔎 Research comparable sold listings on eBay →</a>
+          </div>
+
+          <div class="fee-block" id="pc-fees">
+            <div class="fee-head">
+              <strong>What you actually pocket</strong>
+              <span class="fee-note">At your Ask First price, after platform fees</span>
+            </div>
+            <div class="fee-rows" id="pc-fee-rows"></div>
+          </div>
+          <div class="tip-callout" id="pc-tip" style="display:none;">
+            <span class="tip-icon">💡</span>
+            <div class="tip-body"><h4>Category Tip</h4><p id="pc-tip-text"></p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Offer Helper</h3>
+        <div style="font-size:.82rem;color:var(--gray-500);margin-bottom:.85rem;">Enter a buyer's offer to instantly see your best counter and a ready-to-send script.</div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Buyer's Offer ($)</label>
+            <input type="number" id="pc-offer-in" placeholder="e.g. 120" oninput="calcOffer()">
+          </div>
+          <div class="form-row">
+            <label>Your Floor ($) <span style="font-weight:400;color:var(--gray-400)">(auto-filled if calculated above)</span></label>
+            <input type="number" id="pc-offer-floor" placeholder="auto" oninput="calcOffer()">
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-primary btn-sm" onclick="calcOffer()">🤝 Get My Counter →</button>
+        </div>
+        <div id="pc-offer-result" style="display:none;" class="offer-calc-result">
+          <div id="pc-offer-rec" class="offer-rec"></div>
+          <div class="offer-counter-row" id="pc-offer-counter"></div>
+          <div class="output-header" style="margin-top:.75rem;">
+            <strong>Ready-to-send script</strong>
+            <button class="copy-btn" onclick="copyText('pc-offer-script',this)">📋 Copy</button>
+          </div>
+          <div class="output-box" id="pc-offer-script" style="max-height:120px;"></div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>The Formula</h3>
+        <div style="font-family:monospace; font-size:.875rem; background:var(--gray-50); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--gray-200); line-height:2;">
+          Ask Price = Retail × Condition% × Demand Factor<br>
+          Quick Flip = Ask × 0.80<br>
+          Floor = Ask × 0.65
+        </div>
+        <div style="margin-top:.85rem; font-size:.82rem; color:var(--gray-500); display:grid; grid-template-columns:1fr 1fr; gap:.35rem .5rem;">
+          <span><strong>New:</strong> 95% &nbsp;·&nbsp; <strong>Like New:</strong> 75%</span>
+          <span><strong>Good:</strong> 55% &nbsp;·&nbsp; <strong>Fair:</strong> 35%</span>
+          <span><strong>High demand:</strong> ×1.15</span>
+          <span><strong>Low demand:</strong> ×0.85</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 2. TITLE GENERATOR ══ -->
+    <div class="tk-panel" id="panel-titles">
+      <div class="panel-header">
+        <h2>✍️ Listing Title Generator</h2>
+        <div class="subtitle">3 search-optimized titles generated from your item details.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Platform</h3>
+        <div style="font-size:.8rem;color:var(--gray-500);margin-bottom:.55rem;">Select where you're posting — sets the character limit for each title.</div>
+        <div class="platform-pills">
+          <button class="platform-pill active" onclick="selectPlatform('Facebook',this)">Facebook Marketplace</button>
+          <button class="platform-pill" onclick="selectPlatform('OfferUp',this)">OfferUp</button>
+          <button class="platform-pill" onclick="selectPlatform('Craigslist',this)">Craigslist</button>
+          <button class="platform-pill" onclick="selectPlatform('Mercari',this)">Mercari</button>
+          <button class="platform-pill" onclick="selectPlatform('General',this)">General</button>
+        </div>
+        <div class="platform-limit" id="tg-platform-note">Limit: 100 characters (Facebook Marketplace)</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="form-row">
+          <label>Item Name *</label>
+          <input type="text" id="tg-item" placeholder="e.g. KitchenAid Stand Mixer" oninput="saveLS('tg')">
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Brand (optional)</label>
+            <input type="text" id="tg-brand" placeholder="e.g. KitchenAid" oninput="saveLS('tg')">
+          </div>
+          <div class="form-row">
+            <label>Model / Size / Color</label>
+            <input type="text" id="tg-model" placeholder="e.g. 5-Qt, Empire Red" oninput="saveLS('tg')">
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Condition</label>
+            <select id="tg-condition" onchange="saveLS('tg')">
+              <option value="New">New</option>
+              <option value="Like New" selected>Like New</option>
+              <option value="Excellent">Excellent</option>
+              <option value="Good">Good</option>
+              <option value="Works Great">Works Great</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Category (for keyword suggestions)</label>
+            <select id="tg-cat" onchange="loadKwChips(this.value); saveLS('tg')">
+              <option value="">Select category</option>
+              <option value="electronics">Electronics</option>
+              <option value="furniture">Furniture</option>
+              <option value="clothing">Clothing / Shoes</option>
+              <option value="tools">Tools / Hardware</option>
+              <option value="toys">Toys / Kids</option>
+              <option value="sports">Sports / Outdoors</option>
+              <option value="appliances">Appliances</option>
+              <option value="collectibles">Collectibles</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Key Selling Point</label>
+          <input type="text" id="tg-feature" placeholder="e.g. all attachments included" oninput="saveLS('tg')">
+          <div class="kw-chips" id="tg-kw-chips"></div>
+        </div>
+        <button class="btn btn-primary" onclick="genTitles()">Generate 3 Titles →</button>
+
+        <div id="tg-output" style="display:none; margin-top:1.5rem;">
+          <div style="display:flex;flex-direction:column;gap:.75rem;">
+            <div class="tk-card" style="padding:1rem;margin-bottom:0;border:1.5px solid var(--gray-200);">
+              <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:.35rem;">Option 1 — Search-First</div>
+              <div id="tg-t1" style="font-size:.95rem;font-weight:700;line-height:1.5;"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;">
+                <span class="char-count" id="tg-c1"></span>
+                <button class="copy-btn" onclick="copyText('tg-t1',this)">📋 Copy</button>
+              </div>
+            </div>
+            <div class="tk-card" style="padding:1rem;margin-bottom:0;border:1.5px solid var(--gray-200);">
+              <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--green-dark);margin-bottom:.35rem;">Option 2 — Value-Forward</div>
+              <div id="tg-t2" style="font-size:.95rem;font-weight:700;line-height:1.5;"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;">
+                <span class="char-count" id="tg-c2"></span>
+                <button class="copy-btn" onclick="copyText('tg-t2',this)">📋 Copy</button>
+              </div>
+            </div>
+            <div class="tk-card" style="padding:1rem;margin-bottom:0;border:1.5px solid var(--gray-200);">
+              <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#92400E;margin-bottom:.35rem;">Option 3 — Urgency</div>
+              <div id="tg-t3" style="font-size:.95rem;font-weight:700;line-height:1.5;"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;">
+                <span class="char-count" id="tg-c3"></span>
+                <button class="copy-btn" onclick="copyText('tg-t3',this)">📋 Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Title Best Practices</h3>
+        <div style="display:flex;flex-direction:column;gap:.45rem;font-size:.875rem;color:var(--gray-700);">
+          <div>✓ Lead with Brand + Item — that's what buyers search for</div>
+          <div>✓ Include size, color, or model when buyers filter by it</div>
+          <div>✓ Add condition as a keyword ("like new TV" gets searched)</div>
+          <div>✓ Target 50–80 characters — readable on mobile</div>
+          <div>✗ No ALL CAPS — looks like spam, hurts trust</div>
+          <div>✗ No vague words like "nice" or "great deal" — they mean nothing in search</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 3. DESCRIPTION BUILDER ══ -->
+    <div class="tk-panel" id="panel-description">
+      <div class="panel-header">
+        <h2>📝 Description Builder</h2>
+        <div class="subtitle">Fill in the form. Get a professional listing description in 2 minutes.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="form-grid">
+          <div class="form-row"><label>Item Name *</label><input type="text" id="db-item" placeholder="KitchenAid Stand Mixer" oninput="saveLS('db')"></div>
+          <div class="form-row"><label>Brand</label><input type="text" id="db-brand" placeholder="KitchenAid" oninput="saveLS('db')"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row"><label>Model / Series</label><input type="text" id="db-model" placeholder="Artisan 5-Qt" oninput="saveLS('db')"></div>
+          <div class="form-row">
+            <label>Condition</label>
+            <select id="db-condition" onchange="saveLS('db')">
+              <option value="Brand new, never used">Brand new, never used</option>
+              <option value="Like new — barely used, no scratches">Like new — barely used</option>
+              <option value="Excellent — minor signs of use, fully functional">Excellent — minor use</option>
+              <option value="Good — some wear visible but works perfectly">Good — some wear, works perfectly</option>
+              <option value="Fair — noticeable wear, fully functional">Fair — noticeable wear</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Key Features (one per line)</label>
+          <textarea id="db-features" placeholder="5-quart stainless bowl&#10;10 speed settings&#10;Tilt-head design&#10;Includes 3 attachments" oninput="saveLS('db')"></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-row"><label>Dimensions (optional)</label><input type="text" id="db-dims" placeholder='14"H × 8"W × 14"D' oninput="saveLS('db')"></div>
+          <div class="form-row"><label>What's Included</label><input type="text" id="db-includes" placeholder="Original box, manual, all attachments" oninput="saveLS('db')"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row"><label>Reason for Selling (builds trust)</label><input type="text" id="db-reason" placeholder="Upgrading / Moving / Got as a gift" oninput="saveLS('db')"></div>
+          <div class="form-row">
+            <label>Payment / Pickup</label>
+            <select id="db-pickup" onchange="saveLS('db')">
+              <option value="Local pickup only — no shipping.">Local pickup only</option>
+              <option value="Cash only — no Venmo, PayPal, or checks.">Cash only</option>
+              <option value="Cash or Venmo accepted.">Cash or Venmo</option>
+              <option value="Will meet at a public location for safety.">Public meetup</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label>Bundle Deal (optional)</label><input type="text" id="db-bundle" placeholder="Buy all three kitchen items for $100" oninput="saveLS('db')"></div>
+        <button class="btn btn-primary" onclick="buildDescription()">Build Description →</button>
+      </div>
+
+      <div id="db-output" style="display:none;" class="tk-card">
+        <div class="output-header">
+          <strong>Your Listing Description</strong>
+          <button class="copy-btn" onclick="copyText('db-result',this)">📋 Copy All</button>
+        </div>
+        <div class="output-box" id="db-result"></div>
+        <div class="copy-btn-row">
+          <button class="print-btn" onclick="printSection('db-result')">🖨️ Print</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 4. AI PROMPT ══ -->
+    <div class="tk-panel" id="panel-aiprompt">
+      <div class="panel-header">
+        <h2>🤖 AI Listing Prompt</h2>
+        <div class="subtitle">Copy this prompt into ChatGPT (free) to generate a polished listing in seconds.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Fill In Your Item</h3>
+        <div class="form-grid">
+          <div class="form-row"><label>Item Name *</label><input type="text" id="ai-item" placeholder="Sony 65-inch 4K TV" oninput="saveLS('ai')"></div>
+          <div class="form-row"><label>Brand & Model</label><input type="text" id="ai-brand" placeholder="Sony X90K" oninput="saveLS('ai')"></div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Condition</label>
+            <select id="ai-condition" onchange="saveLS('ai')">
+              <option>New</option><option>Like New</option><option>Good</option><option>Fair</option>
+            </select>
+          </div>
+          <div class="form-row"><label>Asking Price ($)</label><input type="number" id="ai-price" placeholder="450" oninput="saveLS('ai')"></div>
+        </div>
+        <div class="form-row">
+          <label>Key Details (features, included accessories, any defects)</label>
+          <textarea id="ai-details" placeholder="65-inch, 4K HDR, Google TV, remote included, no stand. Small scratch on back, not visible when mounted." oninput="saveLS('ai')"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="genAIPrompt()">Build ChatGPT Prompt →</button>
+      </div>
+
+      <div id="ai-output" style="display:none;" class="tk-card">
+        <div class="output-header">
+          <strong>Your ChatGPT Prompt — copy and paste this</strong>
+          <button class="copy-btn" onclick="copyText('ai-prompt-result',this)">📋 Copy Prompt</button>
+        </div>
+        <div class="output-box" id="ai-prompt-result"></div>
+        <div class="info-callout">
+          <strong>How to use:</strong> Open ChatGPT.com (free), paste this prompt, and press Enter. Copy the generated listing and paste it into your marketplace. Takes about 30 seconds.
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Bonus Quick Prompts</h3>
+        <div style="display:flex;flex-direction:column;gap:.85rem;">
+          <div>
+            <div style="font-size:.75rem;font-weight:700;color:var(--gray-500);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.5px;">Polish my draft:</div>
+            <div class="output-box" id="bp1" style="font-size:.82rem;">"Rewrite this marketplace listing to sound more appealing and professional. Keep all facts accurate. Here is my draft: [paste your description]"</div>
+            <div class="copy-btn-row"><button class="copy-btn" onclick="copyText('bp1',this)">📋 Copy</button></div>
+          </div>
+          <div>
+            <div style="font-size:.75rem;font-weight:700;color:var(--gray-500);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.5px;">Suggest a price range:</div>
+            <div class="output-box" id="bp2" style="font-size:.82rem;">"I'm selling a [ITEM] in [CONDITION] condition on Facebook Marketplace in [CITY]. Original retail price was $[PRICE]. What should I list it for, and why?"</div>
+            <div class="copy-btn-row"><button class="copy-btn" onclick="copyText('bp2',this)">📋 Copy</button></div>
+          </div>
+          <div>
+            <div style="font-size:.75rem;font-weight:700;color:var(--gray-500);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.5px;">Write a counter-offer:</div>
+            <div class="output-box" id="bp3" style="font-size:.82rem;">"I'm selling a [ITEM] for $[MY PRICE]. A buyer offered $[THEIR OFFER]. Write a polite but firm counter-offer message proposing $[COUNTER] as a compromise."</div>
+            <div class="copy-btn-row"><button class="copy-btn" onclick="copyText('bp3',this)">📋 Copy</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 5. NEGOTIATION SCRIPTS ══ -->
+    <div class="tk-panel" id="panel-scripts">
+      <div class="panel-header">
+        <h2>🤝 Negotiation Scripts</h2>
+        <div class="subtitle">Ready-to-send responses for every buyer situation. Copy, fill in the brackets, send.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('scripts','offercalc',this)">💡 Offer Calculator</button>
+          <button class="tab-btn" onclick="switchTab('scripts','lowball',this)">Lowball Offer</button>
+          <button class="tab-btn" onclick="switchTab('scripts','available',this)">Still Available?</button>
+          <button class="tab-btn" onclick="switchTab('scripts','noshow',this)">No-Show</button>
+          <button class="tab-btn" onclick="switchTab('scripts','trade',this)">Trade Request</button>
+          <button class="tab-btn" onclick="switchTab('scripts','haggle',this)">Persistent Haggler</button>
+          <button class="tab-btn" onclick="switchTab('scripts','sold',this)">Already Sold</button>
+        </div>
+
+        <div class="tab-content active" id="scripts-offercalc">
+          <div style="font-size:.85rem;color:var(--gray-600);margin-bottom:1rem;">Enter the numbers — get an instant recommendation and a ready-to-send response.</div>
+          <div class="form-grid">
+            <div class="form-row">
+              <label>Your Asking Price ($)</label>
+              <input type="number" id="oc-asking" placeholder="e.g. 200" oninput="calcOfferScript()">
+            </div>
+            <div class="form-row">
+              <label>Buyer's Offer ($)</label>
+              <input type="number" id="oc-offer" placeholder="e.g. 140" oninput="calcOfferScript()">
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Your Floor Price ($) <span style="font-weight:400;color:var(--gray-400)">— lowest you'll accept</span></label>
+            <input type="number" id="oc-floor" placeholder="Leave blank to auto-set at 65% of asking" oninput="calcOfferScript()">
+          </div>
+          <div id="oc-result" style="display:none;" class="offer-calc-result">
+            <div id="oc-rec" class="offer-rec"></div>
+            <div id="oc-counter-row" class="offer-counter-row"></div>
+            <div class="output-header" style="margin-top:.85rem;">
+              <strong>Ready-to-send script</strong>
+              <button class="copy-btn" onclick="copyText('oc-script',this)">📋 Copy</button>
+            </div>
+            <div class="output-box" id="oc-script" style="max-height:130px;"></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="scripts-lowball">
+          <div class="script-grid">
+            <div class="script-card"><h4>Polite Counter ✓</h4><p>"Thanks for the offer! I'm firm at $[PRICE] for now — it's priced fairly based on condition and similar items selling in the area. Happy to hold it for you if that works?"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Meet in the Middle</h4><p>"Appreciate the offer — I can't go quite that low. Best I can do is $[COUNTER]. That's my bottom line. Let me know if you'd like to make it happen!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Firm No</h4><p>"Thanks for reaching out! The price is $[PRICE] firm. I'll let you know if that changes — but it's going to the first person at that price."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="scripts-available">
+          <div class="script-grid">
+            <div class="script-card"><h4>Quick Qualifier</h4><p>"Yes, still available! Are you able to pick up this week? Asking price is $[PRICE]."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>With Urgency</h4><p>"Still available! I have a few people looking at it — if you're interested, I can hold it 24 hours with a confirmed pickup time."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Qualifying Question</h4><p>"Yes, still here! Are you local to [AREA]? And do you have a vehicle that fits it? Just want to make sure it works before we set a time."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="scripts-noshow">
+          <div class="script-grid">
+            <div class="script-card"><h4>30-Min Check-In</h4><p>"Hey — just checking, we had a pickup scheduled for [TIME]. Still planning to come? I can hold it another 30 minutes before reaching out to other buyers."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Re-List Notice</h4><p>"Hi! Since you weren't able to make it, I'm opening it back up to other buyers. Feel free to reach out if you'd still like it — first to confirm a new time gets it."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Second Chance</h4><p>"No worries — things come up! Still interested? I have [DAY/TIME] available. Confirm and I'll hold it."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="scripts-trade">
+          <div class="script-grid">
+            <div class="script-card"><h4>Polite Decline</h4><p>"Thanks for the offer! I'm looking for cash only right now — not set up for trades. If you're able to pay the asking price, I'd love to make it happen!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Open to Hearing It</h4><p>"What are you looking to trade? I'm open to the right offer. Cash is preferred, but I'll take a look at what you have."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="scripts-haggle">
+          <div class="script-grid">
+            <div class="script-card"><h4>Final Offer Line</h4><p>"I appreciate the interest, but $[PRICE] is truly my final offer. I'm not in a rush, and other buyers have shown interest at this price. Let me know if you'd like it!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Social Proof Close</h4><p>"I've had a lot of interest at this price — going with whoever commits first. If $[PRICE] works, I can confirm a pickup time right now."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="scripts-sold">
+          <div class="script-grid">
+            <div class="script-card"><h4>Already Sold</h4><p>"Hi! This one just sold — sorry about that. I do have [OTHER ITEM] listed as well if you're interested. Thanks for reaching out!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Add to Waitlist</h4><p>"This one is spoken for, but sometimes deals fall through. Want me to add you to my list? I'll message you immediately if it becomes available."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 6. SCAM CHECKLIST ══ -->
+    <div class="tk-panel" id="panel-scam">
+      <div class="panel-header">
+        <h2>🛡️ Scam-Warning Checklist</h2>
+        <div class="subtitle">Run every buyer through these 12 checks before you hand anything over.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="safety-meter">
+          <div>
+            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray-500);margin-bottom:.2rem;">Safety Score</div>
+            <div class="safety-score" id="scam-score">0/12</div>
+          </div>
+          <div style="flex:1;">
+            <div class="safety-bar"><div class="safety-fill" id="scam-fill" style="width:0%;background:var(--red);"></div></div>
+            <div class="safety-verdict" id="scam-verdict" style="color:var(--gray-500);">Check off the items you've verified</div>
+          </div>
+        </div>
+
+        <div class="checklist-section">
+          <div class="checklist-section-title">🔴 Payment Red Flags</div>
+          <ul class="checklist">
+            <li><input type="checkbox" id="sc1" onchange="updateScamScore()"><label for="sc1">Buyer is NOT asking to pay by check, money order, or wire transfer</label></li>
+            <li><input type="checkbox" id="sc2" onchange="updateScamScore()"><label for="sc2">Buyer is NOT offering to pay "extra" for shipping or holding</label></li>
+            <li><input type="checkbox" id="sc3" onchange="updateScamScore()"><label for="sc3">Buyer is NOT asking you to send them money for any reason</label></li>
+            <li><input type="checkbox" id="sc4" onchange="updateScamScore()"><label for="sc4">If Venmo/Zelle — payment shows as "completed" in YOUR app before you release the item</label></li>
+          </ul>
+        </div>
+        <div class="checklist-section">
+          <div class="checklist-section-title">🟡 Identity Red Flags</div>
+          <ul class="checklist">
+            <li><input type="checkbox" id="sc5" onchange="updateScamScore()"><label for="sc5">Buyer's profile has been active for more than 30 days</label></li>
+            <li><input type="checkbox" id="sc6" onchange="updateScamScore()"><label for="sc6">Profile has reviews, posts, or a real photo — not a stock image</label></li>
+            <li><input type="checkbox" id="sc7" onchange="updateScamScore()"><label for="sc7">Buyer is NOT messaging from a brand-new account with zero history</label></li>
+            <li><input type="checkbox" id="sc8" onchange="updateScamScore()"><label for="sc8">Communication is direct — no "my driver/assistant will pick up for me"</label></li>
+          </ul>
+        </div>
+        <div class="checklist-section">
+          <div class="checklist-section-title">🟢 Pickup Safety</div>
+          <ul class="checklist">
+            <li><input type="checkbox" id="sc9" onchange="updateScamScore()"><label for="sc9">Meeting in a public place OR someone is home with you</label></li>
+            <li><input type="checkbox" id="sc10" onchange="updateScamScore()"><label for="sc10">You will NOT hand over the item until payment is confirmed in full</label></li>
+            <li><input type="checkbox" id="sc11" onchange="updateScamScore()"><label for="sc11">You have NOT shared sensitive info (SSN, bank account, full address to a stranger)</label></li>
+            <li><input type="checkbox" id="sc12" onchange="updateScamScore()"><label for="sc12">Your gut says this is a real person — nothing feels off</label></li>
+          </ul>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="analyzeScamRisk()">🛡️ Analyze This Buyer →</button>
+          <button class="btn btn-outline btn-sm" onclick="resetChecklist()">Reset</button>
+        </div>
+
+        <div id="scam-verdict-card" style="display:none;"></div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Common Scam Patterns</h3>
+        <div class="script-grid">
+          <div class="script-card"><h4>Overpayment Check</h4><p>Buyer sends a check for MORE than the price, asks you to deposit and wire back the difference. Check bounces days later — you lose the item and the money.</p></div>
+          <div class="script-card"><h4>Fake Payment Screenshot</h4><p>Buyer sends a Venmo/PayPal screenshot that looks real. Only release an item when the payment shows as completed in YOUR actual account — never based on a screenshot.</p></div>
+          <div class="script-card"><h4>Shipping Scam</h4><p>Buyer wants you to ship first, pays "after you ship." You ship, payment never arrives. Full payment before shipping, always — no exceptions.</p></div>
+          <div class="script-card"><h4>Google Voice Code Scam</h4><p>Buyer asks for your number to "verify," sends you a Google Voice code. They're claiming your number for fraud. Never share any verification code with a buyer.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 7. PICKUP MESSAGES ══ -->
+    <div class="tk-panel" id="panel-pickup">
+      <div class="panel-header">
+        <h2>📍 Pickup Message Templates</h2>
+        <div class="subtitle">Pre-written messages for every stage. Fill in the brackets and send.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('pickup','confirm',this)">Confirm Pickup</button>
+          <button class="tab-btn" onclick="switchTab('pickup','address',this)">Share Address</button>
+          <button class="tab-btn" onclick="switchTab('pickup','reminder',this)">Day-Of Reminder</button>
+          <button class="tab-btn" onclick="switchTab('pickup','thankyou',this)">After Sale</button>
+        </div>
+
+        <div class="tab-content active" id="pickup-confirm">
+          <div class="script-grid">
+            <div class="script-card"><h4>Initial Confirmation</h4><p>"Sounds good! Let's plan for [DAY] at [TIME]. Once you confirm, I'll send the address. Payment is $[PRICE] in cash / Venmo / Zelle. Does that work?"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>With Hold Policy</h4><p>"I can hold it until [DATE/TIME]. After that I'll need to open it to other buyers. Confirming pickup on your end? Just want to make sure before I turn others away."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>First Come First Served</h4><p>"I have a few people interested — goes to whoever confirms a pickup time first. Are you available [DAY] at [TIME] or [DAY] at [TIME]?"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="pickup-address">
+          <div class="script-grid">
+            <div class="script-card"><h4>Standard Address Share</h4><p>"Great — confirmed for [DAY] at [TIME]. Address is [ADDRESS]. Park on the street/driveway. I'll bring it out — just text me when you're close."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Public Meetup</h4><p>"I prefer to meet in a public spot — can we do [STARBUCKS/PARKING LOT] at [CROSS STREETS]? See you [DAY] at [TIME]!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Payment First Policy</h4><p>"Once payment is confirmed I'll send the address. Planning cash or Venmo/Zelle? If digital, send first and I'll confirm receipt before sharing. Sound good?"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="pickup-reminder">
+          <div class="script-grid">
+            <div class="script-card"><h4>Day-Before Reminder</h4><p>"Hey! Quick reminder — we're set for tomorrow ([DAY]) at [TIME] at [ADDRESS]. Still good? Let me know if anything changes."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Morning-Of Check-In</h4><p>"Good morning! Confirming our pickup today at [TIME]. Text me when you're on your way. Looking forward to it!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Running Late Buffer</h4><p>"No problem if you're running a bit late — just text me an updated ETA so I know to expect you. I'm flexible by about [30 MIN]."</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="pickup-thankyou">
+          <div class="script-grid">
+            <div class="script-card"><h4>Post-Sale Thank You</h4><p>"Thanks again! Hope you enjoy it. Feel free to reach out if you have any questions. Good luck!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+            <div class="script-card"><h4>Ask for a Rating</h4><p>"Thanks for the smooth transaction! If you have a moment, a positive rating on Marketplace means a lot to me. Hope to see you again!"</p><button class="copy-btn" onclick="copyScript(this)">📋 Copy</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 8. PRICE DROP SCHEDULE ══ -->
+    <div class="tk-panel" id="panel-pricedrop">
+      <div class="panel-header">
+        <h2>📉 Price Drop Schedule</h2>
+        <div class="subtitle">Know exactly when and how much to drop. No more guessing or random slashes.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="form-grid">
+          <div class="form-row"><label>Your Asking Price ($)</label><input type="number" id="pd-price" placeholder="200" oninput="calcPriceDrop(); saveLS('pd')"></div>
+          <div class="form-row">
+            <label>Deadline (days to sell)</label>
+            <select id="pd-deadline" onchange="calcPriceDrop(); saveLS('pd')">
+              <option value="">Select deadline</option>
+              <option value="7">7 days — urgent</option>
+              <option value="14">14 days — two weeks</option>
+              <option value="21">21 days — three weeks</option>
+              <option value="30">30 days — one month</option>
+              <option value="60">60 days — no rush</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row"><label>Floor Price — won't go below ($) — leave blank to auto-calculate</label><input type="number" id="pd-floor" placeholder="Auto-calculated at 45% of asking price" oninput="calcPriceDrop(); saveLS('pd')"></div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="calcPriceDrop(true)">📉 Build Drop Schedule →</button>
+        </div>
+        <div class="empty-hint" id="pd-empty">Enter your asking price and a deadline to generate the schedule.</div>
+
+        <div id="pd-results" style="display:none; margin-top:1rem;">
+          <div class="output-header">
+            <strong>Your Price Drop Schedule</strong>
+            <button class="copy-btn" onclick="exportDropICS()">📅 Add to Calendar</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="sched-table" id="pd-table">
+              <thead><tr><th>Day</th><th>Date</th><th>Action</th><th>Price</th><th>% of Original</th><th>Status</th></tr></thead>
+              <tbody id="pd-tbody"></tbody>
+            </table>
+          </div>
+          <div class="tip-callout" style="margin-top:1rem;">
+            <span class="tip-icon">💡</span>
+            <div class="tip-body">
+              <h4>Execution tip</h4>
+              <p>Edit your listing price exactly on the scheduled day — don't wait. Marketplace algorithms treat price edits as "recently updated" and show your item to fresh buyers. A Sunday evening price drop gets peak weekend traffic.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Price Drop Rules</h3>
+        <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.875rem;color:var(--gray-700);">
+          <div>✓ <strong>Drop in 10–15% steps</strong> — big enough to trigger re-engagement, small enough to protect value</div>
+          <div>✓ <strong>Drop on the same day of the week</strong> — Sunday evening sees peak buyer activity</div>
+          <div>✓ <strong>Wait until a negotiation is fully dead</strong> before dropping — never drop mid-deal</div>
+          <div>✓ <strong>Re-post after a big drop</strong> — fresh listing visibility = fresh buyer eyes</div>
+          <div>✗ <strong>Never drop more than twice in one week</strong> — signals desperation and invites lowball offers</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 9. MEASUREMENTS ══ -->
+    <div class="tk-panel" id="panel-measurements">
+      <div class="panel-header">
+        <h2>📐 Item Measurement Sheet</h2>
+        <div class="subtitle">Capture all dimensions buyers ask about before they ask. Print-ready.</div>
+      </div>
+
+      <div class="tk-card" id="print-measurements">
+        <div class="form-row"><label>Item Name</label><input type="text" id="ms-name" placeholder="e.g. IKEA Kallax Shelf" oninput="saveLS('ms')"></div>
+        <div class="form-row">
+          <label>Category</label>
+          <select id="ms-category" onchange="loadMeasurements(); saveLS('ms')">
+            <option value="">Select a category</option>
+            <option value="furniture">Furniture (sofa, table, dresser, desk)</option>
+            <option value="appliance">Large Appliance (fridge, washer, TV)</option>
+            <option value="clothing">Clothing</option>
+            <option value="shoes">Shoes</option>
+            <option value="bike">Bike / Bicycle</option>
+            <option value="box">Box / Container / Luggage</option>
+            <option value="art">Artwork / Frame / Mirror</option>
+            <option value="generic">Generic Item</option>
+          </select>
+        </div>
+        <div id="ms-fields" style="margin-top:1.25rem;display:none;">
+          <div class="meas-grid" id="ms-grid"></div>
+          <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="buildMeasurementText()">Build Copy-Paste Text →</button>
+            <button class="print-btn" onclick="window.print()">🖨️ Print Sheet</button>
+          </div>
+        </div>
+        <div id="ms-output" style="display:none;margin-top:1rem;">
+          <div class="output-header"><strong>Copy-Paste Measurement Text</strong><button class="copy-btn" onclick="copyText('ms-result',this)">📋 Copy</button></div>
+          <div class="output-box" id="ms-result"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 10. PHOTO CHECKLIST ══ -->
+    <div class="tk-panel" id="panel-photos">
+      <div class="panel-header">
+        <h2>📸 Photo Checklist</h2>
+        <div class="subtitle">Category-specific shot list. Never miss a photo that costs you a sale.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="form-row">
+          <label>Item Category</label>
+          <select id="ph-category" onchange="loadPhotoChecklist()">
+            <option value="">Select a category</option>
+            <option value="electronics">Electronics (TV, laptop, phone, camera)</option>
+            <option value="furniture">Furniture (couch, table, chair, bed)</option>
+            <option value="clothing">Clothing / Shoes</option>
+            <option value="appliances">Appliances (fridge, washer, microwave)</option>
+            <option value="tools">Tools / Power Tools</option>
+            <option value="vehicles">Vehicles / Bikes / Scooters</option>
+            <option value="collectibles">Collectibles / Art / Antiques</option>
+            <option value="kids">Kids / Toys / Baby Gear</option>
+          </select>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="loadPhotoChecklist(true)">📸 Load My Shot List →</button>
+          <button class="btn btn-outline btn-sm" id="ph-copy-btn" onclick="copyShotList(this)" style="display:none;">📋 Copy Shot List</button>
+          <button class="btn btn-outline btn-sm" id="ph-reset-btn" onclick="resetPhotoChecklist()" style="display:none;">Reset</button>
+        </div>
+        <div class="empty-hint" id="ph-empty">Pick a category to get the exact shots buyers expect.</div>
+
+        <div id="ph-list" style="display:none;margin-top:1rem;"></div>
+
+        <div id="ph-score" style="display:none;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--gray-200);">
+          <div class="progress-wrap">
+            <div style="font-size:1.3rem;font-weight:900;min-width:3rem;" id="ph-score-num">0%</div>
+            <div class="progress-bar"><div class="progress-fill" id="ph-progress" style="width:0%"></div></div>
+          </div>
+          <div id="ph-status" style="font-size:.82rem;color:var(--gray-500);margin-top:.35rem;">Check off photos as you take them</div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Universal Tips — Every Category</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem;font-size:.85rem;color:var(--gray-700);">
+          <div>✓ Natural light — near a window</div>
+          <div>✓ Clean background — clear floor or white wall</div>
+          <div>✓ Horizontal hold for wide items</div>
+          <div>✓ Fill the frame — don't waste space</div>
+          <div>✓ Power it on and screenshot it working</div>
+          <div>✓ Photograph defects clearly — builds trust</div>
+          <div>✗ No blurry, dark, or filtered photos</div>
+          <div>✗ No cars, pets, or people in background</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 11. 7-DAY PLAN ══ -->
+    <div class="tk-panel" id="panel-sevenday">
+      <div class="panel-header">
+        <h2>🗓️ Sell It in 7 Days</h2>
+        <div class="subtitle">A day-by-day action plan personalized to your item and start date.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="form-grid">
+          <div class="form-row"><label>Item You're Selling</label><input type="text" id="sd-item" placeholder="e.g. IKEA Dresser" oninput="saveLS('sd')"></div>
+          <div class="form-row"><label>Start Date</label><input type="date" id="sd-date" oninput="saveLS('sd')"></div>
+        </div>
+        <button class="btn btn-primary" onclick="buildSevenDay()">Build My 7-Day Plan →</button>
+      </div>
+
+      <div id="sd-output" style="display:none;" class="tk-card">
+        <div class="output-header">
+          <strong id="sd-title"></strong>
+          <button class="print-btn" onclick="window.print()">🖨️ Print Plan</button>
+        </div>
+        <div class="day-grid" id="sd-days" style="margin-top:1rem;"></div>
+        <div class="tip-callout" style="margin-top:1.25rem;">
+          <span class="tip-icon">🎯</span>
+          <div class="tip-body">
+            <h4>The single most important rule</h4>
+            <p>List at the right price on Day 1. Use the Pricing Calculator — an overpriced listing wastes all 7 days. Start right, close fast.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>The Standard 7-Day Strategy</h3>
+        <div class="day-grid">
+          <div class="day-card">
+            <div class="day-label" style="color:var(--blue);">Day 1 — List It Right</div>
+            <h4>Create & Post</h4>
+            <ul><li>Calculate your price</li><li>Take 8–12 photos</li><li>Write optimized title + description</li><li>Post on 2–3 platforms</li></ul>
+          </div>
+          <div class="day-card">
+            <div class="day-label" style="color:var(--blue);">Days 2-3 — Respond Fast</div>
+            <h4>Qualify Buyers</h4>
+            <ul><li>Reply to ALL messages within 1 hr</li><li>Ask qualifying questions</li><li>Schedule first pickups</li><li>Hold your price — no negotiating yet</li></ul>
+          </div>
+          <div class="day-card">
+            <div class="day-label" style="color:var(--orange);">Day 4 — Diagnose</div>
+            <h4>Check Performance</h4>
+            <ul><li>&lt;5 views → title/photo problem</li><li>Views but no messages → price too high</li><li>Messages but no sale → qualify better</li><li>Adjust if needed</li></ul>
+          </div>
+          <div class="day-card">
+            <div class="day-label" style="color:var(--orange);">Day 5 — Weekend Push</div>
+            <h4>Drive Traffic</h4>
+            <ul><li>Re-share listing to groups</li><li>Edit listing (triggers re-index)</li><li>Schedule weekend pickups</li><li>Post in local FB groups</li></ul>
+          </div>
+          <div class="day-card">
+            <div class="day-label" style="color:var(--green-dark);">Days 6-7 — Close It</div>
+            <h4>Weekend Peak</h4>
+            <ul><li>Most sales happen Sat–Sun</li><li>Be available and fast on replies</li><li>Execute pickups</li><li>If unsold: drop price 15%</li></ul>
+          </div>
+          <div class="day-card" style="border-color:var(--green);border-width:2px;">
+            <div class="day-label" style="color:var(--green-dark);">Day 8+ — Regroup</div>
+            <h4>Next Steps</h4>
+            <ul><li>Sold → repeat with next item</li><li>Unsold → drop 15%, relist fresh</li><li>Still unsold → try a new platform</li><li>3 weeks unsold → donate or store</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 12. LISTING AUDIT ══ -->
+    <div class="tk-panel" id="panel-audit">
+      <div class="panel-header">
+        <h2>🔍 Listing Quality Audit</h2>
+        <div class="subtitle">Paste your title and description. Get a scored report with specific fixes — in seconds.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="form-row">
+          <label>Your Listing Title</label>
+          <input type="text" id="audit-title" placeholder="Paste your title here…">
+        </div>
+        <div class="form-row">
+          <label>Your Listing Description</label>
+          <textarea id="audit-desc" style="min-height:130px;" placeholder="Paste your full description here…"></textarea>
+        </div>
+        <button class="btn btn-primary" onclick="runAudit()">Audit My Listing →</button>
+      </div>
+
+      <div id="audit-output" style="display:none;" class="tk-card">
+        <div class="audit-score-wrap">
+          <div class="audit-score-circle" id="audit-circle"></div>
+          <div>
+            <div class="audit-verdict" id="audit-verdict"></div>
+            <div class="audit-verdict-sub" id="audit-verdict-sub"></div>
+          </div>
+        </div>
+        <div class="audit-items" id="audit-items"></div>
+      </div>
+
+      <div class="tk-card">
+        <h3>What the Audit Checks</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem .75rem;font-size:.855rem;color:var(--gray-700);">
+          <div>✓ Title length (40–100 chars ideal)</div>
+          <div>✓ Condition mentioned in title</div>
+          <div>✓ No spam words or ALL CAPS</div>
+          <div>✓ Description detail level</div>
+          <div>✓ Bullet points / line breaks for scanning</div>
+          <div>✓ Payment + pickup info present</div>
+          <div>✓ Condition in description</div>
+          <div>✓ Reason for selling (builds trust)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 13. SALE TRACKER ══ -->
+    <div class="tk-panel" id="panel-tracker">
+      <div class="panel-header">
+        <h2>📊 Sale Tracker</h2>
+        <div class="subtitle">Track every item you list. Revenue totals, sell rates, and platform performance — all saved in your browser.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Add an Item</h3>
+        <div class="tracker-add-form" id="tracker-add-form">
+          <div class="form-row" style="margin:0;">
+            <label>Item Name</label>
+            <input type="text" id="tr-name" placeholder="e.g. Samsung TV">
+          </div>
+          <div class="form-row" style="margin:0;">
+            <label>Platform</label>
+            <select id="tr-platform">
+              <option>Facebook</option>
+              <option>OfferUp</option>
+              <option>Craigslist</option>
+              <option>Mercari</option>
+              <option>eBay</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin:0;">
+            <label>Listed Price ($)</label>
+            <input type="number" id="tr-listed" placeholder="200">
+          </div>
+          <div class="form-row" style="margin:0;">
+            <label>Category</label>
+            <select id="tr-cat">
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Tools">Tools</option>
+              <option value="Toys">Toys</option>
+              <option value="Appliances">Appliances</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-row" style="margin:0;">
+            <label>&nbsp;</label>
+            <button class="btn btn-primary btn-sm" onclick="addTrackerItem()" style="width:100%;">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tracker-stats" id="tracker-stats">
+        <div class="tracker-stat"><div class="ts-num" id="ts-total">0</div><div class="ts-label">Items Tracked</div></div>
+        <div class="tracker-stat"><div class="ts-num" id="ts-sold">$0</div><div class="ts-label">Total Revenue</div></div>
+        <div class="tracker-stat"><div class="ts-num" id="ts-rate">—</div><div class="ts-label">Sell Rate</div></div>
+        <div class="tracker-stat"><div class="ts-num" id="ts-days">—</div><div class="ts-label">Avg Days to Sell</div></div>
+        <div class="tracker-stat"><div class="ts-num" id="ts-best">—</div><div class="ts-label">Best Platform</div></div>
+      </div>
+
+      <div class="tk-card">
+        <div class="action-row" style="margin-top:0;">
+          <button class="btn btn-outline btn-sm" onclick="exportTrackerCSV()">⬇️ Export CSV</button>
+          <button class="btn btn-outline btn-sm" onclick="printSection('tracker-tbody')">🖨️ Print</button>
+        </div>
+        <div class="tracker-table-wrap">
+          <table class="tracker-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Platform</th>
+                <th>Listed</th>
+                <th>Sold For</th>
+                <th>Added</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tracker-tbody"></tbody>
+          </table>
+          <div class="tracker-empty" id="tracker-empty">No items tracked yet. Add your first listing above.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ════════════════════════════════
+// Navigation
+// ════════════════════════════════
+function showPanel(id) {
+  document.querySelectorAll('.tk-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tk-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  document.querySelectorAll(`[data-panel="${id}"]`).forEach(el => el.classList.add('active'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ════════════════════════════════
+// localStorage helpers
+// ════════════════════════════════
+function saveLS(prefix) {
+  const ids = {
+    pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category'],
+    tg: ['tg-item','tg-brand','tg-model','tg-feature'],
+    db: ['db-item','db-brand','db-model','db-condition','db-features','db-dims','db-includes','db-reason','db-pickup','db-bundle'],
+    ai: ['ai-item','ai-brand','ai-condition','ai-price','ai-details'],
+    pd: ['pd-price','pd-deadline','pd-floor'],
+    ms: ['ms-name','ms-category'],
+    sd: ['sd-item','sd-date']
+  };
+  const fields = ids[prefix] || [];
+  const saved = {};
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) saved[id] = el.value;
+  });
+  try { localStorage.setItem('sk_' + prefix, JSON.stringify(saved)); } catch(e) {}
+}
+
+function loadLS(prefix) {
+  try {
+    const raw = localStorage.getItem('sk_' + prefix);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    Object.entries(saved).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = val;
+    });
+  } catch(e) {}
+}
+
+// ════════════════════════════════
+// 1. Pricing Calculator
+// ════════════════════════════════
+function calcPrice(fromButton) {
+  const retail = parseFloat(document.getElementById('pc-retail').value);
+  const condition = parseFloat(document.getElementById('pc-condition').value);
+  const demand = parseFloat(document.getElementById('pc-demand').value);
+  const category = document.getElementById('pc-category').value;
+  const results = document.getElementById('pc-results');
+  const empty = document.getElementById('pc-empty');
+  if (!retail || !condition || !demand) {
+    results.style.display = 'none';
+    empty.style.display = 'block';
+    if (fromButton) {
+      const missing = [];
+      if (!retail) missing.push('retail price');
+      if (!condition) missing.push('condition');
+      if (!demand) missing.push('local demand');
+      empty.textContent = 'Still need: ' + missing.join(', ') + '.';
+      empty.classList.add('warn');
+    }
+    return;
+  }
+  empty.style.display = 'none';
+  empty.classList.remove('warn');
+  const ideal = Math.round(retail * condition * demand / 5) * 5;
+  const quickflip = Math.round(ideal * 0.80 / 5) * 5;
+  const floor = Math.round(ideal * 0.65 / 5) * 5;
+  document.getElementById('pc-ideal').textContent = '$' + ideal.toLocaleString();
+  document.getElementById('pc-quickflip').textContent = '$' + quickflip.toLocaleString();
+  document.getElementById('pc-floor').textContent = '$' + floor.toLocaleString();
+  // Update visualizer labels
+  document.getElementById('pc-viz-min').textContent = 'Floor: $' + floor.toLocaleString();
+  document.getElementById('pc-viz-mid').textContent = 'Quick: $' + quickflip.toLocaleString();
+  document.getElementById('pc-viz-max').textContent = 'Ask: $' + ideal.toLocaleString();
+  const tips = {
+    electronics: 'Electronics depreciate fast. Include original packaging to justify higher price. Photo it powered on.',
+    furniture: 'Buyers want exact dimensions. Measure and include in the listing — reduces "does it fit?" messages.',
+    clothing: 'Brand matters a lot here. Include size, measurements, and a flat-lay photo.',
+    tools: 'Show it powered on and working. Include all bits, cases, and batteries.',
+    toys: 'Note if batteries are included and all pieces are present.',
+    sports: 'Seasonal demand matters. Bikes sell fastest in spring, ski gear in fall.',
+    appliances: 'Include model number and dimensions — buyers look up specs.',
+    collectibles: 'Provenance and authenticity drive price. Include certificates if you have them.'
+  };
+  const tipEl = document.getElementById('pc-tip');
+  if (category && tips[category]) {
+    document.getElementById('pc-tip-text').textContent = tips[category];
+    tipEl.style.display = 'flex';
+  } else {
+    tipEl.style.display = 'none';
+  }
+  // Sell-time estimate
+  const sellTimes = {
+    '0.95_1.15':'1–3 days','0.95_1.0':'3–7 days','0.95_0.85':'5–14 days',
+    '0.75_1.15':'2–5 days','0.75_1.0':'5–10 days','0.75_0.85':'7–14 days',
+    '0.55_1.15':'5–10 days','0.55_1.0':'7–14 days','0.55_0.85':'14–21 days',
+    '0.35_1.15':'14–21 days','0.35_1.0':'14–28 days','0.35_0.85':'21–35 days',
+    '0.20_1.15':'21–30 days','0.20_1.0':'30–45 days','0.20_0.85':'45+ days'
+  };
+  const stKey = condition + '_' + demand;
+  const stVal = sellTimes[stKey] || '7–21 days';
+  const stNotes = {
+    '1–3 days':'At this price and demand, expect quick interest.',
+    '2–5 days':'Strong demand — should move fast at this price.',
+    '3–7 days':'Good pricing — expect solid interest in the first week.',
+    '5–10 days':'Reasonable pace. Respond fast to early buyers.',
+    '5–14 days':'May take a week or two — stay active with replies.',
+    '7–14 days':'Plan for 1–2 weeks. Price is right for the condition.',
+    '14–21 days':'Expect about 2 weeks. Consider a 10% drop if no bites by day 10.',
+    '14–28 days':'Set a price-drop trigger at day 14.',
+    '21–35 days':'Fair condition sells slower — be patient or price slightly lower.',
+    '21–30 days':'Rough condition; patient pricing or post on more platforms.',
+    '30–45 days':'Low condition + low demand — focus on niche platforms or bundling.',
+    '45+ days':'Hard sell — consider donation or steep discount.'
+  };
+  document.getElementById('pc-st-days').textContent = stVal;
+  document.getElementById('pc-st-note').textContent = stNotes[stVal] || 'Monitor interest after the first week.';
+  document.getElementById('pc-selltime').style.display = 'flex';
+  // Comparables link
+  const itemName = document.getElementById('pc-name').value.trim();
+  if (itemName) {
+    const query = encodeURIComponent(itemName);
+    document.getElementById('pc-comp-link').href = `https://www.ebay.com/sch/i.html?_nkw=${query}&LH_Sold=1&LH_Complete=1`;
+    document.getElementById('pc-comparables').style.display = 'block';
+  }
+  // Auto-fill offer floor
+  document.getElementById('pc-offer-floor').placeholder = '$' + floor.toLocaleString() + ' (from calculator)';
+  renderFeeBreakdown(ideal);
+  results.style.display = 'block';
+}
+
+// Platform fee rates. Flat fees are per-sale surcharges on top of the percentage.
+const FEE_TABLE = [
+  { name: 'Local cash',        pct: 0,      flat: 0,    note: 'Facebook / OfferUp / Craigslist pickup' },
+  { name: 'Facebook shipping', pct: 0.05,   flat: 0,    note: '5% per shipped order' },
+  { name: 'Mercari',           pct: 0.10,   flat: 0,    note: '10% selling fee' },
+  { name: 'eBay',              pct: 0.1325, flat: 0.30, note: '13.25% + $0.30 per order' },
+  { name: 'Poshmark',          pct: 0.20,   flat: 0,    note: '20% over $15' }
+];
+
+function renderFeeBreakdown(price) {
+  const rows = FEE_TABLE.map(f => {
+    const fee = price * f.pct + (price > 0 ? f.flat : 0);
+    const net = Math.max(0, price - fee);
+    const width = price > 0 ? Math.round((net / price) * 100) : 0;
+    return `<div class="fee-row">
+      <div class="fee-name">${f.name}<span class="fee-sub">${f.note}</span></div>
+      <div class="fee-track"><div class="fee-bar" style="width:${width}%"></div></div>
+      <div class="fee-net">$${Math.round(net).toLocaleString()}<span class="fee-sub">${fee > 0 ? '−$' + Math.round(fee).toLocaleString() + ' fees' : 'no fees'}</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('pc-fee-rows').innerHTML = rows;
+}
+
+function resetPricing() {
+  ['pc-name','pc-retail','pc-condition','pc-demand','pc-category','pc-offer-in','pc-offer-floor']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('pc-results').style.display = 'none';
+  document.getElementById('pc-offer-result').style.display = 'none';
+  const empty = document.getElementById('pc-empty');
+  empty.style.display = 'block';
+  empty.classList.remove('warn');
+  empty.textContent = 'Fill in retail price, condition and demand — then hit Calculate.';
+  try { localStorage.removeItem('sk_pc'); } catch(e) {}
+}
+
+// ════════════════════════════════
+// 2. Title Generator
+// ════════════════════════════════
+function genTitles() {
+  const item = document.getElementById('tg-item').value.trim();
+  const brand = document.getElementById('tg-brand').value.trim();
+  const model = document.getElementById('tg-model').value.trim();
+  const condition = document.getElementById('tg-condition').value;
+  const feature = document.getElementById('tg-feature').value.trim();
+  if (!item) { alert('Please enter an item name.'); return; }
+  const prefix = brand ? brand + ' ' : '';
+  const suffix = model ? ' ' + model : '';
+  const feat = feature ? ' — ' + feature : '';
+  const t1 = (prefix + item + suffix + ' | ' + condition + feat).substring(0, 80);
+  const t2 = (condition + ' ' + prefix + item + suffix + feat + ' | Great Deal').substring(0, 80);
+  const t3 = (prefix + item + suffix + ' — ' + condition + ' Condition — Must Sell' + (feature ? ' | ' + feature : '')).substring(0, 80);
+  const lim = activePlatform ? activePlatform.limit : 80;
+  const setTitle = (id, cid, text) => {
+    document.getElementById(id).textContent = text.substring(0, lim + 20);
+    const len = text.substring(0, lim + 20).length;
+    const el = document.getElementById(cid);
+    el.textContent = len + '/' + lim + ' chars';
+    el.className = 'char-count' + (len > lim * 0.92 ? ' warn' : '') + (len > lim ? ' over' : '');
+  };
+  setTitle('tg-t1', 'tg-c1', t1);
+  setTitle('tg-t2', 'tg-c2', t2);
+  setTitle('tg-t3', 'tg-c3', t3);
+  document.getElementById('tg-output').style.display = 'block';
+}
+
+// ════════════════════════════════
+// 3. Description Builder
+// ════════════════════════════════
+function buildDescription() {
+  const item = document.getElementById('db-item').value.trim();
+  const brand = document.getElementById('db-brand').value.trim();
+  const model = document.getElementById('db-model').value.trim();
+  const condition = document.getElementById('db-condition').value;
+  const featuresRaw = document.getElementById('db-features').value.trim();
+  const dims = document.getElementById('db-dims').value.trim();
+  const includes = document.getElementById('db-includes').value.trim();
+  const reason = document.getElementById('db-reason').value.trim();
+  const pickup = document.getElementById('db-pickup').value;
+  const bundle = document.getElementById('db-bundle').value.trim();
+  if (!item) { alert('Please enter an item name.'); return; }
+  const name = (brand ? brand + ' ' : '') + item + (model ? ' ' + model : '');
+  let desc = `📦 ${name}\n\n✅ Condition: ${condition}\n\n`;
+  if (featuresRaw) {
+    const feats = featuresRaw.split('\n').filter(f => f.trim());
+    if (feats.length) desc += `🔹 What You Get:\n${feats.map(f => '• ' + f.trim()).join('\n')}\n\n`;
+  }
+  if (dims) desc += `📐 Dimensions: ${dims}\n\n`;
+  if (includes) desc += `🎁 Includes: ${includes}\n\n`;
+  if (reason) desc += `🏷️ Selling because: ${reason}\n\n`;
+  desc += `💵 ${pickup}`;
+  if (bundle) desc += `\n\n🛒 Bundle Deal: ${bundle}`;
+  desc += `\n\nFeel free to message with any questions — happy to answer. First come, first served!`;
+  document.getElementById('db-result').textContent = desc;
+  document.getElementById('db-output').style.display = 'block';
+}
+
+// ════════════════════════════════
+// 4. AI Prompt
+// ════════════════════════════════
+function genAIPrompt() {
+  const item = document.getElementById('ai-item').value.trim();
+  const brand = document.getElementById('ai-brand').value.trim();
+  const condition = document.getElementById('ai-condition').value;
+  const price = document.getElementById('ai-price').value;
+  const details = document.getElementById('ai-details').value.trim();
+  if (!item) { alert('Please enter an item name.'); return; }
+  const prompt = `Please write a compelling Facebook Marketplace / Craigslist / OfferUp listing for me.
+
+Item: ${item}${brand ? ' (' + brand + ')' : ''}
+Condition: ${condition}
+Asking Price: ${price ? '$' + price : 'TBD'}
+Details: ${details || 'No additional details provided.'}
+
+Please write:
+1. An optimized title (under 80 characters, search-friendly)
+2. A full description (3–5 short paragraphs) that:
+   - Opens with the item name and condition
+   - Highlights key features and what's included
+   - Mentions any defects honestly (builds buyer trust)
+   - Ends with payment and pickup info
+   - Has a friendly, professional tone — not salesy
+
+Keep it clean and scannable. Use line breaks and bullet points for features.`;
+  document.getElementById('ai-prompt-result').textContent = prompt;
+  document.getElementById('ai-output').style.display = 'block';
+}
+
+// ════════════════════════════════
+// 6. Scam Checklist
+// ════════════════════════════════
+function updateScamScore() {
+  let checked = 0;
+  for (let i = 1; i <= 12; i++) {
+    if (document.getElementById('sc' + i)?.checked) checked++;
+  }
+  document.getElementById('scam-score').textContent = checked + '/12';
+  const pct = (checked / 12) * 100;
+  const fill = document.getElementById('scam-fill');
+  fill.style.width = pct + '%';
+  const [color, text] =
+    checked < 4  ? ['var(--red)',    '🚨 STOP — Do not proceed. Too many red flags unchecked.'] :
+    checked < 8  ? ['var(--orange)', '⚠️ Proceed with caution. Verify the remaining items first.'] :
+    checked < 11 ? ['var(--blue)',   '🟡 Almost safe — check the remaining items before meeting.'] :
+                   ['var(--green)',  '✅ Looks safe! You\'ve done your due diligence.'];
+  fill.style.background = color;
+  const v = document.getElementById('scam-verdict');
+  v.textContent = text;
+  v.style.color = color;
+}
+
+function resetChecklist() {
+  for (let i = 1; i <= 12; i++) {
+    const el = document.getElementById('sc' + i);
+    if (el) el.checked = false;
+  }
+  document.getElementById('scam-verdict-card').style.display = 'none';
+  updateScamScore();
+}
+
+// Weighted risk: payment fraud (1-4) is what actually costs sellers money,
+// so an unchecked payment item outranks an unchecked identity one.
+const SCAM_WEIGHTS = {
+  1: { w: 3, risk: 'Check / money order / wire transfer — the classic bounced-payment scam.' },
+  2: { w: 3, risk: 'Overpayment offer — the check bounces after you refund the difference.' },
+  3: { w: 3, risk: 'Buyer wants YOU to send money. There is no legitimate version of this.' },
+  4: { w: 3, risk: 'Payment not confirmed in your own app — screenshots are trivially faked.' },
+  5: { w: 1, risk: 'Brand-new profile — no history to hold them accountable.' },
+  6: { w: 1, risk: 'No reviews, posts, or real photo on the profile.' },
+  7: { w: 2, risk: 'Zero-history account messaging you — common throwaway scam pattern.' },
+  8: { w: 2, risk: '"My driver will pick it up" — classic proxy-pickup fraud setup.' },
+  9: { w: 2, risk: 'Meeting alone in a private location.' },
+  10:{ w: 3, risk: 'Releasing the item before payment clears.' },
+  11:{ w: 3, risk: 'Sensitive personal info shared — identity theft exposure.' },
+  12:{ w: 1, risk: 'Your own instinct is flagging something.' }
+};
+
+function analyzeScamRisk() {
+  const unchecked = [];
+  let riskScore = 0, maxScore = 0;
+  for (let i = 1; i <= 12; i++) {
+    const meta = SCAM_WEIGHTS[i];
+    maxScore += meta.w;
+    if (!document.getElementById('sc' + i)?.checked) {
+      unchecked.push({ n: i, ...meta });
+      riskScore += meta.w;
+    }
+  }
+
+  const paymentRisk = unchecked.some(u => u.n <= 4 || u.n === 10 || u.n === 11);
+  const safetyPct = Math.round(((maxScore - riskScore) / maxScore) * 100);
+
+  let level, headline, advice;
+  if (unchecked.length === 0) {
+    level = 'go';
+    headline = '✅ Clear to proceed';
+    advice = 'Every check passed. Still meet in public and confirm payment in your own app before handing anything over.';
+  } else if (paymentRisk || safetyPct < 55) {
+    level = 'stop';
+    headline = '🚨 STOP — do not proceed';
+    advice = 'At least one high-severity check failed. These are the patterns that actually cost sellers money and items. Resolve every item below before you meet this buyer.';
+  } else if (safetyPct < 85) {
+    level = 'caution';
+    headline = '⚠️ Proceed with caution';
+    advice = 'No payment-fraud flags, but there are gaps worth closing. Verify the items below before you commit to a meetup.';
+  } else {
+    level = 'go';
+    headline = '🟢 Low risk — looks legitimate';
+    advice = 'Only minor items outstanding. Meet in public, confirm payment, and you should be fine.';
+  }
+
+  const list = unchecked.length
+    ? `<div class="verdict-risks">
+         <div class="verdict-risks-title">${unchecked.length} unresolved ${unchecked.length === 1 ? 'risk' : 'risks'}</div>
+         ${unchecked.map(u => `<div class="verdict-risk sev-${u.w >= 3 ? 'high' : u.w === 2 ? 'med' : 'low'}">
+            <span class="vr-sev">${u.w >= 3 ? 'HIGH' : u.w === 2 ? 'MED' : 'LOW'}</span>
+            <span>${u.risk}</span>
+         </div>`).join('')}
+       </div>`
+    : '';
+
+  document.getElementById('scam-verdict-card').innerHTML =
+    `<div class="verdict-card verdict-${level}">
+       <div class="verdict-head">
+         <div class="verdict-headline">${headline}</div>
+         <div class="verdict-pct">${safetyPct}<span>% safe</span></div>
+       </div>
+       <p class="verdict-advice">${advice}</p>
+       ${list}
+     </div>`;
+  document.getElementById('scam-verdict-card').style.display = 'block';
+}
+
+// ════════════════════════════════
+// 8. Price Drop Schedule
+// ════════════════════════════════
+let DROP_SCHEDULE = [];
+
+function calcPriceDrop(fromButton) {
+  const price = parseFloat(document.getElementById('pd-price').value);
+  const deadline = parseInt(document.getElementById('pd-deadline').value);
+  const floorIn = parseFloat(document.getElementById('pd-floor').value);
+  const empty = document.getElementById('pd-empty');
+  if (!price || !deadline) {
+    document.getElementById('pd-results').style.display = 'none';
+    empty.style.display = 'block';
+    if (fromButton) {
+      empty.textContent = !price ? 'Enter your asking price first.' : 'Pick a deadline to build the schedule.';
+      empty.classList.add('warn');
+    }
+    return;
+  }
+  empty.style.display = 'none';
+  empty.classList.remove('warn');
+  const floor = floorIn || Math.round(price * 0.45 / 5) * 5;
+  const schedules = {
+    7:  [{day:1,pct:1.0,action:'List at asking price'},{day:4,pct:.88,action:'First price drop'},{day:7,pct:.75,action:'Final push or hold'}],
+    14: [{day:1,pct:1.0,action:'List at asking price'},{day:5,pct:.90,action:'First drop'},{day:10,pct:.80,action:'Second drop'},{day:14,pct:.70,action:'Final drop'}],
+    21: [{day:1,pct:1.0,action:'List at asking price'},{day:7,pct:.90,action:'First drop (week 1 review)'},{day:14,pct:.80,action:'Second drop'},{day:21,pct:.72,action:'Final drop'}],
+    30: [{day:1,pct:1.0,action:'List at asking price'},{day:8,pct:.90,action:'First drop'},{day:16,pct:.80,action:'Second drop'},{day:23,pct:.72,action:'Third drop'},{day:30,pct:.65,action:'Final drop'}],
+    60: [{day:1,pct:1.0,action:'List at asking price'},{day:14,pct:.92,action:'First review'},{day:28,pct:.83,action:'Price drop'},{day:45,pct:.75,action:'Second drop'},{day:60,pct:.65,action:'Final or donate'}]
+  };
+  const steps = schedules[deadline] || schedules[30];
+  const today = new Date();
+  const tbody = document.getElementById('pd-tbody');
+  tbody.innerHTML = '';
+  DROP_SCHEDULE = [];
+  steps.forEach(step => {
+    const newPrice = Math.max(Math.round(price * step.pct / 5) * 5, floor);
+    const d = new Date(today);
+    d.setDate(today.getDate() + step.day - 1);
+    DROP_SCHEDULE.push({ date: d, price: newPrice, action: step.action, day: step.day });
+    const dateStr = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+    const badge = step.pct === 1.0 ? '<span class="badge badge-green">Start</span>'
+                : newPrice <= floor ? '<span class="badge badge-red">Floor</span>'
+                : '<span class="badge badge-orange">Drop</span>';
+    tbody.innerHTML += `<tr>
+      <td><strong>Day ${step.day}</strong></td>
+      <td>${dateStr}</td>
+      <td>${step.action}</td>
+      <td><strong>$${newPrice.toLocaleString()}</strong></td>
+      <td>${Math.round(step.pct * 100)}%</td>
+      <td>${badge}</td>
+    </tr>`;
+  });
+  document.getElementById('pd-results').style.display = 'block';
+}
+
+function downloadFile(filename, mime, content) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ICS spec requires CRLF line endings and escaping of , ; and \ in text values.
+function icsEscape(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+}
+
+function exportDropICS() {
+  if (!DROP_SCHEDULE.length) { alert('Build your schedule first.'); return; }
+  const item = (document.getElementById('pd-price').value || '').trim();
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//SellerKit//Price Drop//EN', 'CALSCALE:GREGORIAN'];
+
+  DROP_SCHEDULE.forEach((s, i) => {
+    // All-day event: DTSTART;VALUE=DATE with DTEND on the following day.
+    const y = s.date.getFullYear();
+    const m = String(s.date.getMonth() + 1).padStart(2, '0');
+    const d = String(s.date.getDate()).padStart(2, '0');
+    const end = new Date(s.date);
+    end.setDate(end.getDate() + 1);
+    const ey = end.getFullYear();
+    const em = String(end.getMonth() + 1).padStart(2, '0');
+    const ed = String(end.getDate()).padStart(2, '0');
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:sellerkit-drop-${Date.now()}-${i}@sellerkit`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${y}${m}${d}`,
+      `DTEND;VALUE=DATE:${ey}${em}${ed}`,
+      `SUMMARY:${icsEscape('SellerKit: ' + s.action + ' — $' + s.price)}`,
+      `DESCRIPTION:${icsEscape('Day ' + s.day + ' of your price drop plan. Update your listing price to $' + s.price + ' today. Editing the price also bumps your listing to fresh buyers.')}`,
+      'BEGIN:VALARM',
+      'TRIGGER:-PT1H',
+      'ACTION:DISPLAY',
+      `DESCRIPTION:${icsEscape('Price drop reminder: $' + s.price)}`,
+      'END:VALARM',
+      'END:VEVENT'
+    );
+  });
+
+  lines.push('END:VCALENDAR');
+  downloadFile('sellerkit-price-drops.ics', 'text/calendar;charset=utf-8', lines.join('\r\n'));
+}
+
+// ════════════════════════════════
+// 9. Measurements
+// ════════════════════════════════
+const MEAS_FIELDS = {
+  furniture:  ['Width (W)','Depth (D)','Height (H)','Seat Height','Arm Height','Weight (approx)'],
+  appliance:  ['Width (W)','Depth (D)','Height (H)','Cord Length','Weight (approx)','Door Opening Width'],
+  clothing:   ['Chest','Waist','Hips','Shirt Length','Inseam','Shoulder Width'],
+  shoes:      ['US Size','Insole Length (inches)','Width (N/R/W)'],
+  bike:       ['Frame Size','Wheel Size','Seat Height Range','Handlebar Width','Total Length'],
+  box:        ['Length','Width','Height','Empty Weight','Max Load'],
+  art:        ['Width','Height','Frame Depth','Weight'],
+  generic:    ['Length','Width','Height','Weight']
+};
+
+function loadMeasurements() {
+  const cat = document.getElementById('ms-category').value;
+  if (!cat) { document.getElementById('ms-fields').style.display = 'none'; return; }
+  const fields = MEAS_FIELDS[cat] || MEAS_FIELDS.generic;
+  document.getElementById('ms-grid').innerHTML = fields.map((f, i) => `
+    <div class="meas-field">
+      <label for="mf-${i}">${f}</label>
+      <input type="text" id="mf-${i}" data-label="${f}" placeholder='e.g. 36"'>
+    </div>`).join('');
+  document.getElementById('ms-fields').style.display = 'block';
+  document.getElementById('ms-output').style.display = 'none';
+}
+
+function buildMeasurementText() {
+  const name = document.getElementById('ms-name').value.trim() || 'Item';
+  const inputs = document.querySelectorAll('#ms-grid input');
+  let text = `📐 ${name} — Measurements\n\n`;
+  inputs.forEach(inp => { if (inp.value.trim()) text += `• ${inp.dataset.label}: ${inp.value.trim()}\n`; });
+  if (text.length < 30) { alert('Fill in at least a few measurements first.'); return; }
+  text += '\nAll measurements approximate. Message if you need exact dimensions.';
+  document.getElementById('ms-result').textContent = text;
+  document.getElementById('ms-output').style.display = 'block';
+}
+
+// ════════════════════════════════
+// 10. Photo Checklist
+// ════════════════════════════════
+const PHOTO_LISTS = {
+  electronics: {
+    'Must-Have': ['Full front — powered ON (proves it works)','Screen close-up (check for cracks/burn-in)','All ports and connections','Back panel with serial number','Any scratches, dents, or defects clearly lit'],
+    'Recommended': ['Original box and accessories','Remote or cables included','Settings screen showing model info','Size reference next to a common object']
+  },
+  furniture: {
+    'Must-Have': ['Full front in good lighting','Side profile shot','Close-up of fabric or material texture','Any scratches, stains, or wear — well lit','Dimensions written on paper next to item'],
+    'Recommended': ['Top-down view','Legs and hardware close-up','Styled in a room setting']
+  },
+  clothing: {
+    'Must-Have': ['Flat lay on clean light background','Label close-up (brand + size)','Any stains, holes, or wear','Fabric texture close-up'],
+    'Recommended': ['On a hanger or mannequin','Tape measure for reference']
+  },
+  appliances: {
+    'Must-Have': ['Full front view','Door/lid open showing interior','Model and serial number label','Any dents, rust, or damage','Running or powered on if possible'],
+    'Recommended': ['Interior close-ups (shelves, drum)','Controls and display panel']
+  },
+  tools: {
+    'Must-Have': ['Tool powered on or in use','All included bits, accessories, and case','Brand and model label','Battery or cord condition','Any wear or damage'],
+    'Recommended': ['Storage case laid out','Full set on a clean surface']
+  },
+  vehicles: {
+    'Must-Have': ['Left side full view','Right side full view','Front and rear','Odometer/hour meter','Any scratches, rust, or damage','Tire condition close-up'],
+    'Recommended': ['Seat/interior area','Engine or motor','Any documents (title, manual)']
+  },
+  collectibles: {
+    'Must-Have': ['All angles (front, back, both sides)','Signature or marking close-up','Any chips, cracks, or repairs','Original box or packaging','Certificate of authenticity (if any)'],
+    'Recommended': ['Scale reference photo','Under UV light if applicable']
+  },
+  kids: {
+    'Must-Have': ['All pieces laid out or assembled','Working/lit up if battery-operated','Age/safety label','Any missing parts or damage clearly shown','Safety certification sticker'],
+    'Recommended': ['Original packaging','Size comparison']
+  }
+};
+
+function loadPhotoChecklist(fromButton) {
+  const cat = document.getElementById('ph-category').value;
+  const empty = document.getElementById('ph-empty');
+  const copyBtn = document.getElementById('ph-copy-btn');
+  const resetBtn = document.getElementById('ph-reset-btn');
+  if (!cat || !PHOTO_LISTS[cat]) {
+    document.getElementById('ph-list').style.display = 'none';
+    document.getElementById('ph-score').style.display = 'none';
+    copyBtn.style.display = 'none';
+    resetBtn.style.display = 'none';
+    empty.style.display = 'block';
+    if (fromButton) { empty.textContent = 'Pick a category first.'; empty.classList.add('warn'); }
+    return;
+  }
+  empty.style.display = 'none';
+  empty.classList.remove('warn');
+
+  const done = loadPhotoState(cat);
+  let html = '', idx = 0;
+  Object.entries(PHOTO_LISTS[cat]).forEach(([section, items]) => {
+    html += `<div class="checklist-section"><div class="checklist-section-title">${section}</div><ul class="checklist">`;
+    items.forEach(item => {
+      const checked = done.includes(idx) ? ' checked' : '';
+      html += `<li><input type="checkbox" id="ph_${idx}"${checked} onchange="updatePhotoScore()"><label for="ph_${idx}">${item}</label></li>`;
+      idx++;
+    });
+    html += `</ul></div>`;
+  });
+  document.getElementById('ph-list').innerHTML = html;
+  document.getElementById('ph-list').style.display = 'block';
+  document.getElementById('ph-score').style.display = 'block';
+  copyBtn.style.display = 'inline-flex';
+  resetBtn.style.display = 'inline-flex';
+  updatePhotoScore();
+}
+
+function loadPhotoState(cat) {
+  try {
+    const raw = localStorage.getItem('sk_photos');
+    if (!raw) return [];
+    return (JSON.parse(raw) || {})[cat] || [];
+  } catch(e) { return []; }
+}
+
+function savePhotoState() {
+  const cat = document.getElementById('ph-category').value;
+  if (!cat) return;
+  const done = [];
+  document.querySelectorAll('#ph-list input[type=checkbox]').forEach((el, i) => { if (el.checked) done.push(i); });
+  try {
+    const raw = localStorage.getItem('sk_photos');
+    const all = raw ? (JSON.parse(raw) || {}) : {};
+    all[cat] = done;
+    localStorage.setItem('sk_photos', JSON.stringify(all));
+  } catch(e) {}
+}
+
+function resetPhotoChecklist() {
+  document.querySelectorAll('#ph-list input[type=checkbox]').forEach(el => { el.checked = false; });
+  updatePhotoScore();
+}
+
+function copyShotList(btn) {
+  const cat = document.getElementById('ph-category').value;
+  if (!cat || !PHOTO_LISTS[cat]) return;
+  let text = `📸 Photo Shot List — ${cat.charAt(0).toUpperCase() + cat.slice(1)}\n\n`;
+  const boxes = document.querySelectorAll('#ph-list input[type=checkbox]');
+  let idx = 0;
+  Object.entries(PHOTO_LISTS[cat]).forEach(([section, items]) => {
+    text += `${section}\n`;
+    items.forEach(item => {
+      text += `${boxes[idx] && boxes[idx].checked ? '[x]' : '[ ]'} ${item}\n`;
+      idx++;
+    });
+    text += '\n';
+  });
+  text += 'Natural light · clean background · fill the frame · show defects honestly.';
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 1600);
+  });
+}
+
+function updatePhotoScore() {
+  const all = document.querySelectorAll('#ph-list input[type=checkbox]');
+  const checked = document.querySelectorAll('#ph-list input:checked').length;
+  const pct = all.length ? Math.round((checked / all.length) * 100) : 0;
+  document.getElementById('ph-score-num').textContent = pct + '%';
+  const fill = document.getElementById('ph-progress');
+  fill.style.width = pct + '%';
+  fill.style.background = pct < 50 ? 'var(--orange)' : pct < 80 ? 'var(--blue)' : 'var(--green)';
+  document.getElementById('ph-status').textContent =
+    pct < 50 ? `${checked} of ${all.length} shots — more photos = faster sale and fewer buyer questions` :
+    pct < 80 ? `${checked} of ${all.length} shots — good progress, a few more will really help.` :
+    pct < 100 ? `${checked} of ${all.length} shots — almost there, excellent coverage!` :
+    '✅ Full coverage — your listing is photo-complete!';
+  savePhotoState();
+}
+
+// ════════════════════════════════
+// 11. 7-Day Plan
+// ════════════════════════════════
+function buildSevenDay() {
+  const item = document.getElementById('sd-item').value.trim() || 'Your Item';
+  const dateInput = document.getElementById('sd-date').value;
+  const startDate = dateInput ? new Date(dateInput + 'T12:00:00') : new Date();
+  document.getElementById('sd-title').textContent = `7-Day Plan: "${item}" — Start ${fmt(startDate, 0)}, Sold by ${fmt(startDate, 6)}`;
+  const days = [
+    {label:'Day 1 — ' + fmt(startDate,0), color:'var(--blue)', title:'List It Right', tasks:['Pricing Calculator → set your price','Photo Checklist → take 8–12 photos','Title Generator → pick best title','Description Builder → write the listing','Post on FB Marketplace + OfferUp']},
+    {label:'Day 2 — ' + fmt(startDate,1), color:'var(--blue)', title:'Respond Fast', tasks:['Reply to ALL messages within 1 hour','Qualify buyers: local? have vehicle?','Schedule first pickup appointments','Hold your price — no negotiating yet','Under 20 views? Fix your title']},
+    {label:'Day 3 — ' + fmt(startDate,2), color:'var(--blue)', title:'Follow Up', tasks:['Follow up with interested buyers','Re-examine photos if no responses','Make sure you\'re in the right category','Share listing to local FB groups','Run scam check on any buyer']},
+    {label:'Day 4 — ' + fmt(startDate,3), color:'var(--orange)', title:'Diagnose', tasks:['Views but no messages → price too high','Few views → title or category problem','Many messages, no sale → qualify harder','Use AI Prompt to refresh description','Confirm scheduled pickups']},
+    {label:'Day 5 — ' + fmt(startDate,4), color:'var(--orange)', title:'Pre-Weekend Push', tasks:['Re-share to all platforms','Update listing (triggers re-index)','Schedule weekend pickup windows','Reply to all pending messages','Review Price Drop Schedule']},
+    {label:'Day 6 — ' + fmt(startDate,5), color:'var(--green-dark)', title:'Weekend Peak', tasks:['Be available and fast all day','Execute any pickups','Use Negotiation Scripts for offers','Don\'t drop price yet — peak demand','Send pickup reminder messages']},
+    {label:'Day 7 — ' + fmt(startDate,6), color:'var(--green-dark)', title:'Close or Re-Calibrate', tasks:['Still unsold? Drop price 15%','Re-post as a new listing "Price Reduced"','Try one new platform','Message top interested buyers','Sold? Mark sold everywhere immediately']}
+  ];
+  document.getElementById('sd-days').innerHTML = days.map(d => `
+    <div class="day-card" style="border-top:3px solid ${d.color};">
+      <div class="day-label" style="color:${d.color};">${d.label}</div>
+      <h4>${d.title}</h4>
+      <ul>${d.tasks.map(t => `<li>${t}</li>`).join('')}</ul>
+    </div>`).join('');
+  document.getElementById('sd-output').style.display = 'block';
+}
+
+function fmt(base, offset) {
+  const d = new Date(base);
+  d.setDate(d.getDate() + offset);
+  return d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+}
+
+// ════════════════════════════════
+// Utilities
+// ════════════════════════════════
+function switchTab(group, id, btn) {
+  const card = btn.closest('.tk-card');
+  card.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  card.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(group + '-' + id).classList.add('active');
+}
+
+function copyText(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✅ Copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function copyScript(btn) {
+  const text = btn.previousElementSibling.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✅ Copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function printSection() {
+  window.print();
+}
+
+// ════════════════════════════════
+// Platform-aware title generator
+// ════════════════════════════════
+const PLATFORMS = [
+  { name: 'Facebook', limit: 100, note: 'Limit: 100 characters (Facebook Marketplace)' },
+  { name: 'OfferUp',  limit: 50,  note: 'Limit: 50 characters (OfferUp)' },
+  { name: 'Craigslist', limit: 80, note: 'Limit: ~80 characters recommended (Craigslist)' },
+  { name: 'Mercari',  limit: 40,  note: 'Limit: 40 characters (Mercari)' },
+  { name: 'General',  limit: 80,  note: 'Limit: 80 characters (General best practice)' }
+];
+let activePlatform = PLATFORMS[0];
+
+function selectPlatform(name, btn) {
+  activePlatform = PLATFORMS.find(p => p.name === name) || PLATFORMS[0];
+  document.querySelectorAll('.platform-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tg-platform-note').textContent = activePlatform.note;
+  const out = document.getElementById('tg-output');
+  if (out.style.display !== 'none') updateTitleCharCounts();
+}
+
+function updateTitleCharCounts() {
+  ['tg-t1','tg-t2','tg-t3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    const cEl = document.getElementById('tg-c' + (i + 1));
+    const len = el.textContent.length;
+    const lim = activePlatform.limit;
+    cEl.textContent = len + '/' + lim + ' chars';
+    cEl.className = 'char-count' + (len > lim * 0.92 ? ' warn' : '') + (len > lim ? ' over' : '');
+  });
+}
+
+// ════════════════════════════════
+// Keyword chips
+// ════════════════════════════════
+const KW_CHIPS = {
+  electronics: ['4K UHD','Smart TV','Bluetooth','USB-C','Like New','Works Perfect','All Cables','OBO'],
+  furniture:   ['Solid Wood','Pet Free','Smoke Free','Easy Disassemble','Full Set','Like New','Spotless'],
+  clothing:    ['Brand New','Tags On','No Stains','Smoke Free','Vintage','Rare Find','NWT'],
+  tools:       ['Works Perfect','All Bits Included','Heavy Duty','Barely Used','Complete Set','Like New'],
+  toys:        ['Complete Set','All Pieces','Batteries Included','Like New','Smoke Free','Ages 3+'],
+  sports:      ['Like New','Barely Used','Adult Size','Season Ready','Performance Grade'],
+  appliances:  ['Works Great','Spotless Inside','Barely Used','Energy Efficient','All Trays Included'],
+  collectibles:['Rare','Authenticated','Limited Edition','Mint Condition','Original Box','COA']
+};
+
+function loadKwChips(cat) {
+  const chips = KW_CHIPS[cat] || [];
+  const container = document.getElementById('tg-kw-chips');
+  container.innerHTML = chips.map(kw =>
+    `<button class="kw-chip" onclick="insertKeyword('${kw}')">${kw}</button>`
+  ).join('');
+}
+
+function insertKeyword(kw) {
+  const el = document.getElementById('tg-feature');
+  const cur = el.value.trim();
+  el.value = cur ? cur + ', ' + kw : kw;
+  saveLS('tg');
+}
+
+// ════════════════════════════════
+// Offer Calculator (Pricing card)
+// ════════════════════════════════
+function calcOffer() {
+  const asking = parseFloat(document.getElementById('pc-ideal')?.textContent?.replace(/[$,]/g,'')) || 0;
+  const floor  = parseFloat(document.getElementById('pc-floor')?.textContent?.replace(/[$,]/g,'')) || 0;
+  const offerIn = parseFloat(document.getElementById('pc-offer-in').value);
+  if (floor && !document.getElementById('pc-offer-floor').value) {
+    document.getElementById('pc-offer-floor').placeholder = floor;
+  }
+  const floorVal = parseFloat(document.getElementById('pc-offer-floor').value) || floor || asking * 0.65;
+  _renderOfferResult(asking, offerIn, floorVal, 'pc-offer-rec', 'pc-offer-counter', 'pc-offer-script', 'pc-offer-result');
+}
+
+// Offer Calculator (Scripts tab)
+function calcOfferScript() {
+  const asking  = parseFloat(document.getElementById('oc-asking').value);
+  const offerIn = parseFloat(document.getElementById('oc-offer').value);
+  const floorIn = parseFloat(document.getElementById('oc-floor').value);
+  const floor   = floorIn || (asking ? asking * 0.65 : 0);
+  _renderOfferResult(asking, offerIn, floor, 'oc-rec', 'oc-counter-row', 'oc-script', 'oc-result');
+}
+
+function _renderOfferResult(asking, offer, floor, recId, counterId, scriptId, wrapId) {
+  if (!asking || !offer) { document.getElementById(wrapId).style.display = 'none'; return; }
+  const pct = offer / asking;
+  let rec, counterNote, script;
+  if (pct >= 0.95) {
+    rec = { type: 'accept', text: '✅ Accept — Great deal for both sides' };
+    counterNote = `${Math.round(pct*100)}% of asking price.`;
+    script = `Sounds great — works for me! When can you come pick it up? Looking forward to it.`;
+  } else if (offer >= floor * 0.97) {
+    rec = { type: 'accept', text: '✅ Acceptable — Close to your floor' };
+    counterNote = `Near your floor of $${Math.round(floor)}. Accepting saves time vs. waiting.`;
+    script = `That works for me — let's make it happen. When are you available to pick it up?`;
+  } else if (pct >= 0.82) {
+    const counter = Math.round(asking * 0.91 / 5) * 5;
+    rec = { type: 'counter', text: `💬 Counter at $${counter}` };
+    counterNote = `Counter at $${counter} — 91% of asking, leaves room to meet in the middle.`;
+    script = `Thanks for the offer! I can't quite go that low — best I can do is $${counter}. That's firm on my end. Does that work?`;
+  } else if (offer >= floor) {
+    const counter = Math.round((offer + asking) / 2 / 5) * 5;
+    rec = { type: 'counter', text: `💬 Counter at $${counter} — Split the difference` };
+    counterNote = `Meet in the middle at $${counter}.`;
+    script = `I appreciate the interest, but I need a bit more. How about we split the difference — $${counter}? Fair for both of us. Let me know!`;
+  } else {
+    rec = { type: 'decline', text: `🚫 Decline — Below your floor ($${Math.round(floor)})` };
+    const firmOffer = Math.round(asking * 0.85 / 5) * 5;
+    counterNote = `$${Math.round(offer)} is below your minimum. You can counter at $${firmOffer} as a firm offer.`;
+    script = `Thanks for reaching out! I can't go that low — I'm firm at $${firmOffer}. If that works, let me know and we can set up a pickup. Otherwise I'll keep it listed. Good luck!`;
+  }
+  document.getElementById(recId).textContent = rec.text;
+  document.getElementById(recId).className = 'offer-rec ' + rec.type;
+  document.getElementById(counterId).innerHTML = `<strong>Analysis:</strong> ${counterNote}`;
+  document.getElementById(scriptId).textContent = script;
+  document.getElementById(wrapId).style.display = 'block';
+}
+
+// ════════════════════════════════
+// Listing Audit
+// ════════════════════════════════
+function runAudit() {
+  const title = document.getElementById('audit-title').value.trim();
+  const desc  = document.getElementById('audit-desc').value.trim();
+  if (!title && !desc) { alert('Paste your title and/or description first.'); return; }
+
+  const tLow = title.toLowerCase(), dLow = desc.toLowerCase();
+  const criteria = [];
+
+  if (title) {
+    const len = title.length;
+    if (len >= 40 && len <= 100)
+      criteria.push({s:'pass', t:`Title length: ${len} characters — ideal range (40–100)`});
+    else if (len < 20)
+      criteria.push({s:'fail', t:`Title too short (${len} chars) — add brand, model, and condition`});
+    else if (len > 100)
+      criteria.push({s:'warn', t:`Title might be cut off at ${len} characters on some platforms`});
+    else
+      criteria.push({s:'warn', t:`Title could be longer (${len} chars) — add more searchable keywords`});
+
+    const condWords = ['new','like new','excellent','good','fair','used','working','clean','mint'];
+    if (condWords.some(w => tLow.includes(w)))
+      criteria.push({s:'pass', t:'Title mentions condition — buyers search by this'});
+    else
+      criteria.push({s:'warn', t:'Add condition to title (e.g. "Like New", "Good Condition") — it\'s searched'});
+
+    const spamWords = ['!!!','amazing','best price','must see','wow','cheap cheap','lowest price'];
+    if (spamWords.some(w => tLow.includes(w)))
+      criteria.push({s:'fail', t:'Spam-like phrase in title — remove superlatives, they hurt trust and search'});
+    else
+      criteria.push({s:'pass', t:'No spam words detected in title'});
+
+    if (title.length > 10 && title === title.toUpperCase())
+      criteria.push({s:'warn', t:'ALL CAPS looks like spam — use title case for better trust'});
+  }
+
+  if (desc) {
+    if (desc.length >= 150)
+      criteria.push({s:'pass', t:`Description length: ${desc.length} chars — detailed enough to reduce buyer questions`});
+    else if (desc.length >= 60)
+      criteria.push({s:'warn', t:`Description short (${desc.length} chars) — add features, dimensions, or what\'s included`});
+    else
+      criteria.push({s:'fail', t:`Description too short (${desc.length} chars) — buyers won\'t commit without more info`});
+
+    if (desc.includes('\n') || desc.includes('•') || desc.includes('-') || desc.includes('·'))
+      criteria.push({s:'pass', t:'Uses line breaks or bullets — easy for buyers to scan'});
+    else
+      criteria.push({s:'warn', t:'No line breaks or bullets — buyers skim, not read. Break it up.'});
+
+    const payW = ['cash','venmo','zelle','paypal','pickup','local pickup','ship','delivery'];
+    if (payW.some(w => dLow.includes(w)))
+      criteria.push({s:'pass', t:'Payment and pickup info included — reduces back-and-forth messages'});
+    else
+      criteria.push({s:'fail', t:'Missing payment / pickup info — add "Cash only, local pickup" or similar'});
+
+    const condW2 = ['new','like new','excellent','good','fair','used','condition','wear','scratch'];
+    if (condW2.some(w => dLow.includes(w)))
+      criteria.push({s:'pass', t:'Condition mentioned in description'});
+    else
+      criteria.push({s:'warn', t:'State the condition explicitly in your description — reduces buyer hesitation'});
+
+    const trustW = ['selling because','moving','upgrading','upgrade','gift','no longer','downsiz','rarely used'];
+    if (trustW.some(w => dLow.includes(w)))
+      criteria.push({s:'pass', t:'Reason for selling included — significantly increases buyer trust'});
+    else
+      criteria.push({s:'warn', t:'Add why you\'re selling ("upgrading", "moving") — it builds credibility'});
+  }
+
+  const passed = criteria.filter(c => c.s === 'pass').length;
+  const score  = Math.round((passed / criteria.length) * 100);
+  const cls    = score >= 75 ? 'great' : score >= 50 ? 'ok' : 'poor';
+  const verdict = score >= 75 ? 'Strong Listing'
+                : score >= 50 ? 'Needs Work'
+                : 'Needs Major Fixes';
+  const verdictSub = score >= 75
+    ? 'Your listing follows most best practices. Small tweaks could help further.'
+    : score >= 50
+    ? 'Your listing is okay but missing key elements buyers expect before committing.'
+    : 'Critical elements are missing — these gaps are likely costing you real sales.';
+
+  const icons = { pass: '✓', warn: '!', fail: '✗' };
+  document.getElementById('audit-circle').textContent = score + '%';
+  document.getElementById('audit-circle').className = 'audit-score-circle ' + cls;
+  document.getElementById('audit-verdict').textContent = verdict;
+  document.getElementById('audit-verdict-sub').textContent = verdictSub;
+  document.getElementById('audit-items').innerHTML = criteria.map(c =>
+    `<div class="audit-item ${c.s}"><span class="ai-icon">${icons[c.s]}</span><span class="ai-text">${c.t}</span></div>`
+  ).join('');
+  document.getElementById('audit-output').style.display = 'block';
+}
+
+// ════════════════════════════════
+// Sale Tracker
+// ════════════════════════════════
+function loadTracker() {
+  try { return JSON.parse(localStorage.getItem('sk_tracker') || '[]'); } catch(e) { return []; }
+}
+function saveTracker(items) {
+  try { localStorage.setItem('sk_tracker', JSON.stringify(items)); } catch(e) {}
+}
+
+function addTrackerItem() {
+  const name = document.getElementById('tr-name').value.trim();
+  const listed = parseFloat(document.getElementById('tr-listed').value);
+  if (!name) { alert('Enter an item name.'); return; }
+  const items = loadTracker();
+  items.unshift({
+    id: Date.now(),
+    name,
+    platform: document.getElementById('tr-platform').value,
+    category: document.getElementById('tr-cat').value,
+    listedPrice: listed || 0,
+    soldPrice: null,
+    status: 'listed',
+    dateAdded: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'})
+  });
+  saveTracker(items);
+  document.getElementById('tr-name').value = '';
+  document.getElementById('tr-listed').value = '';
+  renderTracker();
+}
+
+function markSold(id) {
+  const soldPrice = parseFloat(prompt('Sold for how much? ($)'));
+  if (isNaN(soldPrice) || soldPrice < 0) return;
+  const items = loadTracker();
+  const item = items.find(i => i.id === id);
+  if (item) { item.status = 'sold'; item.soldPrice = soldPrice; item.soldAt = Date.now(); }
+  saveTracker(items);
+  renderTracker();
+}
+
+function markExpired(id) {
+  const items = loadTracker();
+  const item = items.find(i => i.id === id);
+  if (item) item.status = 'expired';
+  saveTracker(items);
+  renderTracker();
+}
+
+function deleteTrackerItem(id) {
+  if (!confirm('Delete this sale record? This cannot be undone.')) return;
+  const items = loadTracker().filter(i => i.id !== id);
+  saveTracker(items);
+  renderTracker();
+}
+
+function renderTracker() {
+  const items = loadTracker();
+  const tbody = document.getElementById('tracker-tbody');
+  const empty = document.getElementById('tracker-empty');
+  if (!items.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    updateTrackerStats([]);
+    return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = items.map(it => {
+    const statusClass = { listed:'status-listed', sold:'status-sold', expired:'status-expired', donated:'status-donated' }[it.status] || 'status-listed';
+    const soldCell = it.soldPrice != null ? `<strong>$${it.soldPrice.toLocaleString()}</strong>` : '—';
+    const actions = it.status === 'listed'
+      ? `<button class="tracker-action-btn btn-mark-sold" onclick="markSold(${it.id})">✓ Sold</button><button class="tracker-action-btn btn-del" onclick="markExpired(${it.id})">Expire</button>`
+      : `<button class="tracker-action-btn btn-del" onclick="deleteTrackerItem(${it.id})">Delete</button>`;
+    return `<tr>
+      <td><strong>${it.name}</strong><br><span style="font-size:.72rem;color:var(--gray-500)">${it.category}</span></td>
+      <td>${it.platform}</td>
+      <td>$${it.listedPrice.toLocaleString()}</td>
+      <td>${soldCell}</td>
+      <td style="font-size:.78rem;color:var(--gray-500)">${it.dateAdded}</td>
+      <td><span class="status-badge ${statusClass}">${it.status}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+  updateTrackerStats(items);
+}
+
+function updateTrackerStats(items) {
+  const sold = items.filter(i => i.status === 'sold');
+  const revenue = sold.reduce((s, i) => s + (i.soldPrice || 0), 0);
+  const rate = items.length ? Math.round((sold.length / items.length) * 100) + '%' : '—';
+  const platformCounts = {};
+  sold.forEach(i => { platformCounts[i.platform] = (platformCounts[i.platform] || 0) + 1; });
+  const bestPlatform = Object.keys(platformCounts).sort((a,b) => platformCounts[b]-platformCounts[a])[0] || '—';
+
+  // Items sold before soldAt was recorded have no duration to measure.
+  const timed = sold.filter(i => i.soldAt && i.id);
+  const avgDays = timed.length
+    ? Math.max(1, Math.round(timed.reduce((s, i) => s + (i.soldAt - i.id) / 86400000, 0) / timed.length))
+    : null;
+
+  document.getElementById('ts-total').textContent = items.length;
+  document.getElementById('ts-sold').textContent = '$' + revenue.toLocaleString();
+  document.getElementById('ts-rate').textContent = rate;
+  document.getElementById('ts-days').textContent = avgDays === null ? '—' : avgDays;
+  document.getElementById('ts-best').textContent = bestPlatform;
+}
+
+function exportTrackerCSV() {
+  const items = loadTracker();
+  if (!items.length) { alert('Nothing to export yet — add some items first.'); return; }
+  const esc = v => {
+    const s = v === null || v === undefined ? '' : String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const header = ['Item','Platform','Category','Listed Price','Sold Price','Status','Date Added','Date Sold','Days to Sell'];
+  const rows = items.map(i => {
+    const days = i.soldAt && i.id ? Math.max(1, Math.round((i.soldAt - i.id) / 86400000)) : '';
+    const soldDate = i.soldAt ? new Date(i.soldAt).toLocaleDateString('en-US') : '';
+    return [i.name, i.platform, i.category, i.listedPrice, i.soldPrice ?? '', i.status, i.dateAdded, soldDate, days].map(esc).join(',');
+  });
+  const csv = [header.join(','), ...rows].join('\r\n');
+  const today = new Date().toISOString().split('T')[0];
+  downloadFile(`sellerkit-sales-${today}.csv`, 'text/csv;charset=utf-8', csv);
+}
+
+// ════════════════════════════════
+// Init — restore saved inputs
+// ════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Restore all localStorage-saved inputs
+  ['pc','tg','db','ai','pd','ms','sd'].forEach(loadLS);
+  // Set today's date default for 7-day plan if empty
+  const sdDate = document.getElementById('sd-date');
+  if (sdDate && !sdDate.value) sdDate.value = new Date().toISOString().split('T')[0];
+  // Re-run calculators if values were restored
+  calcPrice();
+  calcPriceDrop();
+  // Restore measurement fields if category was saved
+  const msCat = document.getElementById('ms-category');
+  if (msCat && msCat.value) loadMeasurements();
+  // Restore photo checklist for whichever category has saved progress
+  try {
+    const saved = JSON.parse(localStorage.getItem('sk_photos') || '{}');
+    const cat = Object.keys(saved).find(k => (saved[k] || []).length);
+    const phCat = document.getElementById('ph-category');
+    if (cat && phCat) { phCat.value = cat; loadPhotoChecklist(); }
+  } catch(e) {}
+  // Initialize sale tracker
+  renderTracker();
+});
+</script>
+</body>
+</html>
