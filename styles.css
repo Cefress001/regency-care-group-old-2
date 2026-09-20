@@ -150,9 +150,8 @@ nav .nav-links a.nav-link:hover { color: var(--blue); }
   transition: var(--transition);
 }
 .pain-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
-.pain-quote { font-size: .95rem; color: var(--gray-700); font-style: italic; margin-bottom: .75rem; line-height: 1.6; }
-.pain-quote::before { content: '"'; font-size: 1.5rem; color: var(--red); opacity: .4; line-height: 0; vertical-align: -0.25em; margin-right: .1rem; }
-.pain-source { font-size: .78rem; color: var(--gray-500); font-weight: 600; }
+.pain-problem { font-size: .95rem; color: var(--gray-700); margin-bottom: .75rem; line-height: 1.6; }
+.pain-fix { font-size: .78rem; color: var(--green-dark); font-weight: 700; }
 
 /* ── Transform ── */
 .transform-block {
@@ -233,26 +232,15 @@ nav .nav-links a.nav-link:hover { color: var(--blue); }
 .tool-card h3 { font-size: .95rem; font-weight: 800; margin-bottom: .3rem; }
 .tool-card p { font-size: .85rem; color: var(--gray-500); line-height: 1.55; }
 
-/* ── Testimonials ── */
-.testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.1rem; }
-.testi-card {
+/* ── Trust cards ── */
+.trust-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.1rem; }
+.trust-card {
   background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius);
   padding: 1.5rem; box-shadow: var(--shadow-sm);
 }
-.testi-header { display: flex; align-items: center; gap: .85rem; margin-bottom: 1rem; }
-.testi-avatar {
-  width: 42px; height: 42px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .9rem; font-weight: 800; color: var(--white); flex-shrink: 0;
-}
-.testi-name { font-size: .9rem; font-weight: 700; }
-.testi-loc { font-size: .78rem; color: var(--gray-500); }
-.stars { color: var(--orange); font-size: 1rem; letter-spacing: 2px; }
-.testi-text { font-size: .9rem; color: var(--gray-700); line-height: 1.65; font-style: italic; }
-.testi-result {
-  margin-top: 1rem; padding-top: .75rem; border-top: 1px solid var(--gray-200);
-  font-size: .8rem; font-weight: 700; color: var(--green-dark);
-}
+.trust-icon { font-size: 1.6rem; line-height: 1; margin-bottom: .7rem; }
+.trust-card h4 { font-size: .95rem; font-weight: 800; color: var(--gray-900); margin-bottom: .5rem; }
+.trust-card p { font-size: .9rem; color: var(--gray-700); line-height: 1.65; }
 
 /* ── How it works ── */
 .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.1rem; }
@@ -279,18 +267,12 @@ nav .nav-links a.nav-link:hover { color: var(--blue); }
   content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px;
   border-radius: 50%; background: rgba(99,102,241,.15); pointer-events: none;
 }
-.price-old { font-size: 1rem; opacity: .55; text-decoration: line-through; margin-bottom: .25rem; }
 .price-main { font-size: 5.5rem; font-weight: 900; line-height: 1; letter-spacing: -.04em; }
 .price-note { font-size: .88rem; opacity: .7; margin-bottom: 2rem; margin-top: .35rem; }
 .price-includes { list-style: none; text-align: left; margin-bottom: 2rem; display: flex; flex-direction: column; gap: .55rem; }
 .price-includes li { font-size: .9rem; display: flex; align-items: center; gap: .5rem; }
 .price-includes li::before { content: '✓'; color: #6ee7b7; font-weight: 800; flex-shrink: 0; }
 .guarantee { font-size: .82rem; opacity: .65; margin-top: 1rem; }
-.countdown-chip {
-  display: inline-block; background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.3);
-  border-radius: 100px; padding: .3rem .85rem; font-size: .8rem; font-weight: 700;
-  color: #fca5a5; margin-bottom: 1.5rem;
-}
 
 /* ── FAQ ── */
 .faq-list { border: 1px solid var(--gray-200); border-radius: var(--radius); overflow: hidden; }

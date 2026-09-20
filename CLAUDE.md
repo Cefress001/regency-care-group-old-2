@@ -8,7 +8,7 @@ SellerKit — a static marketing site plus a client-side web app that helps peop
 
 ## Build / run / test
 
-There is no build system, package manager, test suite, or linter. The repo is five files served as-is.
+There is no build system, package manager, test suite, or linter. The repo is a handful of files served as-is.
 
 ```bash
 python3 -m http.server 8000     # then open http://localhost:8000
@@ -18,19 +18,25 @@ Use a server rather than `file://` — `navigator.clipboard.writeText` (used by 
 
 Verification is manual: open the page, exercise the tool, check the browser console. When changing `toolkit.html`, also check the < 900px layout, since the sidebar becomes a fixed bottom tab bar there and has broken twice before (`a830a43`, `01331d5`).
 
+The toolkit is gated — open it locally at `http://localhost:8000/toolkit.html?access=SK-PRO-2026`, or you will only see the unlock overlay.
+
 ## Architecture
 
-Four pages, no shared JS. Each page carries its own `<script>` at the bottom; there is no module system, bundler, or framework.
+Seven pages, no shared JS. Each page carries its own `<script>` at the bottom; there is no module system, bundler, or framework.
 
 | File | Role |
 | --- | --- |
 | `index.html` | Marketing landing page. Inline `<style>` holds page-specific additions on top of `styles.css`. |
-| `toolkit.html` | The product. A single-page app (~2200 lines) holding all 13 tools. |
+| `toolkit.html` | The product. A single-page app (~2270 lines) holding all 13 tools, behind the interim access gate. |
 | `checkout.html` | Payment page. **Self-contained** — inline `<style>`, Google Fonts, does not load `styles.css`. |
-| `success.html` | Post-purchase page. Also self-contained. |
-| `styles.css` | Design system + landing-page styles (lines 1–332) + toolkit styles (line 333 onward). |
+| `success.html` | Post-purchase page. Also self-contained. Grants toolkit access. |
+| `terms.html` `privacy.html` `refund.html` | Legal pages. Share `legal.css`. |
+| `styles.css` | Design system + landing-page styles (lines 1–313) + toolkit styles (line 315 onward). |
+| `legal.css` | Styles for the three legal pages only. Own tokens — does not read `styles.css`. |
+| `robots.txt` | Keeps `toolkit.html` and `success.html` out of search results. |
+| `favicon.svg` | Linked from every page. |
 
-Two styling worlds coexist deliberately: `index.html` and `toolkit.html` share `styles.css` and its `:root` custom properties (`--blue`, `--gray-600`, `--radius`, …); `checkout.html` and `success.html` are standalone with hardcoded colors and the Inter webfont. Editing a token in `styles.css` will not reach the checkout flow.
+Three styling worlds coexist deliberately: `index.html` and `toolkit.html` share `styles.css` and its `:root` custom properties (`--blue`, `--gray-600`, `--radius`, …); `checkout.html` and `success.html` are standalone with hardcoded colors and the Inter webfont; the legal pages share `legal.css`, which defines its own tokens. Editing a token in `styles.css` will not reach the checkout flow or the legal pages.
 
 ### Toolkit SPA pattern
 
@@ -67,6 +73,8 @@ Everything persists to `localStorage` under an `sk_` prefix; there is no backend
 
 ## Gotchas
 
-- **Stripe is not wired up.** `checkout.html` ships a commented-out `<stripe-buy-button>` and a visible `.stripe-placeholder` div in its place. Real keys go in that comment block; the placeholder div gets deleted at the same time. Nothing currently takes payment.
-- **The tool count appears in four files.** When the count changes, update: `index.html` (hero badge, hero stat, two CTAs, section heading, FAQ, sticky CTA), `checkout.html` (order line, feature list), `success.html` (two strings), and the Stripe product description on the Stripe Dashboard (a fifth copy outside the repo). `index.html` also has a derived string ("N more") — keep it consistent with the count minus 3 tools named inline.
+- **Stripe is live.** `checkout.html` carries a real `<stripe-buy-button>` with a `pk_live_` publishable key. Only publishable keys belong in this repo — a `sk_live_`/`sk_test_` secret key must never be committed. The buy button's success URL is configured on the Stripe Dashboard, not here, and it must point at `success.html` or buyers never receive toolkit access.
+- **The toolkit is gated.** `toolkit.html` hides itself behind an access code (`SK-PRO-2026`), checked by an inline `<head>` script that adds `.sk-locked` to `<html>`. Access is granted by `success.html` (sets `sk_access` in `localStorage`), by `?access=<code>`, or by typing the code into the overlay. This is **interim and trivially bypassed** — the whole block sits between the `interim access gate` comment markers in `toolkit.html` and is meant to be deleted wholesale when Firebase Auth lands. Keep the gate CSS/JS inline in `<head>`: moving it to `styles.css` reintroduces a flash of unlocked content.
+- **No invented social proof.** Testimonials, review counts, star ratings, forum quotes with vote counts, "average" result figures, countdown/scarcity chips, and struck-through reference prices were deliberately removed — they are a Stripe-account and chargeback risk on a live payment product, not just a style choice. Do not reintroduce them. Real numbers about the product (13 tools, 12 scam checks, condition percentages) are fine; the ROI table on `index.html` is allowed only because it is explicitly labelled an illustration.
+- **The tool count appears in four files.** When the count changes, update: `index.html` (hero badge, hero stat, two CTAs, section heading, FAQ, sticky CTA, and the `.price-includes` bullet list), `checkout.html` (order line, feature list), `success.html` (two strings), and the Stripe product description on the Stripe Dashboard (a fifth copy outside the repo). `index.html` also has a derived string ("N more") in its `<meta name="description">` and demo CTA — keep both consistent with the count minus the tools named inline.
 - **`toolkit.html` overrides global nav styles.** The `.tk-*` rules exist partly to undo landing-page nav styling that otherwise turned the dark sidebar white (`a44f685`). Be careful when editing shared nav selectors in `styles.css`.

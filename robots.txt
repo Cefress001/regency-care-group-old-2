@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /toolkit.html
+Disallow: /success.html
+Allow: /

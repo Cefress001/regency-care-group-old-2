@@ -3,10 +3,78 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>SellerKit — Toolkit</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
+
+<!-- Interim access gate — everything between these markers is replaced by Firebase Auth.
+     Inlined in <head> so locked content never flashes before styles.css loads. -->
+<style>
+  html.sk-locked .tk-layout { display: none; }
+  #sk-gate { display: none; }
+  html.sk-locked #sk-gate {
+    display: flex; position: fixed; inset: 0; z-index: 9999;
+    align-items: center; justify-content: center; padding: 20px;
+    background: #0f172a; font-family: system-ui, -apple-system, sans-serif;
+  }
+  .sk-gate-card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 14px;
+    padding: 36px 32px; max-width: 420px; width: 100%; text-align: center; color: #f8fafc;
+  }
+  .sk-gate-card h1 { font-size: 1.3rem; margin: 0 0 10px; }
+  .sk-gate-card p { color: #94a3b8; font-size: .9rem; line-height: 1.6; margin: 0 0 22px; }
+  .sk-gate-card input {
+    width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #475569;
+    background: #0f172a; color: #f8fafc; font-size: 1rem; text-align: center;
+    letter-spacing: 1px; margin-bottom: 12px; font-family: inherit;
+  }
+  .sk-gate-card button {
+    width: 100%; padding: 13px; border: none; border-radius: 8px; cursor: pointer;
+    background: #22c55e; color: #0f172a; font-weight: 800; font-size: .95rem; font-family: inherit;
+  }
+  .sk-gate-err { color: #fca5a5; font-size: .85rem; min-height: 20px; margin-top: 10px; }
+  .sk-gate-buy { display: block; margin-top: 18px; color: #94a3b8; font-size: .85rem; }
+</style>
+<script>
+(function () {
+  var CODE = 'SK-PRO-2026';
+  var granted = false;
+  try { granted = localStorage.getItem('sk_access') === 'granted'; } catch (e) {}
+  var qs = new URLSearchParams(location.search).get('access');
+  if (qs && qs.trim().toUpperCase() === CODE) {
+    granted = true;
+    try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
+  }
+  if (!granted) document.documentElement.classList.add('sk-locked');
+
+  // Unlock still works for the session when localStorage throws (private browsing).
+  window.skUnlock = function () {
+    var entered = document.getElementById('sk-code').value.trim().toUpperCase();
+    if (entered !== CODE) {
+      document.getElementById('sk-err').textContent = "That code isn't right — check your receipt email.";
+      return;
+    }
+    try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
+    document.documentElement.classList.remove('sk-locked');
+  };
+})();
+</script>
 </head>
 <body>
+
+<div id="sk-gate">
+  <div class="sk-gate-card">
+    <h1>🔒 Customers only</h1>
+    <p>The SellerKit toolkit is for people who've bought a license. Enter your access code to unlock it on this device.</p>
+    <input id="sk-code" type="text" placeholder="Access code" autocomplete="off"
+           onkeydown="if (event.key === 'Enter') skUnlock()">
+    <button onclick="skUnlock()">Unlock toolkit</button>
+    <div class="sk-gate-err" id="sk-err"></div>
+    <a class="sk-gate-buy" href="checkout.html">Don't have one yet? Get SellerKit →</a>
+  </div>
+</div>
+<!-- end interim access gate -->
 
 <div class="tk-layout">
 

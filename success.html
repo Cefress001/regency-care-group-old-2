@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
   <title>You're In — SellerKit</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -101,6 +103,12 @@
     }
     .step-text { font-size: 0.9rem; line-height: 1.6; color: #cbd5e1; }
     .step-text strong { color: var(--text); }
+    .code-chip {
+      display: inline-block; background: #0f172a; border: 1px solid var(--green);
+      color: var(--green); font-weight: 800; letter-spacing: 1px;
+      padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; margin-top: 6px;
+    }
+    .key-chip { background: #334155; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
 
     .btn-toolkit {
       display: inline-block;
@@ -168,26 +176,37 @@
     <div class="access-step">
       <div class="step-num">2</div>
       <div class="step-text">
-        <strong>Bookmark it</strong> — Press <code style="background:#334155;padding:1px 5px;border-radius:4px;font-size:0.85em;">Ctrl+D</code> (or ⌘D on Mac) to save it. Your data saves automatically in your browser.
+        <strong>Save your access code</strong> — you'll need it to unlock the toolkit on another device, like your phone.<br>
+        <span class="code-chip">SK-PRO-2026</span>
       </div>
     </div>
 
     <div class="access-step">
       <div class="step-num">3</div>
       <div class="step-text">
+        <strong>Bookmark it</strong> — Press <code class="key-chip">Ctrl+D</code> (or ⌘D on Mac) to save it. Your data saves automatically in your browser.
+      </div>
+    </div>
+
+    <div class="access-step">
+      <div class="step-num">4</div>
+      <div class="step-text">
         <strong>Start with the Price Calculator</strong> — Enter your item details to get a data-backed price and see your estimated sell time.
       </div>
     </div>
   </div>
 
-  <a href="toolkit.html" class="btn-toolkit">Open SellerKit →</a>
+  <a href="toolkit.html?access=SK-PRO-2026" class="btn-toolkit">Open SellerKit →</a>
 
   <p class="receipt-note">A receipt was sent to your email by Stripe. Questions? Email <strong>support@sellerkit.io</strong></p>
 </div>
 
 <script>
+  // Reaching this page means the purchase completed — unlock the toolkit on this device.
+  try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
+
   // Simple confetti burst on load
-  const colors = ['#22c55e','#86efac','#fbbf24','#60a5fa','#f472b6','#a78bfa'];
+  const colors =['#22c55e','#86efac','#fbbf24','#60a5fa','#f472b6','#a78bfa'];
   const container = document.getElementById('confetti');
   for (let i = 0; i < 60; i++) {
     const el = document.createElement('div');
