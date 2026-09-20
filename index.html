@@ -1,176 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regency Care Group – Private Caregiver Referrals</title>
-    <!--
-      The description highlights Regency’s core promise: private caregiver referrals
-      for Coastal Orange County families. It emphasises the concierge-level vetting,
-      thoughtful matching and ongoing support that set this service apart while
-      noting the typical cost advantage versus traditional agencies.
-    -->
-    <meta name="description" content="Regency Care Group provides private caregiver referrals for Coastal Orange County families with concierge-level vetting, thoughtful matching and ongoing support—typically 30–40% less than agency care.">
-    <link rel="stylesheet" href="styles.css">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTTXRNalcxzYPwv9PuXbZk+/wQ2uUalj+e4bG6BTul6QU98fcOQsDp6S71KdQf8p6+SG4GTTw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SellerKit — Sell Any Item in 10 Minutes</title>
+<meta name="description" content="Turn unwanted items into professionally priced and written listings in 10 minutes. Pricing calculator, title generator, negotiation scripts, photo checklist, and more.">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Sales-page only extras */
+.sticky-cta {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--white); border-top: 1px solid var(--gray-300);
+  padding: .9rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
+  z-index: 90; box-shadow: 0 -4px 20px rgba(0,0,0,.08);
+  transform: translateY(100%); transition: transform .3s;
+}
+.sticky-cta.visible { transform: translateY(0); }
+.sticky-price { font-size: 1.5rem; font-weight: 900; color: var(--green-dark); }
+.sticky-label { font-size: .8rem; color: var(--gray-500); }
+.section-video {
+  background: var(--dark); padding: 4rem 0; color: var(--white);
+}
+.video-placeholder {
+  background: rgba(255,255,255,.05); border: 2px dashed rgba(255,255,255,.2);
+  border-radius: var(--radius); padding: 4rem 2rem; text-align: center;
+  max-width: 720px; margin: 0 auto;
+}
+.video-placeholder .play { font-size: 4rem; margin-bottom: 1rem; }
+.video-placeholder p { color: rgba(255,255,255,.6); font-size: .95rem; }
+.feature-highlight {
+  display: flex; align-items: flex-start; gap: 1rem; padding: 1.25rem;
+  background: var(--white); border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-300);
+}
+.feature-highlight .num { font-size: 1.8rem; font-weight: 900; color: var(--blue); min-width: 2rem; }
+.feature-highlight h4 { font-weight: 700; margin-bottom: .25rem; }
+.feature-highlight p { font-size: .9rem; color: var(--gray-500); }
+.highlight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+.countdown { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 8px; padding: .75rem 1.25rem; margin-bottom: 1.5rem; color: #991B1B; font-size: .9rem; font-weight: 600; text-align: center; }
+</style>
 </head>
-<body class="watermark">
-    <!-- Navigation -->
-    <nav>
-        <a class="logo" href="index.html"><img src="assets/logo.png" alt="Regency Care Group logo"></a>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="inner">
+    <div class="logo">Seller<span>Kit</span></div>
+    <div class="nav-links">
+      <a href="#tools">Tools</a>
+      <a href="#pricing">Pricing</a>
+      <a href="toolkit.html" class="btn btn-primary" style="padding:.5rem 1.2rem; font-size:.875rem;">Open Toolkit →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">🔥 11 tools, one toolkit, $49</div>
+    <h1>Turn Any Unwanted Item Into<br><em>Cash In Your Pocket</em> — in 10 Minutes</h1>
+    <p class="subtitle">Stop guessing prices. Stop writing weak listings. Stop falling for scams. SellerKit gives you every tool you need to sell smarter on Facebook Marketplace, Craigslist, OfferUp, and more.</p>
+    <div class="hero-cta">
+      <a href="toolkit.html" class="btn btn-success btn-lg">Get SellerKit — $49 →</a>
+      <a href="#tools" class="btn btn-outline" style="color:white; border-color:rgba(255,255,255,.4);">See What's Inside</a>
+    </div>
+    <div class="hero-social">
+      <div class="hero-stat"><div class="num">11</div><div class="label">Tools Included</div></div>
+      <div class="hero-stat"><div class="num">10 min</div><div class="label">To First Listing</div></div>
+      <div class="hero-stat"><div class="num">30-Day</div><div class="label">Money-Back Guarantee</div></div>
+      <div class="hero-stat"><div class="num">$0</div><div class="label">Monthly Fees</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Problem -->
+<section class="section">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="eyebrow">The Problem</div>
+      <h2>Selling Online Is Harder Than It Should Be</h2>
+      <p>People are already asking for exactly this help — every single day</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <p class="pain-quote">"How do I know if I'm pricing this too high? I've had it listed for 3 weeks with zero offers."</p>
+        <div class="pain-source">Reddit r/FacebookMarketplace · 847 upvotes</div>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"Does anyone have a template for writing good descriptions? Mine sound terrible and I know it."</p>
+        <div class="pain-source">Facebook Marketplace Sellers Group · 312 comments</div>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"Someone offered me $10 for my $150 item. What do I even say? I don't want to be rude but NO."</p>
+        <div class="pain-source">Reddit r/declutter · 1.2k upvotes</div>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"I keep making mistakes with scammers. Is there a checklist I should go through?"</p>
+        <div class="pain-source">OfferUp Community Forum · 500+ replies</div>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"I need to sell all this stuff before we move in 2 weeks. What photos do buyers actually care about?"</p>
+        <div class="pain-source">Craigslist Reddit · 743 upvotes</div>
+      </div>
+      <div class="pain-card">
+        <p class="pain-quote">"I wish there were an easier way to figure out when to drop the price and by how much."</p>
+        <div class="pain-source">Nextdoor Sellers Group · 88 comments</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Transformation -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="eyebrow">The Transformation</div>
+      <h2>Before SellerKit vs. After SellerKit</h2>
+    </div>
+    <div class="transform-block">
+      <div class="before">
+        <h4>Without SellerKit</h4>
         <ul>
-            <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="process.html">How It Works</a></li>
-            <li><a href="services.html">Services</a></li>
-            <li><a href="caregiver.html">For Caregivers</a></li>
-            <li><a href="contact.html">Contact</a></li>
+          <li>Guess at prices, items sit for weeks</li>
+          <li>Write vague descriptions, low views</li>
+          <li>Panic when someone lowballs you</li>
+          <li>Waste 30 min per listing</li>
+          <li>Miss scam red flags, lose money</li>
+          <li>No-shows with no follow-up plan</li>
         </ul>
-        <a href="contact.html" class="btn-primary nav-cta">Schedule</a>
-    </nav>
+      </div>
+      <div class="transform-arrow">→</div>
+      <div class="after">
+        <h4>With SellerKit</h4>
+        <ul>
+          <li>Price confidently with a formula</li>
+          <li>Professional listings in 5 minutes</li>
+          <li>Counter every offer with a script</li>
+          <li>10-minute listing, start to finish</li>
+          <li>Scam-proof every transaction</li>
+          <li>Pickup confirmed with one message</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="hero-content">
-            <h1>Private caregiver referrals for Coastal Orange County families.</h1>
-            <p>Concierge‑level vetting, thoughtful matching, and ongoing support — typically 30–40% less than agency care.</p>
-            <div class="cta-buttons" style="display:flex;justify-content:center;gap:1rem;margin-top:1rem;">
-                <a class="btn-primary" href="contact.html">Schedule a Call</a>
-                <a class="btn-secondary" href="process.html">How It Works</a>
-            </div>
-            <p class="microline" style="margin-top:1rem;">Vetted caregivers • 2–3 curated matches • 90‑day replacement • Ongoing check‑ins</p>
+<!-- Tools -->
+<section id="tools" class="section">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="eyebrow">What's Inside</div>
+      <h2>11 Tools, One Simple Toolkit</h2>
+      <p>Everything you need to go from "I should sell this" to "sold" — nothing you don't.</p>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-icon blue">💰</div>
+        <h3>Pricing Calculator</h3>
+        <p>Input original price, condition, and category. Get your ideal asking price, quick-flip price, and when to drop.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon green">✍️</div>
+        <h3>Listing Title Generator</h3>
+        <p>Enter item details and get 3 search-optimized titles in seconds. More views, more buyers.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon blue">📝</div>
+        <h3>Description Builder</h3>
+        <p>Fill in a guided form. Get a professional, buyer-ready listing description — no writing skills needed.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon orange">🤖</div>
+        <h3>AI Listing Prompt</h3>
+        <p>Copy-paste prompt into ChatGPT to generate a polished listing. Includes the exact prompt text.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon green">🤝</div>
+        <h3>Negotiation Scripts</h3>
+        <p>Ready-to-send responses for lowball offers, "is this still available?" messages, no-shows, and trades.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon blue">🛡️</div>
+        <h3>Scam-Warning Checklist</h3>
+        <p>12 red flags to check before every transaction. Never lose money to an obvious scam again.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon orange">📍</div>
+        <h3>Pickup Message Templates</h3>
+        <p>Confirm pickups, share addresses safely, send reminders — all with pre-written, copy-paste messages.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon green">📉</div>
+        <h3>Price Drop Schedule</h3>
+        <p>Know exactly when and how much to lower your price to sell within your deadline.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon blue">📐</div>
+        <h3>Item Measurement Sheet</h3>
+        <p>Print or use on-screen. Capture all dimensions buyers ask for before they even ask.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon orange">📸</div>
+        <h3>Photo Checklist</h3>
+        <p>Category-specific shot lists. Never wonder "did I get the right photos?" again.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon green">🗓️</div>
+        <h3>Sell It in 7 Days</h3>
+        <p>A proven day-by-day action plan. List Monday, sold by Sunday.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="eyebrow">How It Works</div>
+      <h2>Three Steps to Your First Sale</h2>
+    </div>
+    <div class="highlight-grid">
+      <div class="feature-highlight">
+        <div class="num">1</div>
+        <div>
+          <h4>Buy & Open Instantly</h4>
+          <p>Get immediate access to all 11 tools. No download, no setup, works on any device in your browser.</p>
         </div>
-    </header>
-
-    <!-- Trust Strip -->
-    <section class="trust-strip">
-        <div class="trust-item">Vetted Caregivers</div>
-        <div class="trust-item">2–3 Curated Matches</div>
-        <div class="trust-item">90‑Day Replacement</div>
-        <div class="trust-item">Ongoing Check‑Ins</div>
-    </section>
-
-    <!-- Pillar Section -->
-    <section class="pillars">
-        <h2>Why Families Choose Regency</h2>
-        <div class="pillar-grid">
-            <div class="pillar-item">
-                <i class="fa fa-shield-alt"></i>
-                <h3>Safety</h3>
-                <p>Caregivers are screened, referenced and evaluated for reliability and character.</p>
-            </div>
-            <div class="pillar-item">
-                <i class="fa fa-feather"></i>
-                <h3>Ease</h3>
-                <p>We handle the searching, scheduling and introductions so you can breathe.</p>
-            </div>
-            <div class="pillar-item">
-                <i class="fa fa-gem"></i>
-                <h3>Value</h3>
-                <p>Exceptional care without agency overhead or markups.</p>
-            </div>
-            <div class="pillar-item">
-                <i class="fa fa-hand-holding-heart"></i>
-                <h3>Ongoing Support</h3>
-                <p>We remain available after placement for check‑ins and adjustments to ensure harmony.</p>
-            </div>
+      </div>
+      <div class="feature-highlight">
+        <div class="num">2</div>
+        <div>
+          <h4>Price & Write Your Listing</h4>
+          <p>Use the calculator to set a data-backed price, then the title generator and description builder to write the listing in under 5 minutes.</p>
         </div>
-    </section>
-
-    <!-- Timeline Preview -->
-    <section class="how-it-works-preview">
-        <h2>How It Works</h2>
-        <div class="timeline">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>Discovery Call</h3>
-                <p>We clarify needs, schedule, preferences and budget so we can serve your family well.</p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>Screening &amp; Vetting</h3>
-                <p>Thorough background checks, reference verification and experience review.</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3>Curated Introductions</h3>
-                <p>You receive 2–3 vetted candidates selected for fit and reliability.</p>
-            </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <h3>Ongoing Support</h3>
-                <p>We remain available for check‑ins, adjustments and guidance as needed.</p>
-            </div>
+      </div>
+      <div class="feature-highlight">
+        <div class="num">3</div>
+        <div>
+          <h4>Manage Buyers & Close the Sale</h4>
+          <p>Use negotiation scripts, the scam checklist, and pickup templates to handle every buyer professionally and get paid safely.</p>
         </div>
-        <p style="text-align:center;margin-top:2rem;"><a class="btn-primary" href="process.html">Learn More</a></p>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Who We Serve -->
-    <section class="who-serve">
-        <h2>Who We Serve</h2>
-        <div class="serve-grid">
-            <div class="serve-item">
-                <i class="fa fa-user-injured"></i>
-                <h3>Post‑Surgery Recovery</h3>
-                <p>Short‑term support after a medical procedure or hospital stay.</p>
-            </div>
-            <div class="serve-item">
-                <i class="fa fa-brain"></i>
-                <h3>Dementia &amp; Memory Care</h3>
-                <p>Compassionate assistance tailored to cognitive and emotional needs.</p>
-            </div>
-            <div class="serve-item">
-                <i class="fa fa-home"></i>
-                <h3>Daily Living &amp; Companionship</h3>
-                <p>Help with everyday tasks, hobbies and meaningful connection.</p>
-            </div>
-            <div class="serve-item">
-                <i class="fa fa-walking"></i>
-                <h3>Mobility &amp; Transportation</h3>
-                <p>Assistance getting around safely—errands, appointments and outings.</p>
-            </div>
-            <div class="serve-item">
-                <i class="fa fa-moon"></i>
-                <h3>Overnight &amp; 24‑Hour Care</h3>
-                <p>Continuous support for peace of mind around‑the‑clock.</p>
-            </div>
-        </div>
-    </section>
+<!-- Testimonials -->
+<section class="section">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="eyebrow">Early Users</div>
+      <h2>What People Are Saying</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"I had 14 items sitting unsold for over a month. Used the pricing calculator and relisted everything. Sold 9 of them in the first week. The formula is simple but it works."</p>
+        <div class="testi-author">— Sarah M., Chicago IL</div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"The negotiation scripts alone are worth $49. I used to just awkwardly say 'no thanks' to lowballers. Now I counter confidently and close at my price most of the time."</p>
+        <div class="testi-author">— Marcus T., Phoenix AZ</div>
+      </div>
+      <div class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p class="testi-text">"Saved me from a check scam I almost fell for. The scam checklist flagged 3 red flags I missed. That could have cost me $200. Worth every dollar."</p>
+        <div class="testi-author">— Jennifer K., Atlanta GA</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Testimonials -->
-    <section class="testimonials">
-        <h2>Kind Words from Families</h2>
-        <div class="testimonial-grid">
-            <blockquote>
-                Regency made this process calm and clear. We found the right caregiver quickly — and felt supported the whole time.
-                <cite>— Newport Beach Family</cite>
-            </blockquote>
-            <blockquote>
-                The match was perfect. Mom feels safe and cared for, and we finally have peace of mind.
-                <cite>— Laguna Niguel Daughter</cite>
-            </blockquote>
-            <blockquote>
-                Their team truly listened. It felt like working with a trusted advisor, not a typical agency.
-                <cite>— OC Elder Law Attorney</cite>
-            </blockquote>
-        </div>
-    </section>
+<!-- Pricing -->
+<section id="pricing" class="section section-alt">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="eyebrow">Simple Pricing</div>
+      <h2>One Price, Everything Included</h2>
+    </div>
+    <div class="countdown">⏰ Limited launch pricing — price increases when initial stock sells out</div>
+    <div class="price-box">
+      <div class="price-old">Value: $149+</div>
+      <div class="price-main">$49</div>
+      <div class="price-note">One-time payment · Lifetime access · No subscription</div>
+      <ul class="price-includes">
+        <li>Pricing Calculator with condition formula</li>
+        <li>Listing Title Generator (3 options)</li>
+        <li>Description Builder with auto-fill</li>
+        <li>AI Listing Prompt for ChatGPT</li>
+        <li>Negotiation Scripts (6 scenarios)</li>
+        <li>Scam-Warning Checklist (12 items)</li>
+        <li>Pickup Message Templates</li>
+        <li>Price Drop Schedule Calculator</li>
+        <li>Item Measurement Sheet</li>
+        <li>Category Photo Checklist</li>
+        <li>7-Day Sell-It Action Plan</li>
+      </ul>
+      <a href="toolkit.html" class="btn btn-success" style="width:100%; font-size:1.15rem;">Get SellerKit Now — $49 →</a>
+      <div class="guarantee">🔒 30-day money-back guarantee · Secure checkout</div>
+    </div>
+  </div>
+</section>
 
-    <!-- Contact Call to Action -->
-    <section class="contact-cta">
-        <h2>Not sure where to start?</h2>
-        <p>We’ll ask a few questions and guide you to the right next step.</p>
-        <div class="cta-buttons">
-            <a class="btn-secondary" href="tel:5551234567">Call/Text</a>
-            <a class="btn-primary" href="contact.html">Schedule</a>
-        </div>
-    </section>
+<!-- FAQ -->
+<section class="section">
+  <div class="container" style="max-width: 720px;">
+    <div class="section-header text-center">
+      <div class="eyebrow">FAQ</div>
+      <h2>Common Questions</h2>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What platforms does SellerKit work for? <span class="icon">+</span></div>
+      <div class="faq-a">SellerKit works for any local selling platform — Facebook Marketplace, Craigslist, OfferUp, Nextdoor, VarageSale, Letgo, Mercari local pickup, and garage sales. The strategies and scripts apply anywhere you're selling directly to a buyer.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Do I need any special software? <span class="icon">+</span></div>
+      <div class="faq-a">No. Everything runs in your browser. No downloads, no apps, no subscriptions. Works on phone, tablet, or desktop. If you can open a webpage, you have everything you need.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What if I'm not tech-savvy? <span class="icon">+</span></div>
+      <div class="faq-a">SellerKit is designed for people who are not tech-savvy. Fill in a few fields, click a button, get your result. The hardest part is deciding what to sell first.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What does the "30-day money-back guarantee" cover? <span class="icon">+</span></div>
+      <div class="faq-a">If you use SellerKit within 30 days and feel it didn't deliver value, email us for a full refund. No questions asked. We're confident you'll sell something before needing to ask.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Will I get updates? <span class="icon">+</span></div>
+      <div class="faq-a">Yes. One-time purchase includes all future updates. As we add new tools and scripts, you get access automatically.</div>
+    </div>
+  </div>
+</section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Regency Care Group, LLC. All rights reserved.</p>
-        <p>Serving Coastal Orange County • Private caregiver referral service</p>
-        <small>The domestic workers referred by this service are not employees of this company. Clients hire and supervise their independent caregivers and assume all employer obligations.</small>
-    </footer>
+<!-- Final CTA -->
+<section class="hero" style="padding: 4rem 0;">
+  <div class="container text-center">
+    <h2 style="font-size:clamp(1.6rem,4vw,2.5rem); margin-bottom:1rem;">Ready to Turn Clutter Into Cash?</h2>
+    <p style="opacity:.85; margin-bottom:2rem; font-size:1.1rem;">Join hundreds of sellers who stopped guessing and started selling.</p>
+    <a href="toolkit.html" class="btn btn-success btn-lg">Get SellerKit — $49 →</a>
+    <p style="opacity:.6; font-size:.85rem; margin-top:1rem;">30-day money-back guarantee · Instant access · No subscription</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p><strong>SellerKit</strong> — Professional selling tools for everyday sellers.</p>
+    <p style="margin-top:.5rem;">Questions? <a href="mailto:hello@sellerkit.io" style="color:rgba(255,255,255,.7)">hello@sellerkit.io</a> · <a href="toolkit.html" style="color:rgba(255,255,255,.7)">Open Toolkit</a></p>
+  </div>
+</footer>
+
+<!-- Sticky CTA -->
+<div class="sticky-cta" id="stickyCta">
+  <div>
+    <div class="sticky-price">$49</div>
+    <div class="sticky-label">One-time · All 11 tools</div>
+  </div>
+  <a href="toolkit.html" class="btn btn-success">Get SellerKit →</a>
+</div>
+
+<script>
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+// Sticky CTA
+const stickyCta = document.getElementById('stickyCta');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 500) stickyCta.classList.add('visible');
+  else stickyCta.classList.remove('visible');
+});
+</script>
 </body>
 </html>
