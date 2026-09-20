@@ -223,6 +223,12 @@
           </select>
         </div>
 
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="calcPrice(true)">💰 Calculate My Price →</button>
+          <button class="btn btn-outline btn-sm" onclick="resetPricing()">Reset</button>
+        </div>
+        <div class="empty-hint" id="pc-empty">Fill in retail price, condition and demand — then hit Calculate.</div>
+
         <div id="pc-results" style="display:none;">
           <div class="results-row">
             <div class="result-chip ideal">
@@ -262,6 +268,14 @@
           <div id="pc-comparables" style="display:none;margin-top:.5rem;">
             <a class="comparables-link" id="pc-comp-link" target="_blank" rel="noopener">🔎 Research comparable sold listings on eBay →</a>
           </div>
+
+          <div class="fee-block" id="pc-fees">
+            <div class="fee-head">
+              <strong>What you actually pocket</strong>
+              <span class="fee-note">At your Ask First price, after platform fees</span>
+            </div>
+            <div class="fee-rows" id="pc-fee-rows"></div>
+          </div>
           <div class="tip-callout" id="pc-tip" style="display:none;">
             <span class="tip-icon">💡</span>
             <div class="tip-body"><h4>Category Tip</h4><p id="pc-tip-text"></p></div>
@@ -281,6 +295,9 @@
             <label>Your Floor ($) <span style="font-weight:400;color:var(--gray-400)">(auto-filled if calculated above)</span></label>
             <input type="number" id="pc-offer-floor" placeholder="auto" oninput="calcOffer()">
           </div>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-primary btn-sm" onclick="calcOffer()">🤝 Get My Counter →</button>
         </div>
         <div id="pc-offer-result" style="display:none;" class="offer-calc-result">
           <div id="pc-offer-rec" class="offer-rec"></div>
@@ -681,9 +698,12 @@
             <li><input type="checkbox" id="sc12" onchange="updateScamScore()"><label for="sc12">Your gut says this is a real person — nothing feels off</label></li>
           </ul>
         </div>
-        <div style="display:flex;gap:.75rem;margin-top:.5rem;flex-wrap:wrap;">
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="analyzeScamRisk()">🛡️ Analyze This Buyer →</button>
           <button class="btn btn-outline btn-sm" onclick="resetChecklist()">Reset</button>
         </div>
+
+        <div id="scam-verdict-card" style="display:none;"></div>
       </div>
 
       <div class="tk-card">
@@ -769,8 +789,16 @@
         </div>
         <div class="form-row"><label>Floor Price — won't go below ($) — leave blank to auto-calculate</label><input type="number" id="pd-floor" placeholder="Auto-calculated at 45% of asking price" oninput="calcPriceDrop(); saveLS('pd')"></div>
 
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="calcPriceDrop(true)">📉 Build Drop Schedule →</button>
+        </div>
+        <div class="empty-hint" id="pd-empty">Enter your asking price and a deadline to generate the schedule.</div>
+
         <div id="pd-results" style="display:none; margin-top:1rem;">
-          <div class="output-header"><strong>Your Price Drop Schedule</strong></div>
+          <div class="output-header">
+            <strong>Your Price Drop Schedule</strong>
+            <button class="copy-btn" onclick="exportDropICS()">📅 Add to Calendar</button>
+          </div>
           <div style="overflow-x:auto;">
             <table class="sched-table" id="pd-table">
               <thead><tr><th>Day</th><th>Date</th><th>Action</th><th>Price</th><th>% of Original</th><th>Status</th></tr></thead>
@@ -859,6 +887,13 @@
           </select>
         </div>
 
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="loadPhotoChecklist(true)">📸 Load My Shot List →</button>
+          <button class="btn btn-outline btn-sm" id="ph-copy-btn" onclick="copyShotList(this)" style="display:none;">📋 Copy Shot List</button>
+          <button class="btn btn-outline btn-sm" id="ph-reset-btn" onclick="resetPhotoChecklist()" style="display:none;">Reset</button>
+        </div>
+        <div class="empty-hint" id="ph-empty">Pick a category to get the exact shots buyers expect.</div>
+
         <div id="ph-list" style="display:none;margin-top:1rem;"></div>
 
         <div id="ph-score" style="display:none;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--gray-200);">
@@ -900,7 +935,7 @@
         <button class="btn btn-primary" onclick="buildSevenDay()">Build My 7-Day Plan →</button>
       </div>
 
-      <div id="sd-output" style="display:none;" class="tk-card" id="print-sevenday">
+      <div id="sd-output" style="display:none;" class="tk-card">
         <div class="output-header">
           <strong id="sd-title"></strong>
           <button class="print-btn" onclick="window.print()">🖨️ Print Plan</button>
@@ -1049,10 +1084,15 @@
         <div class="tracker-stat"><div class="ts-num" id="ts-total">0</div><div class="ts-label">Items Tracked</div></div>
         <div class="tracker-stat"><div class="ts-num" id="ts-sold">$0</div><div class="ts-label">Total Revenue</div></div>
         <div class="tracker-stat"><div class="ts-num" id="ts-rate">—</div><div class="ts-label">Sell Rate</div></div>
+        <div class="tracker-stat"><div class="ts-num" id="ts-days">—</div><div class="ts-label">Avg Days to Sell</div></div>
         <div class="tracker-stat"><div class="ts-num" id="ts-best">—</div><div class="ts-label">Best Platform</div></div>
       </div>
 
       <div class="tk-card">
+        <div class="action-row" style="margin-top:0;">
+          <button class="btn btn-outline btn-sm" onclick="exportTrackerCSV()">⬇️ Export CSV</button>
+          <button class="btn btn-outline btn-sm" onclick="printSection('tracker-tbody')">🖨️ Print</button>
+        </div>
         <div class="tracker-table-wrap">
           <table class="tracker-table">
             <thead>
@@ -1125,13 +1165,28 @@ function loadLS(prefix) {
 // ════════════════════════════════
 // 1. Pricing Calculator
 // ════════════════════════════════
-function calcPrice() {
+function calcPrice(fromButton) {
   const retail = parseFloat(document.getElementById('pc-retail').value);
   const condition = parseFloat(document.getElementById('pc-condition').value);
   const demand = parseFloat(document.getElementById('pc-demand').value);
   const category = document.getElementById('pc-category').value;
   const results = document.getElementById('pc-results');
-  if (!retail || !condition || !demand) { results.style.display = 'none'; return; }
+  const empty = document.getElementById('pc-empty');
+  if (!retail || !condition || !demand) {
+    results.style.display = 'none';
+    empty.style.display = 'block';
+    if (fromButton) {
+      const missing = [];
+      if (!retail) missing.push('retail price');
+      if (!condition) missing.push('condition');
+      if (!demand) missing.push('local demand');
+      empty.textContent = 'Still need: ' + missing.join(', ') + '.';
+      empty.classList.add('warn');
+    }
+    return;
+  }
+  empty.style.display = 'none';
+  empty.classList.remove('warn');
   const ideal = Math.round(retail * condition * demand / 5) * 5;
   const quickflip = Math.round(ideal * 0.80 / 5) * 5;
   const floor = Math.round(ideal * 0.65 / 5) * 5;
@@ -1195,7 +1250,43 @@ function calcPrice() {
   }
   // Auto-fill offer floor
   document.getElementById('pc-offer-floor').placeholder = '$' + floor.toLocaleString() + ' (from calculator)';
+  renderFeeBreakdown(ideal);
   results.style.display = 'block';
+}
+
+// Platform fee rates. Flat fees are per-sale surcharges on top of the percentage.
+const FEE_TABLE = [
+  { name: 'Local cash',        pct: 0,      flat: 0,    note: 'Facebook / OfferUp / Craigslist pickup' },
+  { name: 'Facebook shipping', pct: 0.05,   flat: 0,    note: '5% per shipped order' },
+  { name: 'Mercari',           pct: 0.10,   flat: 0,    note: '10% selling fee' },
+  { name: 'eBay',              pct: 0.1325, flat: 0.30, note: '13.25% + $0.30 per order' },
+  { name: 'Poshmark',          pct: 0.20,   flat: 0,    note: '20% over $15' }
+];
+
+function renderFeeBreakdown(price) {
+  const rows = FEE_TABLE.map(f => {
+    const fee = price * f.pct + (price > 0 ? f.flat : 0);
+    const net = Math.max(0, price - fee);
+    const width = price > 0 ? Math.round((net / price) * 100) : 0;
+    return `<div class="fee-row">
+      <div class="fee-name">${f.name}<span class="fee-sub">${f.note}</span></div>
+      <div class="fee-track"><div class="fee-bar" style="width:${width}%"></div></div>
+      <div class="fee-net">$${Math.round(net).toLocaleString()}<span class="fee-sub">${fee > 0 ? '−$' + Math.round(fee).toLocaleString() + ' fees' : 'no fees'}</span></div>
+    </div>`;
+  }).join('');
+  document.getElementById('pc-fee-rows').innerHTML = rows;
+}
+
+function resetPricing() {
+  ['pc-name','pc-retail','pc-condition','pc-demand','pc-category','pc-offer-in','pc-offer-floor']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('pc-results').style.display = 'none';
+  document.getElementById('pc-offer-result').style.display = 'none';
+  const empty = document.getElementById('pc-empty');
+  empty.style.display = 'block';
+  empty.classList.remove('warn');
+  empty.textContent = 'Fill in retail price, condition and demand — then hit Calculate.';
+  try { localStorage.removeItem('sk_pc'); } catch(e) {}
 }
 
 // ════════════════════════════════
@@ -1318,17 +1409,104 @@ function resetChecklist() {
     const el = document.getElementById('sc' + i);
     if (el) el.checked = false;
   }
+  document.getElementById('scam-verdict-card').style.display = 'none';
   updateScamScore();
+}
+
+// Weighted risk: payment fraud (1-4) is what actually costs sellers money,
+// so an unchecked payment item outranks an unchecked identity one.
+const SCAM_WEIGHTS = {
+  1: { w: 3, risk: 'Check / money order / wire transfer — the classic bounced-payment scam.' },
+  2: { w: 3, risk: 'Overpayment offer — the check bounces after you refund the difference.' },
+  3: { w: 3, risk: 'Buyer wants YOU to send money. There is no legitimate version of this.' },
+  4: { w: 3, risk: 'Payment not confirmed in your own app — screenshots are trivially faked.' },
+  5: { w: 1, risk: 'Brand-new profile — no history to hold them accountable.' },
+  6: { w: 1, risk: 'No reviews, posts, or real photo on the profile.' },
+  7: { w: 2, risk: 'Zero-history account messaging you — common throwaway scam pattern.' },
+  8: { w: 2, risk: '"My driver will pick it up" — classic proxy-pickup fraud setup.' },
+  9: { w: 2, risk: 'Meeting alone in a private location.' },
+  10:{ w: 3, risk: 'Releasing the item before payment clears.' },
+  11:{ w: 3, risk: 'Sensitive personal info shared — identity theft exposure.' },
+  12:{ w: 1, risk: 'Your own instinct is flagging something.' }
+};
+
+function analyzeScamRisk() {
+  const unchecked = [];
+  let riskScore = 0, maxScore = 0;
+  for (let i = 1; i <= 12; i++) {
+    const meta = SCAM_WEIGHTS[i];
+    maxScore += meta.w;
+    if (!document.getElementById('sc' + i)?.checked) {
+      unchecked.push({ n: i, ...meta });
+      riskScore += meta.w;
+    }
+  }
+
+  const paymentRisk = unchecked.some(u => u.n <= 4 || u.n === 10 || u.n === 11);
+  const safetyPct = Math.round(((maxScore - riskScore) / maxScore) * 100);
+
+  let level, headline, advice;
+  if (unchecked.length === 0) {
+    level = 'go';
+    headline = '✅ Clear to proceed';
+    advice = 'Every check passed. Still meet in public and confirm payment in your own app before handing anything over.';
+  } else if (paymentRisk || safetyPct < 55) {
+    level = 'stop';
+    headline = '🚨 STOP — do not proceed';
+    advice = 'At least one high-severity check failed. These are the patterns that actually cost sellers money and items. Resolve every item below before you meet this buyer.';
+  } else if (safetyPct < 85) {
+    level = 'caution';
+    headline = '⚠️ Proceed with caution';
+    advice = 'No payment-fraud flags, but there are gaps worth closing. Verify the items below before you commit to a meetup.';
+  } else {
+    level = 'go';
+    headline = '🟢 Low risk — looks legitimate';
+    advice = 'Only minor items outstanding. Meet in public, confirm payment, and you should be fine.';
+  }
+
+  const list = unchecked.length
+    ? `<div class="verdict-risks">
+         <div class="verdict-risks-title">${unchecked.length} unresolved ${unchecked.length === 1 ? 'risk' : 'risks'}</div>
+         ${unchecked.map(u => `<div class="verdict-risk sev-${u.w >= 3 ? 'high' : u.w === 2 ? 'med' : 'low'}">
+            <span class="vr-sev">${u.w >= 3 ? 'HIGH' : u.w === 2 ? 'MED' : 'LOW'}</span>
+            <span>${u.risk}</span>
+         </div>`).join('')}
+       </div>`
+    : '';
+
+  document.getElementById('scam-verdict-card').innerHTML =
+    `<div class="verdict-card verdict-${level}">
+       <div class="verdict-head">
+         <div class="verdict-headline">${headline}</div>
+         <div class="verdict-pct">${safetyPct}<span>% safe</span></div>
+       </div>
+       <p class="verdict-advice">${advice}</p>
+       ${list}
+     </div>`;
+  document.getElementById('scam-verdict-card').style.display = 'block';
 }
 
 // ════════════════════════════════
 // 8. Price Drop Schedule
 // ════════════════════════════════
-function calcPriceDrop() {
+let DROP_SCHEDULE = [];
+
+function calcPriceDrop(fromButton) {
   const price = parseFloat(document.getElementById('pd-price').value);
   const deadline = parseInt(document.getElementById('pd-deadline').value);
   const floorIn = parseFloat(document.getElementById('pd-floor').value);
-  if (!price || !deadline) { document.getElementById('pd-results').style.display = 'none'; return; }
+  const empty = document.getElementById('pd-empty');
+  if (!price || !deadline) {
+    document.getElementById('pd-results').style.display = 'none';
+    empty.style.display = 'block';
+    if (fromButton) {
+      empty.textContent = !price ? 'Enter your asking price first.' : 'Pick a deadline to build the schedule.';
+      empty.classList.add('warn');
+    }
+    return;
+  }
+  empty.style.display = 'none';
+  empty.classList.remove('warn');
   const floor = floorIn || Math.round(price * 0.45 / 5) * 5;
   const schedules = {
     7:  [{day:1,pct:1.0,action:'List at asking price'},{day:4,pct:.88,action:'First price drop'},{day:7,pct:.75,action:'Final push or hold'}],
@@ -1341,10 +1519,12 @@ function calcPriceDrop() {
   const today = new Date();
   const tbody = document.getElementById('pd-tbody');
   tbody.innerHTML = '';
+  DROP_SCHEDULE = [];
   steps.forEach(step => {
     const newPrice = Math.max(Math.round(price * step.pct / 5) * 5, floor);
     const d = new Date(today);
     d.setDate(today.getDate() + step.day - 1);
+    DROP_SCHEDULE.push({ date: d, price: newPrice, action: step.action, day: step.day });
     const dateStr = d.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
     const badge = step.pct === 1.0 ? '<span class="badge badge-green">Start</span>'
                 : newPrice <= floor ? '<span class="badge badge-red">Floor</span>'
@@ -1359,6 +1539,60 @@ function calcPriceDrop() {
     </tr>`;
   });
   document.getElementById('pd-results').style.display = 'block';
+}
+
+function downloadFile(filename, mime, content) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ICS spec requires CRLF line endings and escaping of , ; and \ in text values.
+function icsEscape(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+}
+
+function exportDropICS() {
+  if (!DROP_SCHEDULE.length) { alert('Build your schedule first.'); return; }
+  const item = (document.getElementById('pd-price').value || '').trim();
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//SellerKit//Price Drop//EN', 'CALSCALE:GREGORIAN'];
+
+  DROP_SCHEDULE.forEach((s, i) => {
+    // All-day event: DTSTART;VALUE=DATE with DTEND on the following day.
+    const y = s.date.getFullYear();
+    const m = String(s.date.getMonth() + 1).padStart(2, '0');
+    const d = String(s.date.getDate()).padStart(2, '0');
+    const end = new Date(s.date);
+    end.setDate(end.getDate() + 1);
+    const ey = end.getFullYear();
+    const em = String(end.getMonth() + 1).padStart(2, '0');
+    const ed = String(end.getDate()).padStart(2, '0');
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:sellerkit-drop-${Date.now()}-${i}@sellerkit`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${y}${m}${d}`,
+      `DTEND;VALUE=DATE:${ey}${em}${ed}`,
+      `SUMMARY:${icsEscape('SellerKit: ' + s.action + ' — $' + s.price)}`,
+      `DESCRIPTION:${icsEscape('Day ' + s.day + ' of your price drop plan. Update your listing price to $' + s.price + ' today. Editing the price also bumps your listing to fresh buyers.')}`,
+      'BEGIN:VALARM',
+      'TRIGGER:-PT1H',
+      'ACTION:DISPLAY',
+      `DESCRIPTION:${icsEscape('Price drop reminder: $' + s.price)}`,
+      'END:VALARM',
+      'END:VEVENT'
+    );
+  });
+
+  lines.push('END:VCALENDAR');
+  downloadFile('sellerkit-price-drops.ics', 'text/calendar;charset=utf-8', lines.join('\r\n'));
 }
 
 // ════════════════════════════════
@@ -1437,14 +1671,30 @@ const PHOTO_LISTS = {
   }
 };
 
-function loadPhotoChecklist() {
+function loadPhotoChecklist(fromButton) {
   const cat = document.getElementById('ph-category').value;
-  if (!cat || !PHOTO_LISTS[cat]) { document.getElementById('ph-list').style.display = 'none'; document.getElementById('ph-score').style.display = 'none'; return; }
+  const empty = document.getElementById('ph-empty');
+  const copyBtn = document.getElementById('ph-copy-btn');
+  const resetBtn = document.getElementById('ph-reset-btn');
+  if (!cat || !PHOTO_LISTS[cat]) {
+    document.getElementById('ph-list').style.display = 'none';
+    document.getElementById('ph-score').style.display = 'none';
+    copyBtn.style.display = 'none';
+    resetBtn.style.display = 'none';
+    empty.style.display = 'block';
+    if (fromButton) { empty.textContent = 'Pick a category first.'; empty.classList.add('warn'); }
+    return;
+  }
+  empty.style.display = 'none';
+  empty.classList.remove('warn');
+
+  const done = loadPhotoState(cat);
   let html = '', idx = 0;
   Object.entries(PHOTO_LISTS[cat]).forEach(([section, items]) => {
     html += `<div class="checklist-section"><div class="checklist-section-title">${section}</div><ul class="checklist">`;
     items.forEach(item => {
-      html += `<li><input type="checkbox" id="ph_${idx}" onchange="updatePhotoScore()"><label for="ph_${idx}">${item}</label></li>`;
+      const checked = done.includes(idx) ? ' checked' : '';
+      html += `<li><input type="checkbox" id="ph_${idx}"${checked} onchange="updatePhotoScore()"><label for="ph_${idx}">${item}</label></li>`;
       idx++;
     });
     html += `</ul></div>`;
@@ -1452,7 +1702,57 @@ function loadPhotoChecklist() {
   document.getElementById('ph-list').innerHTML = html;
   document.getElementById('ph-list').style.display = 'block';
   document.getElementById('ph-score').style.display = 'block';
+  copyBtn.style.display = 'inline-flex';
+  resetBtn.style.display = 'inline-flex';
   updatePhotoScore();
+}
+
+function loadPhotoState(cat) {
+  try {
+    const raw = localStorage.getItem('sk_photos');
+    if (!raw) return [];
+    return (JSON.parse(raw) || {})[cat] || [];
+  } catch(e) { return []; }
+}
+
+function savePhotoState() {
+  const cat = document.getElementById('ph-category').value;
+  if (!cat) return;
+  const done = [];
+  document.querySelectorAll('#ph-list input[type=checkbox]').forEach((el, i) => { if (el.checked) done.push(i); });
+  try {
+    const raw = localStorage.getItem('sk_photos');
+    const all = raw ? (JSON.parse(raw) || {}) : {};
+    all[cat] = done;
+    localStorage.setItem('sk_photos', JSON.stringify(all));
+  } catch(e) {}
+}
+
+function resetPhotoChecklist() {
+  document.querySelectorAll('#ph-list input[type=checkbox]').forEach(el => { el.checked = false; });
+  updatePhotoScore();
+}
+
+function copyShotList(btn) {
+  const cat = document.getElementById('ph-category').value;
+  if (!cat || !PHOTO_LISTS[cat]) return;
+  let text = `📸 Photo Shot List — ${cat.charAt(0).toUpperCase() + cat.slice(1)}\n\n`;
+  const boxes = document.querySelectorAll('#ph-list input[type=checkbox]');
+  let idx = 0;
+  Object.entries(PHOTO_LISTS[cat]).forEach(([section, items]) => {
+    text += `${section}\n`;
+    items.forEach(item => {
+      text += `${boxes[idx] && boxes[idx].checked ? '[x]' : '[ ]'} ${item}\n`;
+      idx++;
+    });
+    text += '\n';
+  });
+  text += 'Natural light · clean background · fill the frame · show defects honestly.';
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 1600);
+  });
 }
 
 function updatePhotoScore() {
@@ -1464,10 +1764,11 @@ function updatePhotoScore() {
   fill.style.width = pct + '%';
   fill.style.background = pct < 50 ? 'var(--orange)' : pct < 80 ? 'var(--blue)' : 'var(--green)';
   document.getElementById('ph-status').textContent =
-    pct < 50 ? 'Keep going — more photos = faster sale and fewer buyer questions' :
-    pct < 80 ? 'Good progress! A few more shots will really help.' :
-    pct < 100 ? 'Almost there — excellent photo coverage!' :
+    pct < 50 ? `${checked} of ${all.length} shots — more photos = faster sale and fewer buyer questions` :
+    pct < 80 ? `${checked} of ${all.length} shots — good progress, a few more will really help.` :
+    pct < 100 ? `${checked} of ${all.length} shots — almost there, excellent coverage!` :
     '✅ Full coverage — your listing is photo-complete!';
+  savePhotoState();
 }
 
 // ════════════════════════════════
@@ -1781,7 +2082,7 @@ function markSold(id) {
   if (isNaN(soldPrice) || soldPrice < 0) return;
   const items = loadTracker();
   const item = items.find(i => i.id === id);
-  if (item) { item.status = 'sold'; item.soldPrice = soldPrice; }
+  if (item) { item.status = 'sold'; item.soldPrice = soldPrice; item.soldAt = Date.now(); }
   saveTracker(items);
   renderTracker();
 }
@@ -1838,10 +2139,36 @@ function updateTrackerStats(items) {
   const platformCounts = {};
   sold.forEach(i => { platformCounts[i.platform] = (platformCounts[i.platform] || 0) + 1; });
   const bestPlatform = Object.keys(platformCounts).sort((a,b) => platformCounts[b]-platformCounts[a])[0] || '—';
+
+  // Items sold before soldAt was recorded have no duration to measure.
+  const timed = sold.filter(i => i.soldAt && i.id);
+  const avgDays = timed.length
+    ? Math.max(1, Math.round(timed.reduce((s, i) => s + (i.soldAt - i.id) / 86400000, 0) / timed.length))
+    : null;
+
   document.getElementById('ts-total').textContent = items.length;
   document.getElementById('ts-sold').textContent = '$' + revenue.toLocaleString();
   document.getElementById('ts-rate').textContent = rate;
+  document.getElementById('ts-days').textContent = avgDays === null ? '—' : avgDays;
   document.getElementById('ts-best').textContent = bestPlatform;
+}
+
+function exportTrackerCSV() {
+  const items = loadTracker();
+  if (!items.length) { alert('Nothing to export yet — add some items first.'); return; }
+  const esc = v => {
+    const s = v === null || v === undefined ? '' : String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const header = ['Item','Platform','Category','Listed Price','Sold Price','Status','Date Added','Date Sold','Days to Sell'];
+  const rows = items.map(i => {
+    const days = i.soldAt && i.id ? Math.max(1, Math.round((i.soldAt - i.id) / 86400000)) : '';
+    const soldDate = i.soldAt ? new Date(i.soldAt).toLocaleDateString('en-US') : '';
+    return [i.name, i.platform, i.category, i.listedPrice, i.soldPrice ?? '', i.status, i.dateAdded, soldDate, days].map(esc).join(',');
+  });
+  const csv = [header.join(','), ...rows].join('\r\n');
+  const today = new Date().toISOString().split('T')[0];
+  downloadFile(`sellerkit-sales-${today}.csv`, 'text/csv;charset=utf-8', csv);
 }
 
 // ════════════════════════════════
@@ -1859,6 +2186,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Restore measurement fields if category was saved
   const msCat = document.getElementById('ms-category');
   if (msCat && msCat.value) loadMeasurements();
+  // Restore photo checklist for whichever category has saved progress
+  try {
+    const saved = JSON.parse(localStorage.getItem('sk_photos') || '{}');
+    const cat = Object.keys(saved).find(k => (saved[k] || []).length);
+    const phCat = document.getElementById('ph-category');
+    if (cat && phCat) { phCat.value = cat; loadPhotoChecklist(); }
+  } catch(e) {}
   // Initialize sale tracker
   renderTracker();
 });

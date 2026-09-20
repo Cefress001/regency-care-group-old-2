@@ -646,6 +646,50 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 .tracker-empty { text-align: center; padding: 2.5rem; color: var(--gray-500); font-size: .9rem; }
 .tracker-add-form { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: .6rem; align-items: end; }
 
+/* ── Action rows & empty hints ── */
+.action-row { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; margin-top: 1.1rem; }
+.empty-hint {
+  margin-top: .7rem; font-size: .82rem; color: var(--gray-500);
+  background: var(--gray-50); border: 1px dashed var(--gray-300);
+  border-radius: var(--radius-sm); padding: .65rem .85rem;
+}
+.empty-hint.warn { color: #92400E; background: var(--orange-light); border-color: #FDE68A; font-weight: 600; }
+
+/* ── Platform fee breakdown ── */
+.fee-block { margin-top: 1rem; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: .9rem 1rem; background: var(--gray-50); }
+.fee-head { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; flex-wrap: wrap; margin-bottom: .75rem; }
+.fee-head strong { font-size: .88rem; }
+.fee-note { font-size: .72rem; color: var(--gray-500); }
+.fee-rows { display: flex; flex-direction: column; gap: .5rem; }
+.fee-row { display: grid; grid-template-columns: 150px 1fr 96px; gap: .75rem; align-items: center; }
+.fee-name { font-size: .8rem; font-weight: 700; color: var(--gray-900); display: flex; flex-direction: column; }
+.fee-sub { font-size: .68rem; font-weight: 500; color: var(--gray-500); }
+.fee-track { height: 8px; background: var(--gray-200); border-radius: 100px; overflow: hidden; }
+.fee-bar { height: 100%; background: linear-gradient(90deg, var(--green-dark), var(--green)); border-radius: 100px; transition: width .35s ease; }
+.fee-net { font-size: .95rem; font-weight: 900; color: var(--green-dark); text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+.fee-net .fee-sub { color: var(--gray-500); font-weight: 600; }
+
+/* ── Scam verdict card ── */
+.verdict-card { margin-top: 1rem; border-radius: var(--radius-sm); padding: 1.1rem 1.25rem; border: 1.5px solid; }
+.verdict-go { background: var(--green-light); border-color: #6EE7B7; }
+.verdict-caution { background: var(--orange-light); border-color: #FDE68A; }
+.verdict-stop { background: var(--red-light); border-color: #FCA5A5; }
+.verdict-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.verdict-headline { font-size: 1.05rem; font-weight: 900; letter-spacing: -.01em; }
+.verdict-pct { font-size: 1.7rem; font-weight: 900; line-height: 1; }
+.verdict-pct span { font-size: .72rem; font-weight: 700; margin-left: .1rem; }
+.verdict-go .verdict-headline, .verdict-go .verdict-pct { color: #065F46; }
+.verdict-caution .verdict-headline, .verdict-caution .verdict-pct { color: #92400E; }
+.verdict-stop .verdict-headline, .verdict-stop .verdict-pct { color: #991B1B; }
+.verdict-advice { font-size: .85rem; line-height: 1.6; color: var(--gray-700); margin-top: .5rem; }
+.verdict-risks { margin-top: .9rem; border-top: 1px solid rgba(0,0,0,.08); padding-top: .8rem; }
+.verdict-risks-title { font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-600); margin-bottom: .5rem; }
+.verdict-risk { display: flex; gap: .6rem; align-items: flex-start; font-size: .82rem; line-height: 1.5; padding: .35rem 0; color: var(--gray-900); }
+.vr-sev { flex-shrink: 0; font-size: .62rem; font-weight: 900; letter-spacing: .05em; padding: .12rem .4rem; border-radius: 4px; margin-top: .1rem; }
+.sev-high .vr-sev { background: var(--red); color: #fff; }
+.sev-med .vr-sev { background: var(--orange); color: #fff; }
+.sev-low .vr-sev { background: var(--gray-300); color: var(--gray-700); }
+
 /* ── Responsive ── */
 @media (max-width: 1020px) {
   .hero-inner { grid-template-columns: 1fr; }
@@ -771,4 +815,21 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   /* Audit score */
   .audit-score-wrap { padding: .85rem 1rem; gap: 1rem; }
   .audit-score-circle { width: 58px; height: 58px; font-size: 1.1rem; }
+
+  /* Action buttons stretch full width so they're easy to hit */
+  .action-row { gap: .5rem; }
+  .action-row .btn { flex: 1 1 100%; justify-content: center; }
+  .action-row .btn-sm { flex: 1 1 auto; }
+
+  /* Fee rows stack: name on top, bar and net side by side */
+  .fee-block { padding: .8rem; }
+  .fee-row { grid-template-columns: 1fr auto; gap: .3rem .6rem; }
+  .fee-name { grid-column: 1 / -1; }
+  .fee-track { grid-column: 1; }
+  .fee-net { grid-column: 2; font-size: .9rem; }
+
+  /* Verdict card */
+  .verdict-card { padding: .9rem 1rem; }
+  .verdict-headline { font-size: .95rem; }
+  .verdict-pct { font-size: 1.4rem; }
 }
