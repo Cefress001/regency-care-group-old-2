@@ -89,6 +89,9 @@
       <div class="tk-nav-item active" data-panel="home" onclick="showPanel('home')">
         <span class="nav-icon">🏠</span>All Tools
       </div>
+      <div class="tk-nav-item" data-panel="items" onclick="showPanel('items')">
+        <span class="nav-icon">📦</span>My Items
+      </div>
       <div class="tk-nav-section">Listing</div>
       <div class="tk-nav-item" data-panel="pricing" onclick="showPanel('pricing')">
         <span class="nav-icon">💰</span>Pricing Calc
@@ -140,6 +143,104 @@
   <!-- ── Main ── -->
   <main class="tk-main">
 
+    <!-- ══ ITEM BAR — which item every tool is currently working on ══ -->
+    <div class="item-bar">
+      <span class="item-bar-label">Item</span>
+      <select id="item-select" onchange="switchItem(this.value)" style="display:none;"></select>
+      <span class="ib-hint" id="item-bar-hint">No item yet — create one and every tool fills itself in.</span>
+      <button class="btn btn-primary btn-sm" onclick="newItemPrompt()">+ New</button>
+      <button class="btn btn-outline btn-sm" onclick="showPanel('items')">Edit</button>
+    </div>
+
+    <!-- ══ MY ITEMS ══ -->
+    <div class="tk-panel" id="panel-items">
+      <div class="panel-header">
+        <h2>📦 My Items</h2>
+        <div class="subtitle">Enter an item once here — every tool fills itself in from it.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3>Item details</h3>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Item Name</label>
+            <input type="text" id="it-name" placeholder="e.g. Leather sectional sofa" oninput="updateItemField('name', this.value)">
+          </div>
+          <div class="form-row">
+            <label>Category</label>
+            <select id="it-category" onchange="updateItemField('category', this.value)">
+              <option value="">Select category</option>
+              <option value="electronics">Electronics</option>
+              <option value="furniture">Furniture</option>
+              <option value="clothing">Clothing / Shoes</option>
+              <option value="tools">Tools / Hardware</option>
+              <option value="toys">Toys / Kids</option>
+              <option value="sports">Sports / Outdoors</option>
+              <option value="appliances">Appliances</option>
+              <option value="collectibles">Collectibles</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-3">
+          <div class="form-row">
+            <label>Brand</label>
+            <input type="text" id="it-brand" placeholder="e.g. Article" oninput="updateItemField('brand', this.value)">
+          </div>
+          <div class="form-row">
+            <label>Model</label>
+            <input type="text" id="it-model" placeholder="e.g. Sven" oninput="updateItemField('model', this.value)">
+          </div>
+          <div class="form-row">
+            <label>Condition</label>
+            <select id="it-condition" onchange="updateItemField('condition', this.value)">
+              <option value="">Select condition</option>
+              <option value="0.95">New / Never Used</option>
+              <option value="0.75">Like New / Barely Used</option>
+              <option value="0.55">Good — Minor Wear</option>
+              <option value="0.35">Fair — Visible Wear</option>
+              <option value="0.20">Poor — Works But Rough</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Original Retail Price ($)</label>
+            <input type="number" id="it-retail" placeholder="800" oninput="updateItemField('retail', this.value)">
+          </div>
+          <div class="form-row">
+            <label>Asking Price ($) — set by the Pricing Calc, or enter your own</label>
+            <input type="number" id="it-asking" placeholder="600" oninput="updateItemField('asking', this.value)">
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="showCompleteListing()">📄 Build Complete Listing →</button>
+          <button class="btn btn-outline btn-sm" onclick="newItemPrompt()">+ New Item</button>
+          <button class="btn btn-outline btn-sm" onclick="addActiveItemToTracker()">📊 Add to Sale Tracker</button>
+          <button class="btn btn-outline btn-sm" onclick="deleteActiveItem()">Delete This Item</button>
+        </div>
+        <div class="empty-hint" id="it-empty">Create your first item to get started.</div>
+      </div>
+
+      <div id="it-listing-output" style="display:none;" class="tk-card">
+        <div class="output-header">
+          <strong>Your Complete Listing</strong>
+          <button class="copy-btn" onclick="copyText('it-listing-text',this)">📋 Copy All</button>
+        </div>
+        <div class="output-box" id="it-listing-text"></div>
+        <div class="copy-btn-row">
+          <button class="print-btn" onclick="downloadCompleteListing()">⬇️ Download .txt</button>
+          <button class="print-btn" onclick="printSection('it-listing-text')">🖨️ Print</button>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>All Items</h3>
+        <div id="it-list"></div>
+        <div class="empty-hint" id="it-list-empty">Nothing here yet.</div>
+      </div>
+    </div>
+
     <!-- ══ HOME DASHBOARD ══ -->
     <div class="tk-panel active" id="panel-home">
       <div class="panel-header">
@@ -153,7 +254,8 @@
           <div>
             <strong style="font-size:.9rem;">Selling something new?</strong>
             <div style="font-size:.82rem;color:var(--gray-600);margin-top:.1rem;">
-              Start with <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('pricing')">Pricing Calc</span> →
+              Add it under <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('items')">My Items</span> →
+              then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('pricing')">Pricing Calc</span> →
               then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('titles')">Title Gen</span> →
               then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('description')">Description</span>.
               Takes about 10 minutes total.
@@ -163,7 +265,7 @@
       </div>
 
       <div style="margin-bottom:.75rem; padding: .6rem .9rem; background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-sm); font-size:.78rem; color:var(--gray-500);">
-        📌 Your inputs are saved automatically — close and reopen this page and your work will be here.
+        📌 Everything saves automatically, per item. Switch items from the bar above and every tool follows along.
       </div>
 
       <div class="home-grid">
@@ -1197,37 +1299,427 @@ function showPanel(id) {
 }
 
 // ════════════════════════════════
-// localStorage helpers
+// Items — enter it once, every tool fills itself in
 // ════════════════════════════════
+// Every tool's inputs live inside the active item, so switching items swaps the
+// whole workspace. Adding an input to a form means adding its ID to TOOL_FIELDS.
+const TOOL_FIELDS = {
+  pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category'],
+  tg: ['tg-item','tg-brand','tg-model','tg-condition','tg-cat','tg-feature'],
+  db: ['db-item','db-brand','db-model','db-condition','db-features','db-dims','db-includes','db-reason','db-pickup','db-bundle'],
+  ai: ['ai-item','ai-brand','ai-condition','ai-price','ai-details'],
+  pd: ['pd-price','pd-deadline','pd-floor'],
+  ms: ['ms-name','ms-category'],
+  sd: ['sd-item','sd-date']
+};
+
+// Plain text and numbers flow both ways — edit them in any tool and the item follows.
+const CORE_TWO_WAY = {
+  name:   ['it-name','pc-name','tg-item','db-item','ai-item','ms-name','sd-item'],
+  brand:  ['it-brand','tg-brand','db-brand','ai-brand'],
+  model:  ['it-model','tg-model','db-model'],
+  retail: ['it-retail','pc-retail'],
+  asking: ['it-asking','ai-price','pd-price']
+};
+const CORE_SOURCES = {
+  pc: { name:'pc-name', retail:'pc-retail' },
+  tg: { name:'tg-item', brand:'tg-brand', model:'tg-model' },
+  db: { name:'db-item', brand:'db-brand', model:'db-model' },
+  ai: { name:'ai-item', brand:'ai-brand', asking:'ai-price' },
+  pd: { asking:'pd-price' },
+  ms: { name:'ms-name' },
+  sd: { name:'sd-item' }
+};
+
+// Category and condition flow one way, out of the item: each tool's dropdown uses
+// its own vocabulary, so 'Works Great' can't be read back as a single multiplier.
+const CORE_ONE_WAY = {
+  pc: { condition:'pc-condition', category:'pc-category' },
+  tg: { category:'tg-cat' }
+};
+const CAT_TO_MS = { electronics:'generic', furniture:'furniture', clothing:'clothing', tools:'generic',
+                    toys:'generic', sports:'bike', appliances:'appliance', collectibles:'art' };
+const CAT_TO_PH = { electronics:'electronics', furniture:'furniture', clothing:'clothing', tools:'tools',
+                    toys:'kids', sports:'vehicles', appliances:'appliances', collectibles:'collectibles' };
+const CAT_TO_TR = { electronics:'Electronics', furniture:'Furniture', clothing:'Clothing', tools:'Tools',
+                    toys:'Toys', sports:'Other', appliances:'Appliances', collectibles:'Other' };
+const COND_TO_TG = { '0.95':'New', '0.75':'Like New', '0.55':'Good', '0.35':'Works Great', '0.20':'Works Great' };
+const COND_TO_DB = { '0.95':'Brand new, never used',
+                     '0.75':'Like new — barely used, no scratches',
+                     '0.55':'Good — some wear visible but works perfectly',
+                     '0.35':'Fair — noticeable wear, fully functional',
+                     '0.20':'Fair — noticeable wear, fully functional' };
+const COND_TO_AI = { '0.95':'New', '0.75':'Like New', '0.55':'Good', '0.35':'Fair', '0.20':'Fair' };
+
+let _activeId = null;
+
+function loadItems() {
+  try { return JSON.parse(localStorage.getItem('sk_items') || '[]'); } catch(e) { return []; }
+}
+function saveItems(items) {
+  try { localStorage.setItem('sk_items', JSON.stringify(items)); } catch(e) {}
+}
+function setActiveId(id) {
+  _activeId = id;
+  try { localStorage.setItem('sk_active_item', id || ''); } catch(e) {}
+}
+function getActiveId() {
+  if (_activeId) return _activeId;
+  try { _activeId = localStorage.getItem('sk_active_item') || null; } catch(e) {}
+  return _activeId;
+}
+function activeItem() {
+  const items = loadItems();
+  return items.find(i => i.id === getActiveId()) || items[0] || null;
+}
+// Mutating an item means writing the whole list back — parsed JSON is a copy.
+function updateActiveItem(fn) {
+  const items = loadItems();
+  const it = items.find(i => i.id === getActiveId()) || items[0];
+  if (!it) return null;
+  fn(it);
+  saveItems(items);
+  return it;
+}
+
+function setVal(id, val) {
+  const el = document.getElementById(id);
+  if (el && el.value !== val) el.value = val;
+}
+
 function saveLS(prefix) {
-  const ids = {
-    pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category'],
-    tg: ['tg-item','tg-brand','tg-model','tg-feature'],
-    db: ['db-item','db-brand','db-model','db-condition','db-features','db-dims','db-includes','db-reason','db-pickup','db-bundle'],
-    ai: ['ai-item','ai-brand','ai-condition','ai-price','ai-details'],
-    pd: ['pd-price','pd-deadline','pd-floor'],
-    ms: ['ms-name','ms-category'],
-    sd: ['sd-item','sd-date']
-  };
-  const fields = ids[prefix] || [];
-  const saved = {};
-  fields.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) saved[id] = el.value;
+  // Touching any tool with no item yet creates one, rather than dropping the input.
+  if (!activeItem()) {
+    const nameEl = document.getElementById((CORE_SOURCES[prefix] || {}).name || '');
+    createItem((nameEl && nameEl.value.trim()) || 'Untitled item');
+    renderItemForm();
+  }
+  let derived = false;
+  const it = updateActiveItem(item => {
+    item.tools = item.tools || {};
+    const saved = {};
+    (TOOL_FIELDS[prefix] || []).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) saved[id] = el.value;
+    });
+    item.tools[prefix] = saved;
+
+    Object.entries(CORE_SOURCES[prefix] || {}).forEach(([core, id]) => {
+      const el = document.getElementById(id);
+      if (el && item[core] !== el.value) {
+        item[core] = el.value;
+        CORE_TWO_WAY[core].forEach(other => { if (other !== id) setVal(other, el.value); });
+      }
+    });
+
+    Object.entries(CORE_ONE_WAY[prefix] || {}).forEach(([core, id]) => {
+      const el = document.getElementById(id);
+      if (el && item[core] !== el.value) { item[core] = el.value; derived = true; }
+    });
   });
-  try { localStorage.setItem('sk_' + prefix, JSON.stringify(saved)); } catch(e) {}
+  // Outside the mutation above: applyDerived rebuilds the photo checklist, which
+  // saves its own state, and a nested write would be overwritten by this one.
+  if (derived && it) applyDerived(it);
+  renderItemBar();
+  renderItemList();
 }
 
 function loadLS(prefix) {
-  try {
-    const raw = localStorage.getItem('sk_' + prefix);
-    if (!raw) return;
-    const saved = JSON.parse(raw);
-    Object.entries(saved).forEach(([id, val]) => {
-      const el = document.getElementById(id);
-      if (el) el.value = val;
+  const it = activeItem();
+  if (!it) return;
+  const saved = (it.tools || {})[prefix] || {};
+  Object.entries(saved).forEach(([id, val]) => setVal(id, val));
+}
+
+// Push category and condition out to every tool that phrases them differently.
+function applyDerived(it) {
+  setVal('it-category', it.category || '');
+  setVal('pc-category', it.category || '');
+  setVal('tg-cat', it.category || '');
+  setVal('ms-category', it.category ? (CAT_TO_MS[it.category] || 'generic') : '');
+  setVal('ph-category', it.category ? (CAT_TO_PH[it.category] || '') : '');
+
+  setVal('it-condition', it.condition || '');
+  setVal('pc-condition', it.condition || '');
+  setVal('tg-condition', it.condition ? (COND_TO_TG[it.condition] || 'Good') : 'Like New');
+  setVal('db-condition', it.condition ? (COND_TO_DB[it.condition] || '') : '');
+  setVal('ai-condition', it.condition ? (COND_TO_AI[it.condition] || '') : '');
+
+  if (it.category) loadKwChips(it.category);
+  if (document.getElementById('ms-category').value) { loadMeasurements(); restoreMeasurements(); }
+  if (document.getElementById('ph-category').value) loadPhotoChecklist();
+}
+
+// Load an item into every tool: core fields first, then whatever that tool saved.
+function applyItem(it) {
+  Object.entries(CORE_TWO_WAY).forEach(([core, ids]) => {
+    ids.forEach(id => setVal(id, it[core] || ''));
+  });
+  applyDerived(it);
+
+  const tools = it.tools || {};
+  Object.keys(TOOL_FIELDS).forEach(prefix => {
+    Object.entries(tools[prefix] || {}).forEach(([id, val]) => {
+      if (val !== '' && val != null) setVal(id, val);
     });
-  } catch(e) {}
+  });
+
+  const sdDate = document.getElementById('sd-date');
+  if (sdDate && !sdDate.value) sdDate.value = new Date().toISOString().split('T')[0];
+
+  calcPrice();
+  calcPriceDrop();
+  if (document.getElementById('ms-category').value) { loadMeasurements(); restoreMeasurements(); }
+  if (document.getElementById('ph-category').value) loadPhotoChecklist();
+}
+
+function clearAllTools() {
+  Object.values(TOOL_FIELDS).forEach(ids => ids.forEach(id => setVal(id, '')));
+  Object.values(CORE_TWO_WAY).forEach(ids => ids.forEach(id => setVal(id, '')));
+  setVal('it-category', ''); setVal('it-condition', ''); setVal('ph-category', '');
+  document.getElementById('ms-fields').style.display = 'none';
+  document.getElementById('ph-list').innerHTML = '';
+  document.getElementById('ph-list').style.display = 'none';
+  document.getElementById('ph-score').style.display = 'none';
+  calcPrice();
+  calcPriceDrop();
+}
+
+function createItem(name) {
+  const items = loadItems();
+  const it = {
+    id: 'itm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    name: name || 'Untitled item',
+    category: '', brand: '', model: '', condition: '', retail: '', asking: '',
+    createdAt: Date.now(),
+    tools: {}, photos: {}, measurements: {}
+  };
+  items.unshift(it);
+  saveItems(items);
+  setActiveId(it.id);
+  return it;
+}
+
+function newItemPrompt() {
+  const name = prompt('What are you selling?');
+  if (name === null) return;
+  const it = createItem(name.trim() || 'Untitled item');
+  clearAllTools();
+  applyItem(it);
+  renderItemBar(); renderItemList(); renderItemForm();
+  showPanel('items');
+}
+
+function switchItem(id) {
+  if (!id || id === getActiveId()) return;
+  setActiveId(id);
+  const it = activeItem();
+  if (!it) return;
+  clearAllTools();
+  applyItem(it);
+  renderItemBar(); renderItemList(); renderItemForm();
+}
+
+function deleteActiveItem() {
+  const it = activeItem();
+  if (!it) { alert('No item to delete.'); return; }
+  if (!confirm(`Delete "${it.name}" and everything saved with it? This cannot be undone.`)) return;
+  const items = loadItems().filter(i => i.id !== it.id);
+  saveItems(items);
+  setActiveId(items.length ? items[0].id : null);
+  clearAllTools();
+  const next = activeItem();
+  if (next) applyItem(next);
+  renderItemBar(); renderItemList(); renderItemForm();
+}
+
+function updateItemField(core, value) {
+  const created = !activeItem();
+  if (created) createItem('Untitled item');
+  const it = updateActiveItem(item => {
+    item[core] = value;
+    if (CORE_TWO_WAY[core]) {
+      CORE_TWO_WAY[core].forEach(id => { if (id !== 'it-' + core) setVal(id, value); });
+    }
+  });
+  if (!CORE_TWO_WAY[core] && it) applyDerived(it);
+  if (core === 'retail' || core === 'asking') { calcPrice(); calcPriceDrop(); }
+  renderItemBar(); renderItemList();
+  if (created) renderItemForm();
+}
+
+function renderItemBar() {
+  const items = loadItems();
+  const sel = document.getElementById('item-select');
+  const hint = document.getElementById('item-bar-hint');
+  if (!items.length) {
+    sel.style.display = 'none';
+    hint.style.display = 'block';
+    return;
+  }
+  hint.style.display = 'none';
+  sel.style.display = 'block';
+  const active = getActiveId();
+  sel.innerHTML = items.map(i =>
+    `<option value="${i.id}"${i.id === active ? ' selected' : ''}>${escHtml(i.name || 'Untitled item')}</option>`
+  ).join('');
+}
+
+function renderItemList() {
+  const items = loadItems();
+  const list = document.getElementById('it-list');
+  const empty = document.getElementById('it-list-empty');
+  if (!items.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  const active = getActiveId();
+  list.innerHTML = items.map(i => {
+    const bits = [i.brand, i.category, i.asking ? '$' + i.asking : ''].filter(Boolean);
+    const isActive = i.id === active;
+    return `<div class="item-row${isActive ? ' active' : ''}">
+      <div class="ir-main">
+        <div class="ir-name">${escHtml(i.name || 'Untitled item')}</div>
+        <div class="ir-meta">${bits.length ? escHtml(bits.join(' · ')) : 'No details yet'}</div>
+      </div>
+      <div class="ir-actions">
+        ${isActive
+          ? '<span class="ir-active">active</span>'
+          : `<button class="btn btn-outline btn-sm" onclick="switchItem('${i.id}')">Open</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderItemForm() {
+  const it = activeItem();
+  const empty = document.getElementById('it-empty');
+  if (!it) {
+    ['it-name','it-brand','it-model','it-retail','it-asking','it-category','it-condition']
+      .forEach(id => setVal(id, ''));
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  setVal('it-name', it.name || '');
+  setVal('it-brand', it.brand || '');
+  setVal('it-model', it.model || '');
+  setVal('it-retail', it.retail || '');
+  setVal('it-asking', it.asking || '');
+  setVal('it-category', it.category || '');
+  setVal('it-condition', it.condition || '');
+}
+
+function addActiveItemToTracker() {
+  const it = activeItem();
+  if (!it) { alert('Create an item first.'); return; }
+  const items = loadTracker();
+  if (items.some(t => t.itemId === it.id)) { alert('This item is already in the tracker.'); return; }
+  items.unshift({
+    id: Date.now(),
+    itemId: it.id,
+    name: it.name || 'Untitled item',
+    platform: 'Facebook Marketplace',
+    category: CAT_TO_TR[it.category] || 'Other',
+    listedPrice: parseFloat(it.asking) || 0,
+    soldPrice: null,
+    status: 'listed',
+    dateAdded: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'})
+  });
+  saveTracker(items);
+  renderTracker();
+  showPanel('tracker');
+}
+
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+// ════════════════════════════════
+// Complete listing — title, price, description and measurements in one block
+// ════════════════════════════════
+function buildCompleteListing() {
+  const it = activeItem();
+  if (!it) return null;
+  const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  const out = [];
+
+  const cond = it.condition ? COND_TO_TG[it.condition] : '';
+  const title = [it.brand, it.model, it.name].filter(Boolean).join(' ') || it.name || 'Item for sale';
+  out.push(cond ? `${title} | ${cond}` : title);
+
+  if (it.asking) out.push('', `Asking: $${Number(it.asking).toLocaleString()}`);
+
+  const desc = document.getElementById('db-result');
+  if (desc && desc.textContent.trim()) {
+    out.push('', desc.textContent.trim());
+  } else {
+    const features = val('db-features');
+    const includes = val('db-includes');
+    const reason = val('db-reason');
+    if (features) out.push('', features);
+    if (includes) out.push('', `Includes: ${includes}`);
+    if (reason) out.push('', `Why I'm selling: ${reason}`);
+  }
+
+  const meas = Object.entries(it.measurements || {}).filter(([, v]) => v && v.trim());
+  if (meas.length) {
+    out.push('', 'MEASUREMENTS');
+    meas.forEach(([label, v]) => out.push(`• ${label}: ${v.trim()}`));
+  }
+
+  const pickup = val('db-pickup');
+  if (pickup) out.push('', `Pickup: ${pickup}`);
+
+  return out.join('\n');
+}
+
+function showCompleteListing() {
+  const text = buildCompleteListing();
+  if (text === null) { alert('Create an item first.'); return; }
+  document.getElementById('it-listing-text').textContent = text;
+  document.getElementById('it-listing-output').style.display = 'block';
+}
+
+function downloadCompleteListing() {
+  const text = buildCompleteListing();
+  if (!text) return;
+  const it = activeItem();
+  const slug = (it.name || 'listing').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'listing';
+  downloadFile(`${slug}-listing.txt`, 'text/plain;charset=utf-8', text);
+}
+
+// One-time move from the old single-item layout (sk_pc, sk_tg, … sk_photos).
+function migrateLegacyItem() {
+  if (loadItems().length) return;
+  let found = null;
+  const tools = {};
+  ['pc','tg','db','ai','pd','ms','sd'].forEach(prefix => {
+    try {
+      const raw = localStorage.getItem('sk_' + prefix);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (saved && Object.values(saved).some(v => v !== '')) { tools[prefix] = saved; found = found || saved; }
+    } catch(e) {}
+  });
+  let photos = {};
+  try { photos = JSON.parse(localStorage.getItem('sk_photos') || '{}') || {}; } catch(e) {}
+  if (!found && !Object.keys(photos).length) return;
+
+  const it = createItem((tools.pc && tools.pc['pc-name']) || (tools.tg && tools.tg['tg-item']) || 'My first item');
+  updateActiveItem(i => {
+    i.tools = tools;
+    i.photos = photos;
+    i.retail = (tools.pc && tools.pc['pc-retail']) || '';
+    i.condition = (tools.pc && tools.pc['pc-condition']) || '';
+    i.category = (tools.pc && tools.pc['pc-category']) || (tools.tg && tools.tg['tg-cat']) || '';
+    i.brand = (tools.tg && tools.tg['tg-brand']) || (tools.db && tools.db['db-brand']) || '';
+    i.model = (tools.tg && tools.tg['tg-model']) || (tools.db && tools.db['db-model']) || '';
+    i.asking = (tools.ai && tools.ai['ai-price']) || (tools.pd && tools.pd['pd-price']) || '';
+  });
+  ['pc','tg','db','ai','pd','ms','sd'].forEach(p => {
+    try { localStorage.removeItem('sk_' + p); } catch(e) {}
+  });
+  try { localStorage.removeItem('sk_photos'); } catch(e) {}
 }
 
 // ════════════════════════════════
@@ -1265,6 +1757,14 @@ function calcPrice(fromButton) {
   document.getElementById('pc-viz-min').textContent = 'Floor: $' + floor.toLocaleString();
   document.getElementById('pc-viz-mid').textContent = 'Quick: $' + quickflip.toLocaleString();
   document.getElementById('pc-viz-max').textContent = 'Ask: $' + ideal.toLocaleString();
+  // The calculated ask becomes the item's asking price, unless one is already set by hand.
+  const pricedItem = activeItem();
+  if (pricedItem && (fromButton || !pricedItem.asking)) {
+    updateActiveItem(i => { i.asking = String(ideal); });
+    CORE_TWO_WAY.asking.forEach(id => setVal(id, String(ideal)));
+    calcPriceDrop();
+    renderItemList();
+  }
   const tips = {
     electronics: 'Electronics depreciate fast. Include original packaging to justify higher price. Photo it powered on.',
     furniture: 'Buyers want exact dimensions. Measure and include in the listing — reduces "does it fit?" messages.',
@@ -1684,10 +2184,31 @@ function loadMeasurements() {
   document.getElementById('ms-grid').innerHTML = fields.map((f, i) => `
     <div class="meas-field">
       <label for="mf-${i}">${f}</label>
-      <input type="text" id="mf-${i}" data-label="${f}" placeholder='e.g. 36"'>
+      <input type="text" id="mf-${i}" data-label="${f}" placeholder='e.g. 36"' oninput="saveMeasurements()">
     </div>`).join('');
   document.getElementById('ms-fields').style.display = 'block';
   document.getElementById('ms-output').style.display = 'none';
+}
+
+// Measurement inputs are generated per category, so they're stored by label
+// rather than by element id — switching category keeps whatever still applies.
+function saveMeasurements() {
+  if (!activeItem()) return;
+  updateActiveItem(it => {
+    it.measurements = it.measurements || {};
+    document.querySelectorAll('#ms-grid input').forEach(inp => {
+      it.measurements[inp.dataset.label] = inp.value;
+    });
+  });
+}
+
+function restoreMeasurements() {
+  const it = activeItem();
+  if (!it || !it.measurements) return;
+  document.querySelectorAll('#ms-grid input').forEach(inp => {
+    const val = it.measurements[inp.dataset.label];
+    if (val) inp.value = val;
+  });
 }
 
 function buildMeasurementText() {
@@ -1776,24 +2297,16 @@ function loadPhotoChecklist(fromButton) {
 }
 
 function loadPhotoState(cat) {
-  try {
-    const raw = localStorage.getItem('sk_photos');
-    if (!raw) return [];
-    return (JSON.parse(raw) || {})[cat] || [];
-  } catch(e) { return []; }
+  const it = activeItem();
+  return (it && it.photos && it.photos[cat]) || [];
 }
 
 function savePhotoState() {
   const cat = document.getElementById('ph-category').value;
-  if (!cat) return;
+  if (!cat || !activeItem()) return;
   const done = [];
   document.querySelectorAll('#ph-list input[type=checkbox]').forEach((el, i) => { if (el.checked) done.push(i); });
-  try {
-    const raw = localStorage.getItem('sk_photos');
-    const all = raw ? (JSON.parse(raw) || {}) : {};
-    all[cat] = done;
-    localStorage.setItem('sk_photos', JSON.stringify(all));
-  } catch(e) {}
+  updateActiveItem(it => { it.photos = it.photos || {}; it.photos[cat] = done; });
 }
 
 function resetPhotoChecklist() {
@@ -2243,25 +2756,20 @@ function exportTrackerCSV() {
 // Init — restore saved inputs
 // ════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-  // Restore all localStorage-saved inputs
-  ['pc','tg','db','ai','pd','ms','sd'].forEach(loadLS);
-  // Set today's date default for 7-day plan if empty
-  const sdDate = document.getElementById('sd-date');
-  if (sdDate && !sdDate.value) sdDate.value = new Date().toISOString().split('T')[0];
-  // Re-run calculators if values were restored
-  calcPrice();
-  calcPriceDrop();
-  // Restore measurement fields if category was saved
-  const msCat = document.getElementById('ms-category');
-  if (msCat && msCat.value) loadMeasurements();
-  // Restore photo checklist for whichever category has saved progress
-  try {
-    const saved = JSON.parse(localStorage.getItem('sk_photos') || '{}');
-    const cat = Object.keys(saved).find(k => (saved[k] || []).length);
-    const phCat = document.getElementById('ph-category');
-    if (cat && phCat) { phCat.value = cat; loadPhotoChecklist(); }
-  } catch(e) {}
-  // Initialize sale tracker
+  migrateLegacyItem();
+  const it = activeItem();
+  if (it) {
+    setActiveId(it.id);
+    applyItem(it);
+  } else {
+    const sdDate = document.getElementById('sd-date');
+    if (sdDate && !sdDate.value) sdDate.value = new Date().toISOString().split('T')[0];
+    calcPrice();
+    calcPriceDrop();
+  }
+  renderItemBar();
+  renderItemList();
+  renderItemForm();
   renderTracker();
 });
 </script>

@@ -46,14 +46,27 @@ The CSS fade-in animation is attached to `.tk-panel.active`, not `.tk-panel`. Mo
 
 Interaction is inline `onclick="..."` throughout — no `addEventListener` wiring except the single `DOMContentLoaded` init block at the end of the script.
 
-### State
+### State — the Item model
 
 Everything persists to `localStorage` under an `sk_` prefix; there is no backend.
 
-- `saveLS(prefix)` / `loadLS(prefix)` serialize a fixed list of input IDs declared in the `ids` map inside `saveLS`. Prefixes: `pc` pricing, `tg` titles, `db` description, `ai` AI prompt, `pd` price drop, `ms` measurements, `sd` seven-day plan. **Adding an input to a form also means adding its ID to that map** or the value silently won't persist.
-- `sk_photos` and `sk_tracker` are managed separately with their own read/write helpers.
+`sk_items` holds an array of items and `sk_active_item` holds the active item's id. **An item owns the entire workspace** — switching items swaps every tool's contents at once:
+
+```js
+{ id, name, category, brand, model, condition, retail, asking, createdAt,
+  tools: { pc:{…}, tg:{…}, db:{…}, ai:{…}, pd:{…}, ms:{…}, sd:{…} },  // per-tool inputs, keyed by element id
+  photos: { furniture: [0,3,7] },                                      // checked shots, per category
+  measurements: { 'Width (W)': '84"' } }                               // keyed by label, not element id
+```
+
+- `saveLS(prefix)` / `loadLS(prefix)` read and write `activeItem().tools[prefix]` rather than a flat key. The 35 existing `saveLS('xx')` call sites in the markup are unchanged. **Adding an input to a form also means adding its ID to `TOOL_FIELDS`** or the value silently won't persist.
+- `updateActiveItem(fn)` is the only safe way to mutate — `loadItems()` returns parsed JSON, so a mutation is lost unless the whole array is written back. **Never nest `updateActiveItem` calls**: the inner write is clobbered by the outer one. `saveLS` deliberately calls `applyDerived` *after* its mutation closes for exactly this reason.
+- Core fields propagate in two directions depending on ambiguity. `name`, `brand`, `model`, `retail`, `asking` are **two-way** (`CORE_TWO_WAY` / `CORE_SOURCES`) — edit them in any tool and the item follows. `category` and `condition` are **one-way out of the item** (`CORE_ONE_WAY`, `CAT_TO_*`, `COND_TO_*`), because each tool's dropdown uses its own vocabulary and `'Works Great'` can't be read back as a single multiplier.
+- Touching any tool with no item yet auto-creates one, so input is never silently dropped.
+- `migrateLegacyItem()` folds the old flat keys (`sk_pc`, `sk_tg`, … `sk_photos`) into a single item on first load and deletes them. Leave it in place until well past the point where users could still be carrying old data.
+- `sk_tracker` stays separate — it is a financial log of sales, not the working set. `addActiveItemToTracker()` is the one-way bridge from an item into it.
 - Every `localStorage` access is wrapped in `try/catch` (private-browsing mode throws). Keep that.
-- The `DOMContentLoaded` handler restores all prefixes and re-runs `calcPrice()` / `calcPriceDrop()` so restored values re-render their results.
+- The `DOMContentLoaded` handler migrates, then calls `applyItem()` on the active item, which re-runs `calcPrice()` / `calcPriceDrop()` and rebuilds the measurement and photo panels.
 
 ### Conventions
 
@@ -69,7 +82,11 @@ Everything persists to `localStorage` under an `sk_` prefix; there is no backend
 2. A `<div class="tk-panel" id="panel-NAME">` with a `.panel-header`.
 3. A card on the home dashboard grid (`#panel-home`).
 4. A numbered section in the `<script>` with the tool's logic and its data constants.
-5. If it has persisted inputs, add the prefix to the `ids` map in `saveLS` and to the array in the `DOMContentLoaded` restore loop.
+5. If it has persisted inputs, add its field IDs to `TOOL_FIELDS` under a new prefix, and call `saveLS('PREFIX')` from each input's handler.
+6. If it should prefill from the active item, add its fields to `CORE_TWO_WAY` / `CORE_SOURCES` (unambiguous values) or to `CORE_ONE_WAY` plus a `*_TO_*` map (its own vocabulary).
+7. Bump the tool count in the four files listed under Gotchas.
+
+**"My Items" is not a tool** — it is the workspace that feeds the 13 tools. It lives in the Overview nav section next to "All Tools" and is deliberately absent from the home tools grid, so it does not change the advertised count.
 
 ## Gotchas
 

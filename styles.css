@@ -672,6 +672,44 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 .sev-med .vr-sev { background: var(--orange); color: #fff; }
 .sev-low .vr-sev { background: var(--gray-300); color: var(--gray-700); }
 
+/* ── Item bar & item manager ── */
+.item-bar {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  padding: .6rem 2rem;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.item-bar-label {
+  font-size: .68rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--gray-500);
+}
+.item-bar select {
+  flex: 1; min-width: 130px; max-width: 320px;
+  padding: .4rem .6rem; border: 1.5px solid var(--gray-300); border-radius: 6px;
+  font-family: inherit; font-size: .85rem; font-weight: 600;
+  color: var(--gray-900); background: var(--white); cursor: pointer;
+}
+.item-bar select:focus { outline: none; border-color: var(--blue); }
+.item-bar .ib-hint { flex: 1; font-size: .83rem; color: var(--gray-500); }
+
+.item-row {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .7rem .9rem; margin-bottom: .5rem;
+  border: 1px solid var(--gray-200); border-radius: 8px; background: var(--white);
+}
+.item-row:last-child { margin-bottom: 0; }
+.item-row.active { border-color: var(--blue); background: var(--blue-light); }
+.item-row .ir-main { flex: 1; min-width: 0; }
+.item-row .ir-name { font-weight: 700; font-size: .9rem; color: var(--gray-900); }
+.item-row .ir-meta { font-size: .74rem; color: var(--gray-500); margin-top: .1rem; }
+.item-row .ir-actions { display: flex; gap: .35rem; flex-shrink: 0; }
+.item-row .ir-active {
+  font-size: .7rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--blue);
+}
+
 /* ── Responsive ── */
 @media (max-width: 1020px) {
   .hero-inner { grid-template-columns: 1fr; }
@@ -717,6 +755,10 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
     background: rgba(96,165,250,.12); color: #93c5fd;
   }
   .tk-nav-item .nav-icon { font-size: 1.25rem; width: auto; line-height: 1; }
+
+  /* Item bar */
+  .item-bar { padding: .5rem 1rem; gap: .45rem; }
+  .item-bar select { min-width: 0; }
 
   /* Panels */
   .tk-panel {
