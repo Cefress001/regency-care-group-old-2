@@ -1795,6 +1795,7 @@ function markExpired(id) {
 }
 
 function deleteTrackerItem(id) {
+  if (!confirm('Delete this sale record? This cannot be undone.')) return;
   const items = loadTracker().filter(i => i.id !== id);
   saveTracker(items);
   renderTracker();
