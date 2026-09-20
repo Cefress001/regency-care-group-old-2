@@ -558,6 +558,92 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .tk-card { border: 1px solid #ccc; box-shadow: none; page-break-inside: avoid; }
 }
 
+/* Keyword chips */
+.kw-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .55rem; }
+.kw-chip {
+  padding: .25rem .65rem; background: var(--blue-light); border: 1.5px solid var(--blue-mid);
+  border-radius: 100px; font-size: .75rem; font-weight: 700; color: var(--blue-dark);
+  cursor: pointer; transition: var(--transition); font-family: inherit;
+}
+.kw-chip:hover { background: var(--blue); color: var(--white); border-color: var(--blue); }
+
+/* Platform selector */
+.platform-pills { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.1rem; }
+.platform-pill {
+  padding: .32rem .8rem; border: 1.5px solid var(--gray-300); border-radius: 100px;
+  font-size: .8rem; font-weight: 700; cursor: pointer; background: var(--white);
+  color: var(--gray-600); transition: var(--transition); font-family: inherit;
+}
+.platform-pill:hover { border-color: var(--blue); color: var(--blue); }
+.platform-pill.active { background: var(--dark); border-color: var(--dark); color: var(--white); }
+.platform-limit { font-size: .75rem; color: var(--gray-500); margin-bottom: .5rem; }
+
+/* Sell-time / comparables */
+.sell-time-block {
+  display: flex; align-items: center; gap: 1.1rem; margin-top: .9rem;
+  padding: .85rem 1.1rem; background: var(--blue-light); border: 1px solid var(--blue-mid);
+  border-radius: var(--radius-sm);
+}
+.sell-time-num { font-size: 1.5rem; font-weight: 900; color: var(--blue-dark); line-height: 1; white-space: nowrap; }
+.sell-time-label { font-size: .68rem; color: var(--blue); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+.sell-time-note { font-size: .82rem; color: var(--blue-dark); line-height: 1.4; }
+.comparables-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: .75rem; font-size: .82rem; font-weight: 700; color: var(--blue); text-decoration: underline; cursor: pointer; }
+.comparables-link:hover { color: var(--blue-dark); }
+
+/* Offer recommendation */
+.offer-rec {
+  display: inline-flex; align-items: center; gap: .4rem; margin-bottom: .85rem;
+  padding: .35rem 1rem; border-radius: 100px; font-size: .85rem; font-weight: 800;
+}
+.offer-rec.accept { background: var(--green-light); color: var(--green-dark); border: 1.5px solid #a7f3d0; }
+.offer-rec.counter { background: var(--blue-light); color: var(--blue-dark); border: 1.5px solid var(--blue-mid); }
+.offer-rec.decline { background: var(--red-light); color: #991B1B; border: 1.5px solid #fca5a5; }
+.offer-calc-result { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm); padding: 1.25rem; margin-top: 1rem; }
+.offer-counter-row { font-size: .85rem; color: var(--gray-700); margin-bottom: .5rem; }
+.offer-counter-row strong { color: var(--dark); }
+
+/* Listing audit */
+.audit-score-wrap { display: flex; align-items: center; gap: 1.5rem; padding: 1.1rem 1.25rem; background: var(--gray-50); border-radius: var(--radius-sm); border: 1.5px solid var(--gray-200); margin-bottom: 1.1rem; }
+.audit-score-circle { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 900; border: 4px solid; flex-shrink: 0; }
+.audit-score-circle.great { border-color: var(--green); color: var(--green-dark); }
+.audit-score-circle.ok { border-color: var(--orange); color: #92400E; }
+.audit-score-circle.poor { border-color: var(--red); color: #991B1B; }
+.audit-verdict { font-size: .95rem; font-weight: 800; }
+.audit-verdict-sub { font-size: .82rem; color: var(--gray-500); margin-top: .2rem; line-height: 1.4; }
+.audit-items { display: flex; flex-direction: column; gap: .4rem; }
+.audit-item { display: flex; align-items: flex-start; gap: .6rem; padding: .5rem .75rem; border-radius: var(--radius-xs); font-size: .855rem; line-height: 1.45; }
+.audit-item.pass { background: var(--green-light); }
+.audit-item.warn { background: var(--orange-light); }
+.audit-item.fail { background: var(--red-light); }
+.audit-item .ai-icon { font-size: .85rem; flex-shrink: 0; margin-top: .1rem; font-weight: 900; }
+.audit-item.pass .ai-text { color: #065F46; }
+.audit-item.warn .ai-text { color: #78350F; }
+.audit-item.fail .ai-text { color: #991B1B; }
+
+/* Sale tracker */
+.tracker-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; margin-bottom: 1.1rem; }
+.tracker-stat { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: .9rem; text-align: center; }
+.tracker-stat .ts-num { font-size: 1.5rem; font-weight: 900; color: var(--dark); line-height: 1; }
+.tracker-stat .ts-label { font-size: .7rem; color: var(--gray-500); font-weight: 600; margin-top: .2rem; text-transform: uppercase; letter-spacing: .5px; }
+.tracker-table-wrap { overflow-x: auto; }
+.tracker-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.tracker-table th { background: var(--gray-900); color: var(--white); padding: .6rem .85rem; text-align: left; font-size: .72rem; font-weight: 700; letter-spacing: .5px; }
+.tracker-table td { padding: .65rem .85rem; border-bottom: 1px solid var(--gray-200); vertical-align: middle; }
+.tracker-table tr:last-child td { border-bottom: none; }
+.tracker-table tr:hover td { background: var(--gray-50); }
+.status-badge { display: inline-flex; align-items: center; padding: .2rem .55rem; border-radius: 100px; font-size: .7rem; font-weight: 800; }
+.status-listed { background: var(--blue-light); color: var(--blue-dark); }
+.status-sold { background: var(--green-light); color: var(--green-dark); }
+.status-expired { background: var(--gray-100); color: var(--gray-500); }
+.status-donated { background: #F5F3FF; color: var(--purple); }
+.tracker-action-btn { padding: .22rem .55rem; border-radius: 4px; font-size: .7rem; font-weight: 700; cursor: pointer; font-family: inherit; border: 1.5px solid; margin-right: .3rem; }
+.btn-mark-sold { background: var(--green-light); color: var(--green-dark); border-color: #a7f3d0; }
+.btn-mark-sold:hover { background: var(--green); color: var(--white); border-color: var(--green); }
+.btn-del { background: transparent; color: var(--red); border-color: #fca5a5; }
+.btn-del:hover { background: var(--red-light); }
+.tracker-empty { text-align: center; padding: 2.5rem; color: var(--gray-500); font-size: .9rem; }
+.tracker-add-form { display: grid; grid-template-columns: 2fr 1.2fr 1fr 1fr auto; gap: .6rem; align-items: end; }
+
 /* ── Responsive ── */
 @media (max-width: 1020px) {
   .hero-inner { grid-template-columns: 1fr; }
@@ -582,6 +668,8 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .tk-nav-item .nav-icon { font-size: 1.1rem; width: auto; }
   .tk-panel { padding: 1rem; padding-bottom: 5rem; }
   .form-grid, .form-grid-3, .results-row, .meas-grid { grid-template-columns: 1fr; }
+  .tracker-stats { grid-template-columns: 1fr 1fr; }
+  .tracker-add-form { grid-template-columns: 1fr; }
   .transform-block { grid-template-columns: 1fr; }
   .transform-arrow { transform: rotate(90deg); text-align: center; }
   .demo-form-row, .demo-results { grid-template-columns: 1fr; }
