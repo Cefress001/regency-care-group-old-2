@@ -15,6 +15,7 @@
   --dark: #111827;
   --gray-900: #1F2937;
   --gray-700: #374151;
+  --gray-600: #4B5563;
   --gray-500: #6B7280;
   --gray-300: #D1D5DB;
   --gray-200: #E5E7EB;
@@ -331,7 +332,7 @@ footer { background: var(--dark); color: rgba(255,255,255,.5); padding: 3rem 0; 
 /* ════════════════════════════════
    TOOLKIT APP
 ════════════════════════════════ */
-.tk-layout { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+.tk-layout { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; overflow: visible; }
 
 /* Sidebar */
 .tk-sidebar {
@@ -361,11 +362,11 @@ footer { background: var(--dark); color: rgba(255,255,255,.5); padding: 3rem 0; 
 .tk-nav-footer a:hover { color: rgba(255,255,255,.65); }
 
 /* Main content */
-.tk-main { background: #f8fafc; min-height: 100vh; }
+.tk-main { background: #f8fafc; min-height: 100vh; display: block; overflow: visible; }
 
-/* Panel transitions */
-.tk-panel { display: none; padding: 2rem; animation: fadeIn .18s ease; }
-.tk-panel.active { display: block; }
+/* Panel transitions — animation only on active panels so opacity:0 never stalls a hidden panel */
+.tk-panel { display: none; padding: 2rem; opacity: 1; }
+.tk-panel.active { display: block; animation: fadeIn .18s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 .panel-header { margin-bottom: 1.75rem; }
