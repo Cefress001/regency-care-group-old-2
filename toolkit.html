@@ -92,6 +92,13 @@
       <div class="tk-nav-item" data-panel="items" onclick="showPanel('items')">
         <span class="nav-icon">📦</span>My Items
       </div>
+      <div class="tk-nav-section">AI</div>
+      <div class="tk-nav-item" data-panel="copilot" onclick="showPanel('copilot')">
+        <span class="nav-icon">✨</span>AI Copilot
+      </div>
+      <div class="tk-nav-item" data-panel="aisetup" onclick="showPanel('aisetup')">
+        <span class="nav-icon">🔌</span>Connect AI
+      </div>
       <div class="tk-nav-section">Listing</div>
       <div class="tk-nav-item" data-panel="pricing" onclick="showPanel('pricing')">
         <span class="nav-icon">💰</span>Pricing Calc
@@ -264,6 +271,20 @@
         </div>
       </div>
 
+      <!-- AI is a layer over the 13 tools, not a 14th tool — same treatment as My Items,
+           so it is a banner here rather than a card in the counted grid. -->
+      <div class="ai-banner">
+        <h3>✨ Connect your own AI</h3>
+        <p id="ai-banner-copy">
+          Bring your own Claude, ChatGPT, Gemini, or OpenRouter key and every tool below gains an AI mode —
+          plus a copilot that already knows your item. Your key stays in this browser.
+        </p>
+        <div class="ai-banner-row">
+          <button class="btn btn-ai btn-sm" onclick="showPanel('copilot')">✨ Open AI Copilot</button>
+          <button class="btn btn-ghost btn-sm" id="ai-banner-btn" onclick="showPanel('aisetup')">🔌 Connect a provider</button>
+        </div>
+      </div>
+
       <div style="margin-bottom:.75rem; padding: .6rem .9rem; background:var(--white); border:1px solid var(--gray-200); border-radius:var(--radius-sm); font-size:.78rem; color:var(--gray-500);">
         📌 Everything saves automatically, per item. Switch items from the bar above and every tool follows along.
       </div>
@@ -333,6 +354,137 @@
           <div class="ht-icon">📊</div>
           <h4>Sale Tracker</h4>
           <p>Track every item you list — revenue, sell rate, best platform</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ AI COPILOT — a layer over the 13 tools, not one of them ══ -->
+    <div class="tk-panel" id="panel-copilot">
+      <div class="panel-header">
+        <h2>✨ AI Copilot</h2>
+        <div class="subtitle">Ask anything about selling this item. The copilot already sees everything you've entered.</div>
+      </div>
+
+      <div id="cp-locked" style="display:none;" class="tk-card">
+        <div class="ai-locked-note">
+          <div style="flex:1;min-width:200px;">
+            <strong>No AI connected yet.</strong><br>
+            Add an API key from Claude, ChatGPT, Gemini, or OpenRouter — it stays in this browser and is sent only to that provider.
+          </div>
+          <button class="btn btn-ai btn-sm" onclick="showPanel('aisetup')">🔌 Connect in 60 seconds</button>
+        </div>
+      </div>
+
+      <div id="cp-main" class="tk-card">
+        <div class="ai-out-head" style="margin-bottom:.9rem;">
+          <span class="ai-status on" id="cp-status"><span class="dot"></span><span id="cp-status-text">Connected</span></span>
+          <div style="display:flex;gap:.4rem;">
+            <button class="copy-btn" onclick="clearCopilot()">🗑️ Clear chat</button>
+          </div>
+        </div>
+
+        <div class="ai-chat-wrap">
+          <div class="ai-chat-log" id="cp-log"></div>
+
+          <div class="ai-composer">
+            <div class="ai-chips" id="cp-chips">
+              <button class="ai-chip" onclick="copilotQuick('Write me a complete, buyer-ready listing for this item — title, description, and the price I should ask.')">📝 Write my listing</button>
+              <button class="ai-chip" onclick="copilotQuick('What is a realistic asking price for this item on local marketplaces right now, and what is my walk-away floor? Explain your reasoning.')">💰 Price it</button>
+              <button class="ai-chip" onclick="copilotQuick('Review everything I have entered for this item and tell me what is missing or weak before I post it.')">🔍 What am I missing?</button>
+              <button class="ai-chip" onclick="copilotQuick('A buyer just messaged me. Help me write a reply that keeps the sale moving without dropping my price. Here is their message:\n\n')">🤝 Reply to a buyer</button>
+              <button class="ai-chip" onclick="copilotQuick('Which marketplace should I list this item on, and why? Consider fees, audience, and how fast it is likely to sell.')">🏪 Where should I list it?</button>
+            </div>
+
+            <div class="ai-composer-row">
+              <textarea id="cp-input" placeholder="Ask the copilot anything…" onkeydown="copilotKey(event)"></textarea>
+              <button class="btn btn-ai" id="cp-send" onclick="copilotSend()">Send</button>
+              <button class="btn btn-outline" id="cp-stop" onclick="aiAbort()" style="display:none;">■ Stop</button>
+            </div>
+            <div class="ai-composer-meta">
+              <label class="ai-ctx-toggle">
+                <input type="checkbox" id="cp-ctx" checked onchange="renderCopilotContextHint()">
+                <span id="cp-ctx-label">Include my item details</span>
+              </label>
+              <span><span id="cp-model-label"></span> · Enter sends, Shift+Enter for a new line</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CONNECT AI — bring your own provider ══ -->
+    <div class="tk-panel" id="panel-aisetup">
+      <div class="panel-header">
+        <h2>🔌 Connect Your AI</h2>
+        <div class="subtitle">Use your own account with Claude, ChatGPT, Gemini, OpenRouter, or a local model. No SellerKit subscription, no markup.</div>
+      </div>
+
+      <div class="tk-card">
+        <div class="ai-out-head">
+          <span class="ai-status off" id="as-status"><span class="dot"></span><span id="as-status-text">Not connected</span></span>
+          <span class="ai-out-model" id="as-current"></span>
+        </div>
+
+        <h3 style="margin-top:.9rem;">1. Pick your provider</h3>
+        <div class="ai-provider-grid" id="as-providers"></div>
+
+        <h3>2. Paste your API key</h3>
+        <div class="form-row" id="as-baseurl-row" style="display:none;">
+          <label>Base URL <span style="font-weight:500;color:var(--gray-500);">— any OpenAI-compatible endpoint (Ollama, LM Studio, Groq, Together…)</span></label>
+          <input type="text" id="as-baseurl" placeholder="http://localhost:11434/v1" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="form-row">
+          <label>API key</label>
+          <input type="password" id="as-key" placeholder="Paste your key" autocomplete="off" spellcheck="false">
+          <div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem;font-size:.76rem;color:var(--gray-500);">
+            <label class="ai-ctx-toggle"><input type="checkbox" id="as-show" onchange="toggleKeyVisible()"><span>Show key</span></label>
+            <span>·</span>
+            <a id="as-keylink" href="#" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;">Where do I get one? ↗</a>
+          </div>
+        </div>
+
+        <h3 style="margin-top:1.1rem;">3. Choose a model</h3>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Model</label>
+            <select id="as-model" onchange="onModelPick()"></select>
+          </div>
+          <div class="form-row" id="as-custom-model-row" style="display:none;">
+            <label>Model ID</label>
+            <input type="text" id="as-custom-model" placeholder="exact model id from your provider" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+
+        <div class="action-row" style="margin-top:.4rem;">
+          <button class="btn btn-ai" onclick="saveAndTestAI()">💾 Save &amp; test connection</button>
+          <button class="btn btn-outline btn-sm" onclick="disconnectAI()">Disconnect</button>
+        </div>
+
+        <div id="as-test-out" style="display:none;margin-top:.9rem;" class="ai-out"></div>
+      </div>
+
+      <div class="tk-card">
+        <h3>What "bring your own key" means</h3>
+        <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.865rem;color:var(--gray-700);line-height:1.6;">
+          <div>✓ Your key is stored in this browser's local storage and sent <strong>only</strong> to the provider you picked — SellerKit has no server and never sees it.</div>
+          <div>✓ You pay your provider directly for what you use. Most of these tools cost a fraction of a cent per run.</div>
+          <div>✓ Disconnecting erases the key from this device immediately.</div>
+          <div>⚠️ A key in a browser is only as private as the device and browser profile it sits in. On a shared or public computer, disconnect when you're done.</div>
+          <div>⚠️ Use a key scoped to a spending limit if your provider supports one. Never paste a key that also controls billing or team settings.</div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3>What AI unlocks across the toolkit</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem .75rem;font-size:.855rem;color:var(--gray-700);">
+          <div>✨ <strong>Copilot</strong> — chat that knows your item</div>
+          <div>✨ <strong>Pricing</strong> — a second opinion on your number</div>
+          <div>✨ <strong>Titles</strong> — 5 platform-tuned alternatives</div>
+          <div>✨ <strong>Description</strong> — written from your form</div>
+          <div>✨ <strong>Scripts</strong> — a reply to any buyer message</div>
+          <div>✨ <strong>Scam Check</strong> — read a message for red flags</div>
+          <div>✨ <strong>Audit</strong> — a rewrite, not just a score</div>
+          <div>✨ <strong>Everything</strong> — works offline-first without AI too</div>
         </div>
       </div>
     </div>
@@ -481,6 +633,34 @@
       </div>
 
       <div class="tk-card">
+        <h3>✨ AI Price Check</h3>
+        <div style="font-size:.82rem;color:var(--gray-600);margin-bottom:.8rem;line-height:1.55;">
+          The formula below is a floor, not a market. Ask your AI what this specific item actually
+          sells for second-hand, and whether your number is leaving money on the table.
+        </div>
+        <div class="form-row">
+          <label>Your city or region <span style="font-weight:500;color:var(--gray-500);">— optional, sharpens the answer</span></label>
+          <input type="text" id="ap-location" placeholder="e.g. Austin, TX" oninput="saveLS('ap')">
+        </div>
+        <button class="btn btn-ai" onclick="aiPriceCheck(this)">✨ Get an AI Price Opinion</button>
+      </div>
+
+      <div class="tk-card ai-out-card" id="aix-price-card" style="display:none;">
+        <div class="ai-out-head">
+          <span class="ai-out-title">✨ AI Price Opinion</span>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <span class="ai-out-model" id="aix-price-model"></span>
+            <button class="copy-btn" onclick="copyText('aix-price',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="ai-out" id="aix-price"></div>
+        <div class="info-callout" style="margin-top:.7rem;">
+          <strong>Treat this as a second opinion, not a quote.</strong> An AI model has no live access to
+          current listings — check a couple of sold listings on your platform before you commit to a number.
+        </div>
+      </div>
+
+      <div class="tk-card">
         <h3>The Formula</h3>
         <div style="font-family:monospace; font-size:.875rem; background:var(--gray-50); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--gray-200); line-height:2;">
           Ask Price = Retail × Condition% × Demand Factor<br>
@@ -562,7 +742,10 @@
           <input type="text" id="tg-feature" placeholder="e.g. all attachments included" oninput="saveLS('tg')">
           <div class="kw-chips" id="tg-kw-chips"></div>
         </div>
-        <button class="btn btn-primary" onclick="genTitles()">Generate 3 Titles →</button>
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="genTitles()">Generate 3 Titles →</button>
+          <button class="btn btn-ai" onclick="aiTitles(this)">✨ 5 More With AI</button>
+        </div>
 
         <div id="tg-output" style="display:none; margin-top:1.5rem;">
           <div style="display:flex;flex-direction:column;gap:.75rem;">
@@ -592,6 +775,17 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="tk-card ai-out-card" id="aix-titles-card" style="display:none;">
+        <div class="ai-out-head">
+          <span class="ai-out-title">✨ AI Title Options</span>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <span class="ai-out-model" id="aix-titles-model"></span>
+            <button class="copy-btn" onclick="copyText('aix-titles',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="ai-out" id="aix-titles"></div>
       </div>
 
       <div class="tk-card">
@@ -653,7 +847,21 @@
           </div>
         </div>
         <div class="form-row"><label>Bundle Deal (optional)</label><input type="text" id="db-bundle" placeholder="Buy all three kitchen items for $100" oninput="saveLS('db')"></div>
-        <button class="btn btn-primary" onclick="buildDescription()">Build Description →</button>
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="buildDescription()">Build Description →</button>
+          <button class="btn btn-ai" onclick="aiDescription(this)">✨ Write It With AI</button>
+        </div>
+      </div>
+
+      <div class="tk-card ai-out-card" id="aix-desc-card" style="display:none;">
+        <div class="ai-out-head">
+          <span class="ai-out-title">✨ AI Description</span>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <span class="ai-out-model" id="aix-desc-model"></span>
+            <button class="copy-btn" onclick="copyText('aix-desc',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="ai-out" id="aix-desc"></div>
       </div>
 
       <div id="db-output" style="display:none;" class="tk-card">
@@ -735,6 +943,51 @@
       <div class="panel-header">
         <h2>🤝 Negotiation Scripts</h2>
         <div class="subtitle">Ready-to-send responses for every buyer situation. Copy, fill in the brackets, send.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3>✨ AI Reply Writer</h3>
+        <div style="font-size:.82rem;color:var(--gray-600);margin-bottom:.8rem;line-height:1.55;">
+          Paste what the buyer actually sent. Get a reply written for your item, your price, and the outcome you want.
+        </div>
+        <div class="form-row">
+          <label>Buyer's message *</label>
+          <textarea id="ar-message" style="min-height:90px;" placeholder="whats ur lowest? i can do 40 cash today" oninput="saveLS('ar')"></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>What do you want to happen?</label>
+            <select id="ar-goal" onchange="saveLS('ar')">
+              <option>Hold my price and keep them interested</option>
+              <option>Counter-offer and close today</option>
+              <option>Accept, but lock in a pickup time</option>
+              <option>Decline politely and move on</option>
+              <option>Get them to commit before I answer more questions</option>
+              <option>Answer their question and build trust</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Tone</label>
+            <select id="ar-tone" onchange="saveLS('ar')">
+              <option>Friendly but firm</option>
+              <option>Short and businesslike</option>
+              <option>Warm and casual</option>
+              <option>Very firm — no room to haggle</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-ai" onclick="aiReply(this)">✨ Write My Reply</button>
+      </div>
+
+      <div class="tk-card ai-out-card" id="aix-reply-card" style="display:none;">
+        <div class="ai-out-head">
+          <span class="ai-out-title">✨ AI Reply</span>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <span class="ai-out-model" id="aix-reply-model"></span>
+            <button class="copy-btn" onclick="copyText('aix-reply',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="ai-out" id="aix-reply"></div>
       </div>
 
       <div class="tk-card">
@@ -874,6 +1127,35 @@
         </div>
 
         <div id="scam-verdict-card" style="display:none;"></div>
+      </div>
+
+      <div class="tk-card">
+        <h3>✨ AI Message Analysis</h3>
+        <div style="font-size:.82rem;color:var(--gray-600);margin-bottom:.8rem;line-height:1.55;">
+          The 12 checks above cover the patterns we know. Paste a buyer's actual messages and have your AI
+          read them for the ones we don't — pressure tactics, off-platform pivots, story inconsistencies.
+        </div>
+        <div class="form-row">
+          <label>Paste the buyer's messages *</label>
+          <textarea id="sm-message" style="min-height:110px;" placeholder="Paste the whole conversation if you have it — patterns show up across messages, not in one line." oninput="saveLS('sm')"></textarea>
+        </div>
+        <button class="btn btn-ai" onclick="aiScamRead(this)">✨ Read It For Red Flags</button>
+      </div>
+
+      <div class="tk-card ai-out-card" id="aix-scam-card" style="display:none;">
+        <div class="ai-out-head">
+          <span class="ai-out-title">✨ AI Red-Flag Read</span>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <span class="ai-out-model" id="aix-scam-model"></span>
+            <button class="copy-btn" onclick="copyText('aix-scam',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="ai-out" id="aix-scam"></div>
+        <div class="info-callout" style="margin-top:.7rem;">
+          <strong>A clean read is not a green light.</strong> AI misses things. The rules that always hold:
+          meet in public, confirm payment in your own app before the item leaves your hands, and never
+          send money or share a verification code.
+        </div>
       </div>
 
       <div class="tk-card">
@@ -1076,6 +1358,47 @@
       </div>
 
       <div class="tk-card">
+        <h3>✨ AI Photo Review</h3>
+        <p style="font-size:.85rem;color:var(--gray-600);margin:-.2rem 0 .85rem;">
+          Add the shots you actually took and have your AI grade them the way a buyer scrolling
+          Marketplace does — lighting, focus, framing, background, and what is still missing from
+          the list above.
+        </p>
+
+        <div class="ph-drop">
+          <input type="file" id="ph-files" accept="image/*" multiple onchange="phAddShots(this)" hidden>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('ph-files').click()">📁 Add Photos</button>
+          <span style="font-size:.78rem;color:var(--gray-500);">
+            Up to 4 · JPG, PNG or WebP · resized in your browser before sending
+          </span>
+        </div>
+
+        <div class="ph-thumbs" id="ph-thumbs" style="display:none;"></div>
+
+        <div class="action-row">
+          <button class="btn btn-ai" onclick="aiPhotoReview(this)">✨ Review My Photos</button>
+          <button class="btn btn-outline btn-sm" id="ph-clear-btn" onclick="phClearShots()" style="display:none;">Clear Photos</button>
+        </div>
+
+        <div class="info-callout" style="margin-top:.7rem;">
+          <strong>Your photos never reach SellerKit.</strong> They are resized in this browser and sent
+          straight to the AI provider you connected, on your own key. Nothing is saved — they clear when
+          you close the tab.
+        </div>
+      </div>
+
+      <div class="tk-card ai-out-card" id="aix-photos-card" style="display:none;">
+        <div class="ai-out-head">
+          <span class="ai-out-title">✨ AI Photo Review</span>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <span class="ai-out-model" id="aix-photos-model"></span>
+            <button class="copy-btn" onclick="copyText('aix-photos',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="ai-out" id="aix-photos"></div>
+      </div>
+
+      <div class="tk-card">
         <h3>Universal Tips — Every Category</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem;font-size:.85rem;color:var(--gray-700);">
           <div>✓ Natural light — near a window</div>
@@ -1173,7 +1496,21 @@
           <label>Your Listing Description</label>
           <textarea id="audit-desc" style="min-height:130px;" placeholder="Paste your full description here…"></textarea>
         </div>
-        <button class="btn btn-primary" onclick="runAudit()">Audit My Listing →</button>
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="runAudit()">Audit My Listing →</button>
+          <button class="btn btn-ai" onclick="aiAudit(this)">✨ AI Deep Audit + Rewrite</button>
+        </div>
+      </div>
+
+      <div class="tk-card ai-out-card" id="aix-audit-card" style="display:none;">
+        <div class="ai-out-head">
+          <span class="ai-out-title">✨ AI Deep Audit</span>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <span class="ai-out-model" id="aix-audit-model"></span>
+            <button class="copy-btn" onclick="copyText('aix-audit',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="ai-out" id="aix-audit"></div>
       </div>
 
       <div id="audit-output" style="display:none;" class="tk-card">
@@ -1310,7 +1647,10 @@ const TOOL_FIELDS = {
   ai: ['ai-item','ai-brand','ai-condition','ai-price','ai-details'],
   pd: ['pd-price','pd-deadline','pd-floor'],
   ms: ['ms-name','ms-category'],
-  sd: ['sd-item','sd-date']
+  sd: ['sd-item','sd-date'],
+  ap: ['ap-location'],
+  ar: ['ar-message','ar-goal','ar-tone'],
+  sm: ['sm-message']
 };
 
 // Plain text and numbers flow both ways — edit them in any tool and the item follows.
@@ -1471,6 +1811,7 @@ function applyItem(it) {
   calcPriceDrop();
   if (document.getElementById('ms-category').value) { loadMeasurements(); restoreMeasurements(); }
   if (document.getElementById('ph-category').value) loadPhotoChecklist();
+  renderCopilot();
 }
 
 function clearAllTools() {
@@ -1494,9 +1835,14 @@ function createItem(name) {
     createdAt: Date.now(),
     tools: {}, photos: {}, measurements: {}
   };
+  // A copilot conversation started before any item existed belongs to the first
+  // item created — otherwise it is stranded under a key nothing reads again.
+  const orphanChat = takeOrphanChat();
+  if (orphanChat.length) it.aiChat = orphanChat;
   items.unshift(it);
   saveItems(items);
   setActiveId(it.id);
+  renderCopilot();
   return it;
 }
 
@@ -1529,7 +1875,7 @@ function deleteActiveItem() {
   setActiveId(items.length ? items[0].id : null);
   clearAllTools();
   const next = activeItem();
-  if (next) applyItem(next);
+  if (next) applyItem(next); else renderCopilot();
   renderItemBar(); renderItemList(); renderItemForm();
 }
 
@@ -2303,9 +2649,19 @@ function loadPhotoState(cat) {
 
 function savePhotoState() {
   const cat = document.getElementById('ph-category').value;
-  if (!cat || !activeItem()) return;
+  if (!cat) return;
   const done = [];
   document.querySelectorAll('#ph-list input[type=checkbox]').forEach((el, i) => { if (el.checked) done.push(i); });
+  // Ticking a shot with no item yet creates one, the way saveLS() does for every
+  // other tool — otherwise the tick was dropped silently. Guarded on done.length
+  // so that merely picking a category, or the init restore path, never leaves a
+  // phantom item behind. createItem() writes through loadItems/saveItems, so this
+  // is not a nested updateActiveItem.
+  if (!activeItem()) {
+    if (!done.length) return;
+    createItem('Untitled item');
+    renderItemForm();
+  }
   updateActiveItem(it => { it.photos = it.photos || {}; it.photos[cat] = done; });
 }
 
@@ -2350,6 +2706,129 @@ function updatePhotoScore() {
     pct < 100 ? `${checked} of ${all.length} shots — almost there, excellent coverage!` :
     '✅ Full coverage — your listing is photo-complete!';
   savePhotoState();
+}
+
+// ── AI photo review ────────────────────────────────────────────────────
+// The shots live in _phShots and nowhere else. They are deliberately never
+// written to localStorage: four base64 photos would blow the ~5MB quota on the
+// first save and take the whole item workspace down with them. Closing the tab
+// is the clear button.
+const PH_MAX_SHOTS = 4;
+const PH_MAX_EDGE = 1024;      // px on the long side — plenty to judge a photo by
+let _phShots = [];             // [{ name, mime, data (bare base64), url (data: for the thumb) }]
+
+function phAddShots(input) {
+  const files = Array.from(input.files || []);
+  input.value = '';            // so re-picking the same file still fires onchange
+  if (!files.length) return;
+
+  const room = PH_MAX_SHOTS - _phShots.length;
+  if (room <= 0) {
+    phShotError('That is the ' + PH_MAX_SHOTS + '-photo limit. Remove one to add another.');
+    return;
+  }
+  if (files.length > room) {
+    phShotError('Only the first ' + room + ' photo' + (room > 1 ? 's' : '') +
+                ' were added — the limit is ' + PH_MAX_SHOTS + '.');
+  }
+
+  Promise.all(files.slice(0, room).map(phShrink))
+    .then(shots => { _phShots = _phShots.concat(shots.filter(Boolean)); renderShots(); })
+    .catch(e => phShotError(e.message));
+}
+
+// Resize in the browser before anything leaves it. A 12MP phone photo is several
+// MB of base64 and buys nothing over a 1024px edge for a quality read, but it
+// costs real money in image tokens on the seller's own key.
+function phShrink(file) {
+  return new Promise((resolve, reject) => {
+    if (!/^image\//.test(file.type)) { resolve(null); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, PH_MAX_EDGE / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width * scale));
+      c.height = Math.max(1, Math.round(img.height * scale));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const dataUrl = c.toDataURL('image/jpeg', 0.82);
+      resolve({ name: file.name, mime: 'image/jpeg', data: dataUrl.split(',')[1], url: dataUrl });
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      // An iPhone HEIC is the usual culprit: Safari decodes it, nothing else does.
+      reject(new Error('This browser could not open "' + file.name + '". If it is a HEIC from an ' +
+                       'iPhone, save or screenshot it as a JPEG first.'));
+    };
+    img.src = url;
+  });
+}
+
+function renderShots() {
+  const wrap = document.getElementById('ph-thumbs');
+  wrap.innerHTML = _phShots.map((s, i) =>
+    '<div class="ph-thumb">' +
+      '<img src="' + s.url + '" alt="' + escHtml(s.name) + '">' +
+      '<span class="ph-thumb-n">' + (i + 1) + '</span>' +
+      '<button class="ph-thumb-x" onclick="phRemoveShot(' + i + ')" title="Remove this photo">×</button>' +
+    '</div>'
+  ).join('');
+  wrap.style.display = _phShots.length ? 'flex' : 'none';
+  document.getElementById('ph-clear-btn').style.display = _phShots.length ? 'inline-flex' : 'none';
+}
+
+function phRemoveShot(i) { _phShots.splice(i, 1); renderShots(); }
+function phClearShots() { _phShots = []; renderShots(); }
+
+function phShotError(msg) {
+  document.getElementById('aix-photos-card').style.display = 'block';
+  const out = document.getElementById('aix-photos');
+  out.classList.add('ai-err');
+  out.textContent = '⚠️ ' + msg;
+}
+
+function aiPhotoReview(btn) {
+  if (!_phShots.length) { phShotError('Add at least one photo first.'); return; }
+
+  const cat = document.getElementById('ph-category').value;
+  const list = cat && PHOTO_LISTS[cat]
+    ? Object.entries(PHOTO_LISTS[cat]).map(([section, items]) => section + ': ' + items.join('; ')).join('\n')
+    : '';
+
+  const prompt =
+    'Those are the ' + _phShots.length + ' photo' + (_phShots.length > 1 ? 's' : '') +
+    ' I plan to put in this listing, numbered in the order a buyer would scroll them.\n\n' +
+    (list ? 'The shot list for this category is:\n' + list + '\n\n' : '') +
+    'Review them the way a buyer scrolling Marketplace would:\n' +
+    '1. Grade each photo by number — Strong, Usable, or Reshoot — with the one reason that decides ' +
+    'it. Judge lighting, focus, framing, background clutter, and whether the shot actually proves ' +
+    'what it claims to.\n' +
+    '2. The single worst problem across the whole set, and the exact fix: where to stand, what to ' +
+    'move, what light to use.\n' +
+    '3. Which shots' + (list ? ' from the list above' : ' a buyer expects') + ' are still missing, ' +
+    'ranked by which one costs me the sale first.\n' +
+    '4. Anything visible that would make a buyer suspicious, or push them to message a question a ' +
+    'better photo would have answered.\n' +
+    'Describe only what you can actually see. If a photo is too dark or too blurry to judge, say ' +
+    'that rather than guessing at it.';
+
+  // Label each image so the model can refer to "Photo 2" and mean the same one the
+  // seller sees numbered in the thumbnail strip.
+  const content = [];
+  _phShots.forEach((s, i) => {
+    content.push({ type: 'text', text: 'Photo ' + (i + 1) + ':' });
+    content.push({ type: 'image', mime: s.mime, data: s.data });
+  });
+  content.push({ type: 'text', text: aiWithContext(prompt) });
+
+  aiRunInto('aix-photos-card', 'aix-photos', btn, {
+    maxTokens: 1400,
+    system: AI_PERSONA + ' You are looking at the seller\'s own photos. Describe only what is ' +
+            'visible in them — never invent a detail the image does not show, and never claim an ' +
+            'item is flawless because a photo happens to hide the flaw.',
+    messages: [{ role: 'user', content: content }]
+  });
 }
 
 // ════════════════════════════════
@@ -2753,6 +3232,795 @@ function exportTrackerCSV() {
 }
 
 // ════════════════════════════════
+// AI — bring your own provider
+// ════════════════════════════════
+// Every AI feature in the toolkit goes through aiStream(). There is no SellerKit
+// server: the browser talks straight to whichever provider the user connected,
+// using the user's own key from localStorage under `sk_ai_cfg`. Nothing is proxied,
+// nothing is logged, and the key never leaves this device except in the request
+// to that provider. Adding a provider means one entry in AI_PROVIDERS plus its
+// request/SSE shape in aiRequest().
+//
+// The key is `sk_ai_cfg`, not `sk_ai`: `sk_ai` is the AI Prompt tool's legacy flat
+// key, which migrateLegacyItem() folds into an item and then deletes.
+//
+// Model lists go stale faster than this file gets edited, so every provider also
+// offers "Other / newer model…", which reveals a free-text model id.
+const AI_PROVIDERS = {
+  anthropic: {
+    label: 'Claude',
+    blurb: 'Anthropic — strongest long-form listing copy',
+    keyUrl: 'https://console.anthropic.com/settings/keys',
+    keyHint: 'sk-ant-…',
+    models: ['claude-sonnet-5', 'claude-opus-5', 'claude-haiku-4-5-20251001']
+  },
+  openai: {
+    label: 'ChatGPT',
+    blurb: 'OpenAI — the key most people already have',
+    keyUrl: 'https://platform.openai.com/api-keys',
+    keyHint: 'sk-…',
+    base: 'https://api.openai.com/v1',
+    models: ['gpt-4.1-mini', 'gpt-4.1', 'gpt-4o', 'gpt-4o-mini']
+  },
+  google: {
+    label: 'Gemini',
+    blurb: 'Google — generous free tier for light use',
+    keyUrl: 'https://aistudio.google.com/apikey',
+    keyHint: 'AIza…',
+    models: ['gemini-2.5-flash', 'gemini-2.5-pro']
+  },
+  openrouter: {
+    label: 'OpenRouter',
+    blurb: 'One key, hundreds of models — including free ones',
+    keyUrl: 'https://openrouter.ai/keys',
+    keyHint: 'sk-or-…',
+    base: 'https://openrouter.ai/api/v1',
+    models: ['anthropic/claude-sonnet-4.5', 'openai/gpt-4.1-mini', 'google/gemini-2.5-flash', 'meta-llama/llama-3.3-70b-instruct']
+  },
+  custom: {
+    label: 'Local / custom',
+    blurb: 'Any OpenAI-compatible endpoint — Ollama, LM Studio, Groq, Together',
+    keyUrl: 'https://github.com/ollama/ollama/blob/main/docs/openai.md',
+    keyHint: 'optional for local models',
+    needsBaseUrl: true,
+    models: []
+  }
+};
+
+// One persona behind every feature — the tone the rest of the toolkit is written in.
+const AI_PERSONA =
+  'You are the AI inside SellerKit, a toolkit for people selling secondhand items on ' +
+  'Facebook Marketplace, OfferUp, Craigslist and Mercari. You are practical, direct and ' +
+  'concise. You write the way a seasoned flipper talks: no filler, no hype, no invented ' +
+  'facts about the item. If a detail is missing, say what to add rather than making it up. ' +
+  'Never fabricate reviews, ratings, scarcity, or comparison prices. Prices are estimates ' +
+  'from general knowledge, never live market data, and you say so when it matters. ' +
+  'Plain text only — no markdown tables, no code fences.';
+
+let _aiCtl = null;   // AbortController for the request in flight
+
+function aiConfig() {
+  let cfg = null;
+  try { cfg = JSON.parse(localStorage.getItem('sk_ai_cfg') || 'null'); } catch (e) {}
+  if (!cfg || !cfg.provider || !AI_PROVIDERS[cfg.provider]) return null;
+  // Local endpoints commonly need no key; hosted providers always do.
+  if (cfg.provider === 'custom') return cfg.baseUrl ? cfg : null;
+  return cfg.key ? cfg : null;
+}
+function saveAIConfig(cfg) {
+  try { localStorage.setItem('sk_ai_cfg', JSON.stringify(cfg)); } catch (e) {}
+}
+function aiReady() { return !!aiConfig(); }
+function aiModel(cfg) {
+  cfg = cfg || aiConfig() || {};
+  const models = (AI_PROVIDERS[cfg.provider] || {}).models || [];
+  return cfg.model || models[0] || '';
+}
+
+function aiAbort() {
+  if (_aiCtl) { _aiCtl.abort(); _aiCtl = null; }
+}
+
+// A message's `content` is either a plain string or an array of neutral parts:
+//   { type:'text', text:'…' }  |  { type:'image', mime:'image/jpeg', data:'<bare base64>' }
+// Only aiRequest() knows how each provider spells an image, exactly as with the
+// text-only shapes. On the OpenAI path a text-only message keeps its plain-string
+// form: custom and local endpoints are the least likely to accept the array shape
+// and the most likely to be pointed at a text-only model.
+function aiParts(content) {
+  return typeof content === 'string' ? [{ type: 'text', text: content }] : (content || []);
+}
+
+// Per-provider request shape and the one line that pulls text out of an SSE event.
+function aiRequest(cfg, messages, system, maxTokens) {
+  const model = aiModel(cfg);
+
+  if (cfg.provider === 'anthropic') {
+    return {
+      url: 'https://api.anthropic.com/v1/messages',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': cfg.key,
+        'anthropic-version': '2023-06-01',
+        // Anthropic refuses browser-origin calls unless the caller opts in by name.
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: {
+        model: model, max_tokens: maxTokens, system: system, stream: true,
+        messages: messages.map(m => ({
+          role: m.role,
+          content: aiParts(m.content).map(p => p.type === 'image'
+            ? { type: 'image', source: { type: 'base64', media_type: p.mime, data: p.data } }
+            : { type: 'text', text: p.text })
+        }))
+      },
+      extract: j => (j.type === 'content_block_delta' && j.delta && j.delta.text) || ''
+    };
+  }
+
+  if (cfg.provider === 'google') {
+    return {
+      url: 'https://generativelanguage.googleapis.com/v1beta/models/' +
+           encodeURIComponent(model) + ':streamGenerateContent?alt=sse&key=' + encodeURIComponent(cfg.key),
+      headers: { 'content-type': 'application/json' },
+      body: {
+        systemInstruction: { parts: [{ text: system }] },
+        contents: messages.map(m => ({
+          role: m.role === 'assistant' ? 'model' : 'user',
+          parts: aiParts(m.content).map(p => p.type === 'image'
+            ? { inline_data: { mime_type: p.mime, data: p.data } }
+            : { text: p.text })
+        })),
+        generationConfig: { maxOutputTokens: maxTokens }
+      },
+      extract: j => {
+        const parts = j.candidates && j.candidates[0] && j.candidates[0].content && j.candidates[0].content.parts;
+        return (parts || []).map(p => p.text || '').join('');
+      }
+    };
+  }
+
+  // OpenAI, OpenRouter, and anything else speaking OpenAI chat-completions.
+  const base = (cfg.provider === 'custom' ? (cfg.baseUrl || '') : AI_PROVIDERS[cfg.provider].base).replace(/\/+$/, '');
+  const headers = { 'content-type': 'application/json' };
+  if (cfg.key) headers['Authorization'] = 'Bearer ' + cfg.key;
+  return {
+    url: base + '/chat/completions',
+    headers: headers,
+    body: {
+      model: model,
+      max_tokens: maxTokens,
+      stream: true,
+      messages: [{ role: 'system', content: system }].concat(messages.map(m =>
+        typeof m.content === 'string' ? m : {
+          role: m.role,
+          content: aiParts(m.content).map(p => p.type === 'image'
+            ? { type: 'image_url', image_url: { url: 'data:' + p.mime + ';base64,' + p.data } }
+            : { type: 'text', text: p.text })
+        }
+      ))
+    },
+    extract: j => (j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content) || ''
+  };
+}
+
+// Turn an HTTP failure into something a seller can act on, not a status code.
+function aiErrorText(status, raw, cfg) {
+  let detail = '';
+  try {
+    const j = JSON.parse(raw);
+    detail = (j.error && (j.error.message || j.error.status)) || j.message || '';
+  } catch (e) { detail = String(raw || '').slice(0, 220); }
+  detail = detail ? ' (' + detail + ')' : '';
+  const name = (AI_PROVIDERS[cfg.provider] || {}).label || 'Your provider';
+
+  // A text-only model handed a photo fails in a dozen different wordings, and the
+  // raw status alone ("400") tells the seller nothing about what to change.
+  if (status < 500 && /image|vision|multimodal|image_url|inline_data/i.test(String(raw || '')))
+    return 'Model "' + aiModel(cfg) + '" cannot read photos. Pick a vision model under Connect AI — ' +
+           'Claude, GPT-4.1, GPT-4o and Gemini all read images.' + detail;
+
+  if (status === 401 || status === 403)
+    return name + ' rejected that key. Re-copy it from your provider dashboard — keys are easy to truncate when copying.' + detail;
+  if (status === 404)
+    return 'Model "' + aiModel(cfg) + '" does not exist on ' + name + '. Pick a different one under Connect AI.' + detail;
+  if (status === 429)
+    return name + ' is rate-limiting you, or the account is out of credit. Wait a minute, or check your billing.' + detail;
+  if (status >= 500)
+    return name + ' had a server error (' + status + '). Try again shortly.';
+  return name + ' returned ' + status + '.' + detail;
+}
+
+// The one call every AI feature makes. Streams tokens through opts.onDelta and
+// resolves with the full text.
+async function aiStream(messages, opts) {
+  opts = opts || {};
+  const cfg = aiConfig();
+  if (!cfg) throw new Error('No AI provider is connected.');
+
+  const req = aiRequest(cfg, messages, opts.system || AI_PERSONA, opts.maxTokens || 1100);
+  _aiCtl = new AbortController();
+  const signal = _aiCtl.signal;
+
+  const send = body => fetch(req.url, {
+    method: 'POST', headers: req.headers, body: JSON.stringify(body), signal: signal
+  });
+
+  let res;
+  try {
+    res = await send(req.body);
+  } catch (e) {
+    _aiCtl = null;
+    if (e.name === 'AbortError') throw e;
+    throw new Error(
+      "Couldn't reach " + ((AI_PROVIDERS[cfg.provider] || {}).label || 'the provider') + '. ' +
+      "Check your connection, and if you're on a local or custom endpoint, that it allows " +
+      'browser requests from this page (CORS).'
+    );
+  }
+
+  if (!res.ok) {
+    const raw = await res.text();
+    // Newer OpenAI-shaped models renamed max_tokens; retry once rather than fail.
+    if (res.status === 400 && /max_completion_tokens/.test(raw) && 'max_tokens' in req.body) {
+      const retry = Object.assign({}, req.body);
+      retry.max_completion_tokens = retry.max_tokens;
+      delete retry.max_tokens;
+      res = await send(retry);
+      if (!res.ok) { _aiCtl = null; throw new Error(aiErrorText(res.status, await res.text(), cfg)); }
+    } else {
+      _aiCtl = null;
+      throw new Error(aiErrorText(res.status, raw, cfg));
+    }
+  }
+  if (!res.body) {
+    _aiCtl = null;
+    throw new Error('This browser blocked the streaming response. Try a current version of Chrome, Edge, Firefox or Safari.');
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '', full = '';
+  try {
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      buffer += decoder.decode(chunk.value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();                       // keep the partial line for next chunk
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line.startsWith('data:')) continue;
+        const data = line.slice(5).trim();
+        if (!data || data === '[DONE]') continue;
+        let json;
+        try { json = JSON.parse(data); } catch (e) { continue; }
+        if (json.error) throw new Error(json.error.message || 'The provider errored mid-response.');
+        const piece = req.extract(json);
+        if (piece) { full += piece; if (opts.onDelta) opts.onDelta(full); }
+      }
+    }
+  } finally {
+    _aiCtl = null;
+  }
+
+  if (!full.trim()) throw new Error('The model returned nothing. Try again, or switch models under Connect AI.');
+  return full;
+}
+
+// ── Rendering ──────────────────────────────────────────────────────────
+// Model output is escaped first, then given the lightest possible formatting.
+// Escaping before formatting is what keeps a model's response from injecting HTML.
+function aiMd(text) {
+  return escHtml(text)
+    .replace(/^#{1,6}\s*(.+)$/gm, '<span class="ai-h">$1</span>')
+    .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+}
+
+// Every in-tool AI action renders the same way: reveal the card, stream into it,
+// leave either the answer or a usable error behind.
+async function aiRunInto(cardId, outId, btn, spec) {
+  if (!requireAI(cardId, outId)) return;
+  const card = document.getElementById(cardId);
+  const out = document.getElementById(outId);
+  const modelEl = document.getElementById(outId + '-model');
+  const label = btn ? btn.innerHTML : '';
+
+  card.style.display = 'block';
+  out.classList.remove('ai-err');
+  out.innerHTML = '<span class="ai-caret"></span>';
+  if (modelEl) modelEl.textContent = aiModel();
+  if (btn) { btn.disabled = true; btn.innerHTML = '✨ Thinking…'; }
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Re-rendering on every token is wasteful; paint on the next frame instead.
+  let pending = null, queued = false;
+  const paint = () => {
+    queued = false;
+    out.innerHTML = aiMd(pending) + '<span class="ai-caret"></span>';
+  };
+
+  try {
+    const text = await aiStream(spec.messages, {
+      system: spec.system,
+      maxTokens: spec.maxTokens,
+      onDelta: t => { pending = t; if (!queued) { queued = true; requestAnimationFrame(paint); } }
+    });
+    out.innerHTML = aiMd(text);
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      out.innerHTML = aiMd(pending || '') + '\n\n— stopped —';
+    } else {
+      out.classList.add('ai-err');
+      out.textContent = '⚠️ ' + e.message;
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = label; }
+  }
+}
+
+// Show the connect prompt in the output card rather than a dead button.
+function requireAI(cardId, outId) {
+  if (aiReady()) return true;
+  const card = document.getElementById(cardId);
+  const out = document.getElementById(outId);
+  card.style.display = 'block';
+  out.classList.remove('ai-err');
+  out.innerHTML =
+    '<strong>No AI connected yet.</strong>\n\n' +
+    'This runs on your own API key from Claude, ChatGPT, Gemini or OpenRouter — ' +
+    'the key stays in this browser and SellerKit never sees it.\n\n' +
+    '<button class="btn btn-ai btn-sm" onclick="showPanel(\'aisetup\')">🔌 Connect a provider →</button>';
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  return false;
+}
+
+// ── Context — what the model knows about the item before you type anything ──
+function aiItemContext() {
+  const lines = [];
+  const push = (k, v) => {
+    const s = v === undefined || v === null ? '' : String(v).trim();
+    if (s) lines.push(k + ': ' + s);
+  };
+  const val = id => { const el = document.getElementById(id); return el ? el.value : ''; };
+  const txt = id => { const el = document.getElementById(id); return el ? el.textContent : ''; };
+
+  const it = activeItem();
+  if (it) {
+    push('Item', it.name);
+    push('Brand', it.brand);
+    push('Model', it.model);
+    push('Category', it.category);
+    push('Condition', it.condition ? (COND_TO_DB[it.condition] || it.condition) : '');
+    push('Original retail price (USD)', it.retail);
+    push('Current asking price (USD)', it.asking);
+  }
+
+  if (document.getElementById('pc-results') &&
+      document.getElementById('pc-results').style.display !== 'none') {
+    push('SellerKit calculated ask', txt('pc-ideal'));
+    push('SellerKit quick-flip price', txt('pc-quickflip'));
+    push('SellerKit walk-away floor', txt('pc-floor'));
+  }
+  push('Local demand', val('pc-demand') === '1.15' ? 'high' : val('pc-demand') === '0.85' ? 'low' : val('pc-demand') ? 'normal' : '');
+  push('Key features', val('db-features').replace(/\n+/g, '; '));
+  push('Dimensions', val('db-dims'));
+  push("What's included", val('db-includes'));
+  push('Reason for selling', val('db-reason'));
+  push('Payment / pickup terms', val('db-pickup'));
+  push('Bundle offer', val('db-bundle'));
+  push('Extra detail', val('ai-details'));
+  push('Seller location', val('ap-location'));
+
+  if (it && it.measurements) {
+    const m = Object.entries(it.measurements).filter(([, v]) => String(v).trim());
+    if (m.length) push('Measurements', m.map(([k, v]) => k + ' ' + v).join(', '));
+  }
+
+  if (!lines.length) return '';
+  return 'Everything the seller has entered so far:\n' + lines.join('\n');
+}
+
+// A prompt plus whatever context exists, as one user message.
+function aiWithContext(prompt, useContext) {
+  const ctx = useContext === false ? '' : aiItemContext();
+  return ctx ? ctx + '\n\n---\n\n' + prompt : prompt;
+}
+
+// ════════════════════════════════
+// AI — Connect panel
+// ════════════════════════════════
+let _asPick = 'anthropic';   // provider selected in the form, not yet saved
+
+function renderProviders() {
+  const wrap = document.getElementById('as-providers');
+  wrap.innerHTML = Object.entries(AI_PROVIDERS).map(([id, p]) =>
+    `<button class="ai-provider${id === _asPick ? ' active' : ''}" onclick="pickProvider('${id}')">
+       <span class="apn">${escHtml(p.label)}</span>
+       <span class="apd">${escHtml(p.blurb)}</span>
+     </button>`).join('');
+
+  const p = AI_PROVIDERS[_asPick];
+  document.getElementById('as-baseurl-row').style.display = p.needsBaseUrl ? 'block' : 'none';
+  document.getElementById('as-key').placeholder = p.keyHint;
+  document.getElementById('as-keylink').href = p.keyUrl;
+
+  const sel = document.getElementById('as-model');
+  const cfg = aiConfig();
+  const current = (cfg && cfg.provider === _asPick && cfg.model) || p.models[0] || '';
+  const known = p.models.includes(current);
+  sel.innerHTML = p.models.map(m =>
+    `<option value="${escHtml(m)}"${m === current ? ' selected' : ''}>${escHtml(m)}</option>`
+  ).concat(
+    `<option value="__custom__"${!known ? ' selected' : ''}>Other / newer model…</option>`
+  ).join('');
+  document.getElementById('as-custom-model').value = known ? '' : current;
+  onModelPick();
+}
+
+function pickProvider(id) {
+  _asPick = id;
+  const cfg = aiConfig();
+  document.getElementById('as-key').value = (cfg && cfg.provider === id && cfg.key) || '';
+  document.getElementById('as-baseurl').value = (cfg && cfg.provider === id && cfg.baseUrl) || '';
+  renderProviders();
+}
+
+function onModelPick() {
+  const isCustom = document.getElementById('as-model').value === '__custom__';
+  document.getElementById('as-custom-model-row').style.display = isCustom ? 'block' : 'none';
+}
+
+function toggleKeyVisible() {
+  document.getElementById('as-key').type =
+    document.getElementById('as-show').checked ? 'text' : 'password';
+}
+
+function renderAIStatus() {
+  const cfg = aiConfig();
+  const on = !!cfg;
+  const name = on ? (AI_PROVIDERS[cfg.provider] || {}).label : '';
+
+  const pill = document.getElementById('as-status');
+  if (pill) {
+    pill.className = 'ai-status ' + (on ? 'on' : 'off');
+    document.getElementById('as-status-text').textContent = on ? 'Connected to ' + name : 'Not connected';
+    document.getElementById('as-current').textContent = on ? aiModel(cfg) : '';
+  }
+
+  const cpLocked = document.getElementById('cp-locked');
+  if (cpLocked) {
+    cpLocked.style.display = on ? 'none' : 'block';
+    document.getElementById('cp-main').style.display = on ? 'block' : 'none';
+    if (on) {
+      document.getElementById('cp-status-text').textContent = name;
+      document.getElementById('cp-model-label').textContent = aiModel(cfg);
+    }
+  }
+
+  const bannerBtn = document.getElementById('ai-banner-btn');
+  if (bannerBtn) bannerBtn.textContent = on ? '🔌 ' + name + ' connected' : '🔌 Connect a provider';
+}
+
+async function saveAndTestAI() {
+  const p = AI_PROVIDERS[_asPick];
+  const key = document.getElementById('as-key').value.trim();
+  const baseUrl = document.getElementById('as-baseurl').value.trim();
+  let model = document.getElementById('as-model').value;
+  if (model === '__custom__') model = document.getElementById('as-custom-model').value.trim();
+
+  const out = document.getElementById('as-test-out');
+  out.style.display = 'block';
+  out.classList.remove('ai-err');
+
+  const fail = msg => { out.classList.add('ai-err'); out.textContent = '⚠️ ' + msg; };
+
+  if (p.needsBaseUrl && !baseUrl) return fail('Enter the base URL of your endpoint, e.g. http://localhost:11434/v1');
+  if (!p.needsBaseUrl && !key) return fail('Paste your ' + p.label + ' API key first.');
+  if (!model) return fail('Pick a model, or type a model id.');
+
+  saveAIConfig({ provider: _asPick, key: key, baseUrl: baseUrl, model: model });
+  renderAIStatus();
+
+  out.textContent = 'Testing ' + model + '…';
+  try {
+    const reply = await aiStream(
+      [{ role: 'user', content: 'Reply with exactly: SellerKit connected.' }],
+      { maxTokens: 24, system: 'Reply with exactly the words the user asks for. Nothing else.' }
+    );
+    out.textContent = '✅ Connected. ' + p.label + ' answered: ' + reply.trim();
+    renderCopilot();
+  } catch (e) {
+    fail(e.message + '\n\nThe settings are saved — fix the problem above and test again.');
+  }
+  renderAIStatus();
+}
+
+function disconnectAI() {
+  if (!aiReady()) return;
+  if (!confirm('Remove your API key from this device? Your saved items and chats stay.')) return;
+  try { localStorage.removeItem('sk_ai_cfg'); } catch (e) {}
+  document.getElementById('as-key').value = '';
+  document.getElementById('as-test-out').style.display = 'none';
+  renderAIStatus();
+  renderProviders();
+  renderCopilot();
+}
+
+// ════════════════════════════════
+// AI — Copilot
+// ════════════════════════════════
+// The transcript belongs to the item, like every other tool's state, so switching
+// items switches conversations. With no item yet, it falls back to a flat key.
+function loadChat() {
+  const it = activeItem();
+  if (it) return it.aiChat || [];
+  try { return JSON.parse(localStorage.getItem('sk_ai_chat') || '[]'); } catch (e) { return []; }
+}
+// Read and clear the itemless conversation, so createItem can adopt it exactly once.
+function takeOrphanChat() {
+  let msgs = [];
+  try {
+    msgs = JSON.parse(localStorage.getItem('sk_ai_chat') || '[]');
+    if (msgs.length) localStorage.removeItem('sk_ai_chat');
+  } catch (e) { return []; }
+  return Array.isArray(msgs) ? msgs : [];
+}
+function saveChat(msgs) {
+  const trimmed = msgs.slice(-40);
+  const it = activeItem();
+  if (it) { updateActiveItem(i => { i.aiChat = trimmed; }); return; }
+  try { localStorage.setItem('sk_ai_chat', JSON.stringify(trimmed)); } catch (e) {}
+}
+
+function renderCopilot() {
+  renderAIStatus();
+  renderCopilotContextHint();
+  const log = document.getElementById('cp-log');
+  if (!log) return;
+  const msgs = loadChat();
+  if (!msgs.length) {
+    const it = activeItem();
+    log.innerHTML =
+      '<div class="ai-chat-empty"><div class="ace-icon">✨</div>' +
+      (it
+        ? 'Ask anything about selling <strong>' + escHtml(it.name || 'this item') + '</strong>.<br>' +
+          'The copilot already sees everything you\'ve entered in the other tools.'
+        : 'Ask anything about selling secondhand.<br>' +
+          'Add an item under <strong>My Items</strong> and the copilot will know its details too.') +
+      '</div>';
+    return;
+  }
+  log.innerHTML = msgs.map((m, i) => copilotBubble(m.role, m.content, i)).join('');
+  log.scrollTop = log.scrollHeight;
+}
+
+function copilotBubble(role, content, idx) {
+  const isUser = role === 'user';
+  return `<div class="ai-msg ${isUser ? 'user' : 'assistant'}">
+    <div class="ai-avatar">${isUser ? '🙋' : '✨'}</div>
+    <div style="flex:1;min-width:0;">
+      <div class="ai-bubble" id="cp-msg-${idx}">${aiMd(content)}</div>
+      ${isUser ? '' : `<div class="ai-msg-actions"><button class="copy-btn" onclick="copyText('cp-msg-${idx}',this)">📋 Copy</button></div>`}
+    </div>
+  </div>`;
+}
+
+function renderCopilotContextHint() {
+  const label = document.getElementById('cp-ctx-label');
+  if (!label) return;
+  const it = activeItem();
+  label.textContent = it ? 'Include "' + (it.name || 'this item') + '" details' : 'Include my item details (no item yet)';
+}
+
+function copilotQuick(text) {
+  const input = document.getElementById('cp-input');
+  input.value = text;
+  input.focus();
+  // A prompt ending in a blank line is waiting on the user to paste something in.
+  if (!/\n\n$/.test(text)) copilotSend();
+}
+
+function copilotKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); copilotSend(); }
+}
+
+async function copilotSend() {
+  const input = document.getElementById('cp-input');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!aiReady()) { showPanel('aisetup'); return; }
+
+  const useCtx = document.getElementById('cp-ctx').checked;
+  const msgs = loadChat();
+  msgs.push({ role: 'user', content: text });
+  saveChat(msgs);
+  input.value = '';
+  renderCopilot();
+
+  const log = document.getElementById('cp-log');
+  const idx = msgs.length;
+  log.insertAdjacentHTML('beforeend', copilotBubble('assistant', '', idx));
+  const bubble = document.getElementById('cp-msg-' + idx);
+  bubble.innerHTML = '<span class="ai-caret"></span>';
+  log.scrollTop = log.scrollHeight;
+
+  document.getElementById('cp-send').disabled = true;
+  document.getElementById('cp-stop').style.display = 'inline-flex';
+
+  // Context rides on the newest message only — resending it every turn wastes tokens.
+  const history = msgs.slice(0, -1).map(m => ({ role: m.role, content: m.content }));
+  history.push({ role: 'user', content: aiWithContext(text, useCtx) });
+
+  let pending = '', queued = false;
+  const paint = () => {
+    queued = false;
+    bubble.innerHTML = aiMd(pending) + '<span class="ai-caret"></span>';
+    log.scrollTop = log.scrollHeight;
+  };
+
+  try {
+    const reply = await aiStream(history, {
+      maxTokens: 1400,
+      onDelta: t => { pending = t; if (!queued) { queued = true; requestAnimationFrame(paint); } }
+    });
+    msgs.push({ role: 'assistant', content: reply });
+    saveChat(msgs);
+  } catch (e) {
+    const note = e.name === 'AbortError'
+      ? (pending ? pending + '\n\n— stopped —' : '— stopped —')
+      : '⚠️ ' + e.message;
+    msgs.push({ role: 'assistant', content: note });
+    saveChat(msgs);
+  } finally {
+    document.getElementById('cp-send').disabled = false;
+    document.getElementById('cp-stop').style.display = 'none';
+    renderCopilot();
+  }
+}
+
+function clearCopilot() {
+  if (!loadChat().length) return;
+  if (!confirm('Clear this conversation?')) return;
+  saveChat([]);
+  renderCopilot();
+}
+
+// ════════════════════════════════
+// AI — in-tool actions
+// ════════════════════════════════
+function aiTitles(btn) {
+  const plat = (typeof activePlatform !== 'undefined' && activePlatform) || { name: 'Facebook', limit: 100 };
+  aiRunInto('aix-titles-card', 'aix-titles', btn, {
+    maxTokens: 700,
+    messages: [{ role: 'user', content: aiWithContext(
+      'Write 5 listing titles for ' + plat.name + '. Hard limit: ' + plat.limit + ' characters — stay inside it.\n' +
+      'Lead with the words a buyer would type into search: brand, item, model, size or capacity.\n' +
+      'Vary the angle across the five (search-first, condition-led, value-led, specific-detail-led, urgency).\n' +
+      'No ALL CAPS, no emoji, no "great deal" filler, and no claims the seller has not given you.\n' +
+      'Output exactly five numbered lines, each ending with the character count in parentheses. Nothing else.'
+    ) }]
+  });
+}
+
+function aiDescription(btn) {
+  aiRunInto('aix-desc-card', 'aix-desc', btn, {
+    maxTokens: 1000,
+    messages: [{ role: 'user', content: aiWithContext(
+      'Write the listing description for this item, ready to paste into the marketplace.\n' +
+      'Open with one line that makes a scroller stop. Then short scannable bullet lines for the specs ' +
+      'and what is included. Be honest about the condition — name the flaws plainly, it sells better than hiding them. ' +
+      'Close with the pickup and payment terms and a direct call to message.\n' +
+      'Use only facts given above. If something important is missing, end with a short ' +
+      '"Add before posting:" line listing what to fill in.'
+    ) }]
+  });
+}
+
+function aiPriceCheck(btn) {
+  aiRunInto('aix-price-card', 'aix-price', btn, {
+    maxTokens: 900,
+    messages: [{ role: 'user', content: aiWithContext(
+      'Give me a second opinion on pricing this item on local marketplaces.\n' +
+      'Cover, in this order:\n' +
+      '1. A realistic asking price range, and why this category holds or loses value.\n' +
+      '2. Whether the SellerKit calculated ask above is too high, too low, or about right.\n' +
+      '3. The price that sells it within a week, and the floor I should walk away below.\n' +
+      '4. One specific thing I could do to justify a higher price.\n' +
+      'You are working from general knowledge, not live listings — say so in one line at the end, ' +
+      'and tell me exactly what to search on my platform to confirm it.'
+    ) }]
+  });
+}
+
+function aiReply(btn) {
+  const msg = document.getElementById('ar-message').value.trim();
+  if (!msg) {
+    document.getElementById('aix-reply-card').style.display = 'block';
+    const out = document.getElementById('aix-reply');
+    out.classList.add('ai-err');
+    out.textContent = "⚠️ Paste what the buyer sent you first — that's what the reply gets written against.";
+    return;
+  }
+  const goal = document.getElementById('ar-goal').value;
+  const tone = document.getElementById('ar-tone').value;
+  aiRunInto('aix-reply-card', 'aix-reply', btn, {
+    maxTokens: 700,
+    messages: [{ role: 'user', content: aiWithContext(
+      'A buyer sent me this message:\n"""\n' + msg + '\n"""\n\n' +
+      'My goal: ' + goal + '.\nTone: ' + tone + '.\n\n' +
+      'Write the reply I should send. Marketplace-message length — a few lines, not an email. ' +
+      'No greeting boilerplate, no "I hope this finds you well". Never invent other buyers or fake urgency.\n' +
+      'After the reply, add a short line starting with "Read:" telling me what their message signals ' +
+      'about how serious they are and what they will likely say next.'
+    ) }]
+  });
+}
+
+function aiScamRead(btn) {
+  const msg = document.getElementById('sm-message').value.trim();
+  if (!msg) {
+    document.getElementById('aix-scam-card').style.display = 'block';
+    const out = document.getElementById('aix-scam');
+    out.classList.add('ai-err');
+    out.textContent = "⚠️ Paste the buyer's messages first.";
+    return;
+  }
+  aiRunInto('aix-scam-card', 'aix-scam', btn, {
+    maxTokens: 800,
+    system: AI_PERSONA + ' On safety questions you are cautious and concrete. You never tell someone ' +
+            'a stranger is definitely safe — you describe what the evidence shows and what to verify.',
+    messages: [{ role: 'user', content:
+      'Read these messages from someone contacting me about an item I listed, and tell me how risky ' +
+      'this looks:\n"""\n' + msg + '\n"""\n\n' +
+      'Give me:\n' +
+      '1. A risk level — Low, Medium, or High — and the one sentence that justifies it.\n' +
+      '2. Each specific red flag you can point at, quoting the words that triggered it.\n' +
+      '3. What a legitimate buyer would be doing differently here.\n' +
+      '4. Exactly what to do next: what to verify, what to refuse, and how to phrase it.\n' +
+      'If nothing looks wrong, say so — but still name the one thing I should confirm before meeting.'
+    }]
+  });
+}
+
+function aiAudit(btn) {
+  const title = document.getElementById('audit-title').value.trim();
+  const desc = document.getElementById('audit-desc').value.trim();
+  if (!title && !desc) {
+    document.getElementById('aix-audit-card').style.display = 'block';
+    const out = document.getElementById('aix-audit');
+    out.classList.add('ai-err');
+    out.textContent = '⚠️ Paste your title or description above first.';
+    return;
+  }
+  aiRunInto('aix-audit-card', 'aix-audit', btn, {
+    maxTokens: 1300,
+    messages: [{ role: 'user', content: aiWithContext(
+      'Here is my live listing.\n\nTITLE:\n' + (title || '(none)') + '\n\nDESCRIPTION:\n' + (desc || '(none)') + '\n\n' +
+      'Audit it like someone who has sold a few hundred items:\n' +
+      '1. The single biggest reason this listing is not getting messages.\n' +
+      '2. Three specific fixes, each naming the exact words to change.\n' +
+      '3. What a buyer will message to ask because the listing does not answer it.\n' +
+      '4. A rewritten title and a rewritten description I can paste straight in — same facts, better selling.\n' +
+      'Do not add details I never gave you. Mark anything I need to fill in as [LIKE THIS].'
+    ) }]
+  });
+}
+
+function initAI() {
+  renderProviders();
+  const cfg = aiConfig();
+  if (cfg) {
+    _asPick = cfg.provider;
+    document.getElementById('as-key').value = cfg.key || '';
+    document.getElementById('as-baseurl').value = cfg.baseUrl || '';
+    renderProviders();
+  }
+  renderAIStatus();
+  renderCopilot();
+}
+
+// ════════════════════════════════
 // Init — restore saved inputs
 // ════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
@@ -2771,6 +4039,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderItemList();
   renderItemForm();
   renderTracker();
+  initAI();
 });
 </script>
 </body>

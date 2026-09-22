@@ -37,6 +37,7 @@
     <div class="logo">Seller<span>Kit</span></div>
     <div class="nav-links">
       <a href="#tools" class="nav-link">Tools</a>
+      <a href="#ai" class="nav-link">AI</a>
       <a href="#compare" class="nav-link">Compare</a>
       <a href="#pricing" class="nav-link">Pricing</a>
       <a href="checkout.html" class="btn btn-primary btn-sm">Get SellerKit →</a>
@@ -359,6 +360,68 @@
   </div>
 </section>
 
+<!-- ── AI layer — an upgrade to the 13 tools, deliberately not counted as another one ── -->
+<!-- Plain .section, not .section-alt: #tools above and #compare below already alternate,
+     so this carries its own tint instead of shifting every band after it. -->
+<section id="ai" class="section" style="background:linear-gradient(180deg,#F5F3FF 0%,#EFF6FF 100%);">
+  <div class="container">
+    <div class="section-header centered">
+      <div class="eyebrow">✨ New</div>
+      <h2>Bring Your Own AI. Every Tool Gets Smarter.</h2>
+      <p>Connect an API key from Claude, ChatGPT, Gemini, OpenRouter — or a model running on your own machine.
+         SellerKit has no server, so your key stays in your browser and goes nowhere but your provider.</p>
+    </div>
+
+    <div class="tools-grid">
+      <div class="tool-card">
+        <div class="tool-icon blue">💬</div>
+        <h3>AI Copilot</h3>
+        <p>A chat that already knows your item — brand, condition, price, measurements, everything you've entered.
+           Ask it what to fix, what to charge, or what to say back.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon green">📝</div>
+        <h3>Listings Written For You</h3>
+        <p>The Description Builder and Title Generator gain an AI mode: a full description from your form,
+           and five platform-tuned titles inside each marketplace's character limit.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon orange">🤝</div>
+        <h3>Replies To Real Buyers</h3>
+        <p>Paste what a buyer actually sent. Pick your goal and tone. Get the message to send back —
+           plus a read on how serious they are.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon blue">🛡️</div>
+        <h3>Scam Reads</h3>
+        <p>The 12-point checklist covers the patterns we know. AI reads the actual conversation for the ones
+           we don't — pressure tactics, off-platform pivots, stories that don't line up.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon green">💰</div>
+        <h3>A Second Opinion On Price</h3>
+        <p>The formula gives you a number. AI argues with it — where this category holds value, what sells
+           it inside a week, and what to search to confirm before you commit.</p>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon orange">🔍</div>
+        <h3>Audit + Rewrite</h3>
+        <p>The audit scores your listing. AI tells you the single reason it isn't getting messages,
+           then hands back a rewritten title and description you can paste straight in.</p>
+      </div>
+    </div>
+
+    <div style="max-width:760px;margin:1.75rem auto 0;padding:1.1rem 1.3rem;background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius);font-size:.875rem;color:var(--gray-600);line-height:1.65;">
+      <strong style="color:var(--gray-900);">How the key works.</strong>
+      You pay your AI provider directly for what you use — SellerKit takes no cut and adds no subscription.
+      Most providers have a free tier that covers casual selling. The key is stored in your browser's local
+      storage, sent only to the provider you picked, and erased from the device the moment you disconnect.
+      <strong style="color:var(--gray-900);">All 13 tools work fully without connecting anything</strong> —
+      AI is an upgrade to them, not a requirement.
+    </div>
+  </div>
+</section>
+
 <!-- ── Comparison table ── -->
 <section id="compare" class="section section-alt">
   <div class="container">
@@ -517,6 +580,13 @@
         <li>Listing Quality Audit (10-point score)</li>
         <li>Sale Tracker (CSV profit export)</li>
       </ul>
+      <!-- AI is a layer over the 13 tools, so it sits outside the list the count is read from. -->
+      <div style="margin:1rem 0 1.25rem;padding:.85rem 1rem;border-radius:var(--radius-sm);background:linear-gradient(135deg,#1E1B4B,#1D4ED8);color:var(--white);text-align:left;">
+        <div style="font-weight:800;font-size:.9rem;margin-bottom:.2rem;">✨ Plus: AI mode on every tool</div>
+        <div style="font-size:.82rem;line-height:1.55;color:rgba(255,255,255,.75);">
+          Bring your own Claude, ChatGPT, Gemini, or OpenRouter key. No extra subscription.
+        </div>
+      </div>
       <a href="checkout.html" class="btn btn-success btn-lg" style="width:100%;">Get SellerKit — $49 →</a>
       <div class="guarantee">🔒 30-day money-back guarantee · No questions asked</div>
     </div>
@@ -552,6 +622,14 @@
         <div class="faq-a">Yes. One-time payment includes all future updates. As new tools and scripts are added, you get access automatically at no extra charge.</div>
       </div>
       <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Do I need to pay for AI on top of the $49? <span class="icon">+</span></div>
+        <div class="faq-a">No, and SellerKit doesn't sell you AI credits either. All 13 tools work fully on their own. If you want the AI features, you connect your own key from Claude, ChatGPT, Gemini, OpenRouter, or a model running on your own computer — and you pay that provider directly for what you use. Several of them have a free tier that covers casual selling.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Where does my API key go? <span class="icon">+</span></div>
+        <div class="faq-a">Into your browser's local storage on that device, and nowhere else. SellerKit has no server and no account system, so there is nothing for us to store it on — your browser sends requests straight to the provider you chose. Disconnecting erases it from the device immediately. On a shared or public computer, disconnect when you're done.</div>
+      </div>
+      <div class="faq-item">
         <div class="faq-q" onclick="toggleFaq(this)">Is there a free trial? <span class="icon">+</span></div>
         <div class="faq-a">The pricing calculator on this page is free to use. It's one of the 13 tools in the full kit. Try it above — if it gives you a useful number, the rest of the kit will too.</div>
       </div>
@@ -578,6 +656,7 @@
       </div>
       <div class="footer-links">
         <a href="#tools">Tools</a>
+        <a href="#ai">AI</a>
         <a href="#compare">Compare</a>
         <a href="#pricing">Pricing</a>
         <a href="toolkit.html">Customer Login</a>

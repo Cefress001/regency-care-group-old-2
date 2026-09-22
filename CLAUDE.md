@@ -65,8 +65,65 @@ Everything persists to `localStorage` under an `sk_` prefix; there is no backend
 - Touching any tool with no item yet auto-creates one, so input is never silently dropped.
 - `migrateLegacyItem()` folds the old flat keys (`sk_pc`, `sk_tg`, … `sk_photos`) into a single item on first load and deletes them. Leave it in place until well past the point where users could still be carrying old data.
 - `sk_tracker` stays separate — it is a financial log of sales, not the working set. `addActiveItemToTracker()` is the one-way bridge from an item into it.
+- The AI connection lives in **`sk_ai_cfg`** (`{provider, key, baseUrl, model}`), read through
+  `aiConfig()` and written only by `saveAndTestAI()`. **It cannot be called `sk_ai`**: that is the
+  AI Prompt tool's legacy flat key, so `migrateLegacyItem()` would fold the config into an item's
+  `tools.ai` and then delete it — wiping the user's key and creating a phantom item on next load.
+- The copilot transcript is `item.aiChat`, so conversations switch with the item like every other
+  tool's state. A chat started before any item exists goes to the flat `sk_ai_chat`, and
+  `createItem()` adopts it exactly once via `takeOrphanChat()` rather than stranding it.
 - Every `localStorage` access is wrapped in `try/catch` (private-browsing mode throws). Keep that.
 - The `DOMContentLoaded` handler migrates, then calls `applyItem()` on the active item, which re-runs `calcPrice()` / `calcPriceDrop()` and rebuilds the measurement and photo panels.
+
+### The AI layer
+
+AI is a **layer over the 13 tools, not a 14th tool** — the same treatment "My Items" gets. It is
+absent from the home tools grid (a `.ai-banner` sits above the grid instead) and from the four
+counted files, so adding to it never triggers the tool-count chore below.
+
+There is no SellerKit server and no OAuth, so the only architecture available is bring-your-own-key:
+the browser calls the provider directly with a key the user pasted. "Sign in with your AI account"
+is not implementable here — consumer OAuth needs a server for the token exchange. Do not ship a
+sign-in button that only collects a key.
+
+Everything goes through one function:
+
+```js
+aiStream(messages, { system, maxTokens, onDelta })   // → Promise<full text>
+```
+
+`aiRequest(cfg, …)` is the only place that knows a provider's shape. It returns `{url, headers,
+body, extract}`, where `extract(sseEvent)` pulls the text delta out of that provider's event.
+`aiStream` then runs one generic SSE reader over all of them. Four shapes are live: Anthropic
+(`content_block_delta`), Google (`candidates[].content.parts[]`), and OpenAI/OpenRouter/custom
+(`choices[0].delta.content`).
+
+- **Anthropic needs `anthropic-dangerous-direct-browser-access: true`** or it refuses a
+  browser-origin call outright. Google takes the key as a query param, not a header.
+- Model lists go stale. Every provider's dropdown ends in "Other / newer model…", which reveals
+  a free-text model id — that is the escape hatch, not a list update.
+- `aiStream` retries once, automatically, when an OpenAI-shaped 400 complains about
+  `max_completion_tokens`. Newer models renamed `max_tokens`.
+- HTTP failures go through `aiErrorText()`, which turns a status into something a seller can act
+  on. Keep new errors in that register — "re-copy the key", not "401".
+- `aiAbort()` cancels the request in flight; the copilot's Stop button is the only caller.
+
+**Model output is escaped before it is formatted.** `aiMd()` runs `escHtml()` first, then applies
+bold and headings to the escaped string. Reversing that order lets a model inject HTML. Anything
+new that renders model text goes through `aiMd()`.
+
+Adding an AI action to a tool:
+
+1. An output card in the panel: `<div class="tk-card ai-out-card" id="aix-NAME-card" style="display:none;">`
+   holding `<div class="ai-out" id="aix-NAME">` and a `<span class="ai-out-model" id="aix-NAME-model">`.
+2. A `.btn.btn-ai` in the tool's `.action-row`.
+3. A function that calls `aiRunInto('aix-NAME-card', 'aix-NAME', btn, { messages, system, maxTokens })`.
+   It handles the locked state, the streaming paint, the error rendering and the button label.
+4. Build the prompt with `aiWithContext(prompt)` so the model sees the item.
+
+`aiItemContext()` is what every feature knows before the user types: the active item's core fields,
+the calculator's current output, the description form, measurements. Extend it there rather than
+threading fields through individual prompts.
 
 ### Conventions
 
@@ -93,5 +150,10 @@ Everything persists to `localStorage` under an `sk_` prefix; there is no backend
 - **Stripe is live.** `checkout.html` carries a real `<stripe-buy-button>` with a `pk_live_` publishable key. Only publishable keys belong in this repo — a `sk_live_`/`sk_test_` secret key must never be committed. The buy button's success URL is configured on the Stripe Dashboard, not here, and it must point at `success.html` or buyers never receive toolkit access.
 - **The toolkit is gated.** `toolkit.html` hides itself behind an access code (`SK-PRO-2026`), checked by an inline `<head>` script that adds `.sk-locked` to `<html>`. Access is granted by `success.html` (sets `sk_access` in `localStorage`), by `?access=<code>`, or by typing the code into the overlay. This is **interim and trivially bypassed** — the whole block sits between the `interim access gate` comment markers in `toolkit.html` and is meant to be deleted wholesale when Firebase Auth lands. Keep the gate CSS/JS inline in `<head>`: moving it to `styles.css` reintroduces a flash of unlocked content.
 - **No invented social proof.** Testimonials, review counts, star ratings, forum quotes with vote counts, "average" result figures, countdown/scarcity chips, and struck-through reference prices were deliberately removed — they are a Stripe-account and chargeback risk on a live payment product, not just a style choice. Do not reintroduce them. Real numbers about the product (13 tools, 12 scam checks, condition percentages) are fine; the ROI table on `index.html` is allowed only because it is explicitly labelled an illustration.
+- **`ai-*` element ids belong to the AI Prompt tool (tool 4); the AI layer uses `aix-*`.**
+  `ai-item`, `ai-brand`, `ai-condition`, `ai-price`, `ai-details`, `ai-prompt-result` and
+  `ai-output` were taken long before the AI layer existed, and `ai-price` in particular is wired
+  into `CORE_TWO_WAY.asking`. Reusing one silently breaks two-way propagation and gives you a
+  duplicate id that `getElementById` resolves to the wrong element.
 - **The tool count appears in four files.** When the count changes, update: `index.html` (hero badge, hero stat, two CTAs, section heading, FAQ, sticky CTA, and the `.price-includes` bullet list), `checkout.html` (order line, feature list), `success.html` (two strings), and the Stripe product description on the Stripe Dashboard (a fifth copy outside the repo). `index.html` also has a derived string ("N more") in its `<meta name="description">` and demo CTA — keep both consistent with the count minus the tools named inline.
 - **`toolkit.html` overrides global nav styles.** The `.tk-*` rules exist partly to undo landing-page nav styling that otherwise turned the dark sidebar white (`a44f685`). Be careful when editing shared nav selectors in `styles.css`.
