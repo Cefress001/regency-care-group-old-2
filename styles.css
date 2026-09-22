@@ -716,6 +716,17 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .hero-mockup { display: none; }
 }
 
+/* The landing nav has no hamburger — the links just sit in a row, so on narrow
+   phones they push past the viewport. Tighten, then drop the secondary links;
+   the CTA is the only one that has to survive. */
+@media (max-width: 700px) {
+  nav .nav-links { gap: 1rem; }
+  nav .nav-links a.nav-link { font-size: .85rem; }
+}
+@media (max-width: 560px) {
+  nav .nav-links a.nav-link { display: none; }
+}
+
 /* ── Mobile Toolkit (< 900px) ── */
 @media (max-width: 900px) {
 
@@ -856,4 +867,147 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .verdict-card { padding: .9rem 1rem; }
   .verdict-headline { font-size: .95rem; }
   .verdict-pct { font-size: 1.4rem; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AI LAYER — provider connection, copilot chat, in-tool AI actions
+   Toolkit-only. Loaded by toolkit.html on top of the .tk-* system.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── The "✨ do it with AI" button that sits next to a tool's own button ── */
+.btn-ai {
+  background: linear-gradient(135deg, #7C3AED 0%, #2563EB 100%);
+  color: var(--white);
+  box-shadow: 0 4px 14px rgba(124,58,237,.3);
+}
+.btn-ai:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,58,237,.4); }
+.btn-ai:disabled { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
+.btn-ai.locked { background: var(--gray-200); color: var(--gray-500); box-shadow: none; }
+.btn-ai.locked:hover { transform: none; box-shadow: none; }
+
+/* ── Streaming output card, shared by every in-tool AI action ── */
+.ai-out-card { border: 1.5px solid #DDD6FE; background: linear-gradient(180deg,#FAF8FF 0%,var(--white) 90px); }
+.ai-out-head {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  flex-wrap: wrap; margin-bottom: .7rem;
+}
+.ai-out-title { font-size: .8rem; font-weight: 800; color: var(--purple); display: flex; align-items: center; gap: .4rem; }
+.ai-out-model { font-size: .68rem; color: var(--gray-400); font-weight: 600; letter-spacing: .02em; }
+.ai-out {
+  white-space: pre-wrap; word-break: break-word;
+  font-size: .875rem; line-height: 1.65; color: var(--gray-900);
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+  padding: .95rem 1.05rem; min-height: 54px; max-height: 460px; overflow-y: auto;
+}
+.ai-out strong { font-weight: 800; color: var(--gray-900); }
+.ai-out .ai-h { display: block; font-weight: 800; color: var(--purple); margin: .7rem 0 .15rem; }
+.ai-out .ai-h:first-child { margin-top: 0; }
+.ai-err { background: var(--red-light); border-color: #FCA5A5; color: #991B1B; }
+
+/* Caret that blinks while tokens are still arriving */
+.ai-caret {
+  display: inline-block; width: 7px; height: 1em; vertical-align: -2px;
+  background: var(--purple); margin-left: 2px; animation: aiBlink 1s steps(2) infinite;
+}
+@keyframes aiBlink { 50% { opacity: 0; } }
+
+/* ── Not-connected notice shown in place of an AI result ── */
+.ai-locked-note {
+  display: flex; align-items: center; gap: .85rem; flex-wrap: wrap;
+  background: var(--blue-light); border: 1px solid var(--blue-mid); border-radius: var(--radius-sm);
+  padding: .9rem 1.05rem; font-size: .85rem; color: var(--blue-dark); line-height: 1.55;
+}
+.ai-locked-note .btn { flex-shrink: 0; }
+
+/* ── Connection status pill (setup panel + copilot header) ── */
+.ai-status {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .3rem .7rem; border-radius: 99px; font-size: .74rem; font-weight: 800;
+}
+.ai-status.on  { background: var(--green-light); color: var(--green-dark); }
+.ai-status.off { background: var(--gray-100); color: var(--gray-500); }
+.ai-status .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+/* ── Provider picker ── */
+.ai-provider-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(178px, 1fr)); gap: .6rem; margin-bottom: 1rem; }
+.ai-provider {
+  text-align: left; cursor: pointer; font-family: inherit;
+  background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+  padding: .8rem .9rem; transition: var(--transition);
+}
+.ai-provider:hover { border-color: var(--purple); transform: translateY(-2px); box-shadow: var(--shadow); }
+.ai-provider.active { border-color: var(--purple); background: #FAF8FF; box-shadow: 0 0 0 3px rgba(124,58,237,.12); }
+.ai-provider .apn { font-size: .85rem; font-weight: 800; color: var(--gray-900); display: block; }
+.ai-provider .apd { font-size: .73rem; color: var(--gray-500); line-height: 1.45; margin-top: .15rem; display: block; }
+
+/* ── Copilot chat ── */
+.ai-chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 250px); min-height: 400px; }
+.ai-chat-log {
+  flex: 1; overflow-y: auto; padding: .35rem .1rem 1rem;
+  display: flex; flex-direction: column; gap: .8rem;
+}
+.ai-msg { display: flex; gap: .65rem; max-width: 100%; }
+.ai-msg .ai-avatar {
+  width: 27px; height: 27px; border-radius: 7px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: .8rem;
+}
+.ai-msg.user .ai-avatar { background: var(--blue-light); }
+.ai-msg.assistant .ai-avatar { background: linear-gradient(135deg,#7C3AED,#2563EB); }
+.ai-bubble {
+  background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+  padding: .7rem .9rem; font-size: .875rem; line-height: 1.62; white-space: pre-wrap;
+  word-break: break-word; flex: 1; min-width: 0;
+}
+.ai-msg.user .ai-bubble { background: var(--blue-light); border-color: var(--blue-mid); }
+.ai-bubble strong { font-weight: 800; }
+.ai-bubble .ai-h { display: block; font-weight: 800; color: var(--purple); margin: .6rem 0 .15rem; }
+.ai-bubble .ai-h:first-child { margin-top: 0; }
+.ai-msg-actions { margin-top: .4rem; display: flex; gap: .4rem; }
+
+.ai-chat-empty { text-align: center; padding: 1.75rem 1rem; color: var(--gray-500); font-size: .86rem; line-height: 1.6; }
+.ai-chat-empty .ace-icon { font-size: 2rem; margin-bottom: .5rem; }
+
+.ai-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .6rem; }
+.ai-chip {
+  cursor: pointer; font-family: inherit; font-size: .77rem; font-weight: 700;
+  background: var(--white); color: var(--gray-700);
+  border: 1.5px solid var(--gray-200); border-radius: 99px; padding: .32rem .75rem;
+  transition: var(--transition);
+}
+.ai-chip:hover { border-color: var(--purple); color: var(--purple); background: #FAF8FF; }
+
+.ai-composer { border-top: 1px solid var(--gray-200); padding-top: .75rem; }
+.ai-composer-row { display: flex; gap: .55rem; align-items: flex-end; }
+.ai-composer textarea {
+  flex: 1; min-height: 46px; max-height: 170px; resize: vertical;
+  font-family: inherit; font-size: .875rem; line-height: 1.5;
+  padding: .7rem .85rem; border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+  color: var(--gray-900); background: var(--white);
+}
+.ai-composer textarea:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+.ai-composer-meta {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  flex-wrap: wrap; margin-top: .5rem; font-size: .75rem; color: var(--gray-500);
+}
+.ai-ctx-toggle { display: flex; align-items: center; gap: .4rem; cursor: pointer; }
+.ai-ctx-toggle input { width: 15px; height: 15px; accent-color: var(--purple); cursor: pointer; }
+
+/* ── Home dashboard AI banner (deliberately NOT a .home-tool-card — it is not
+      one of the 13 counted tools, same as My Items) ── */
+.ai-banner {
+  background: linear-gradient(135deg, #1E1B4B 0%, #312E81 55%, #1D4ED8 100%);
+  color: var(--white); border-radius: var(--radius); padding: 1.15rem 1.3rem; margin-bottom: .75rem;
+}
+.ai-banner h3 { font-size: .98rem; font-weight: 900; margin-bottom: .25rem; color: var(--white); }
+.ai-banner p { font-size: .82rem; color: rgba(255,255,255,.72); line-height: 1.55; margin-bottom: .85rem; }
+.ai-banner-row { display: flex; gap: .5rem; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  .ai-chat-wrap { height: auto; min-height: 0; }
+  .ai-chat-log { max-height: 55vh; }
+  .ai-provider-grid { grid-template-columns: 1fr; }
+  .ai-out { max-height: 380px; }
+  .ai-locked-note { flex-direction: column; align-items: flex-start; }
+  .ai-locked-note .btn { width: 100%; justify-content: center; }
+  .ai-banner-row .btn { flex: 1 1 100%; justify-content: center; }
 }
