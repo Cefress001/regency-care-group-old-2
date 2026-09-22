@@ -911,6 +911,32 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
 }
 @keyframes aiBlink { 50% { opacity: 0; } }
 
+/* ── Photo review — shots held in memory only, never persisted ── */
+.ph-drop {
+  display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+  padding: .85rem; border: 1.5px dashed var(--gray-300);
+  border-radius: var(--radius); background: var(--gray-50);
+}
+.ph-thumbs { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+.ph-thumb {
+  position: relative; width: 84px; height: 84px; border-radius: var(--radius-sm);
+  overflow: hidden; border: 1.5px solid var(--gray-200);
+}
+.ph-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ph-thumb-n {
+  position: absolute; bottom: 3px; left: 3px; min-width: 16px; height: 16px;
+  padding: 0 .25rem; border-radius: var(--radius-xs); background: rgba(17,24,39,.72);
+  color: var(--white); font-size: .62rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.ph-thumb-x {
+  position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; padding: 0;
+  border: 0; border-radius: 50%; background: rgba(17,24,39,.72); color: var(--white);
+  font-size: .9rem; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: var(--transition);
+}
+.ph-thumb-x:hover { background: var(--red); }
+
 /* ── Not-connected notice shown in place of an AI result ── */
 .ai-locked-note {
   display: flex; align-items: center; gap: .85rem; flex-wrap: wrap;

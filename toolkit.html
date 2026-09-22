@@ -1358,6 +1358,47 @@
       </div>
 
       <div class="tk-card">
+        <h3>✨ AI Photo Review</h3>
+        <p style="font-size:.85rem;color:var(--gray-600);margin:-.2rem 0 .85rem;">
+          Add the shots you actually took and have your AI grade them the way a buyer scrolling
+          Marketplace does — lighting, focus, framing, background, and what is still missing from
+          the list above.
+        </p>
+
+        <div class="ph-drop">
+          <input type="file" id="ph-files" accept="image/*" multiple onchange="phAddShots(this)" hidden>
+          <button class="btn btn-outline btn-sm" onclick="document.getElementById('ph-files').click()">📁 Add Photos</button>
+          <span style="font-size:.78rem;color:var(--gray-500);">
+            Up to 4 · JPG, PNG or WebP · resized in your browser before sending
+          </span>
+        </div>
+
+        <div class="ph-thumbs" id="ph-thumbs" style="display:none;"></div>
+
+        <div class="action-row">
+          <button class="btn btn-ai" onclick="aiPhotoReview(this)">✨ Review My Photos</button>
+          <button class="btn btn-outline btn-sm" id="ph-clear-btn" onclick="phClearShots()" style="display:none;">Clear Photos</button>
+        </div>
+
+        <div class="info-callout" style="margin-top:.7rem;">
+          <strong>Your photos never reach SellerKit.</strong> They are resized in this browser and sent
+          straight to the AI provider you connected, on your own key. Nothing is saved — they clear when
+          you close the tab.
+        </div>
+      </div>
+
+      <div class="tk-card ai-out-card" id="aix-photos-card" style="display:none;">
+        <div class="ai-out-head">
+          <span class="ai-out-title">✨ AI Photo Review</span>
+          <div style="display:flex;gap:.4rem;align-items:center;">
+            <span class="ai-out-model" id="aix-photos-model"></span>
+            <button class="copy-btn" onclick="copyText('aix-photos',this)">📋 Copy</button>
+          </div>
+        </div>
+        <div class="ai-out" id="aix-photos"></div>
+      </div>
+
+      <div class="tk-card">
         <h3>Universal Tips — Every Category</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem .75rem;font-size:.85rem;color:var(--gray-700);">
           <div>✓ Natural light — near a window</div>
@@ -2608,9 +2649,19 @@ function loadPhotoState(cat) {
 
 function savePhotoState() {
   const cat = document.getElementById('ph-category').value;
-  if (!cat || !activeItem()) return;
+  if (!cat) return;
   const done = [];
   document.querySelectorAll('#ph-list input[type=checkbox]').forEach((el, i) => { if (el.checked) done.push(i); });
+  // Ticking a shot with no item yet creates one, the way saveLS() does for every
+  // other tool — otherwise the tick was dropped silently. Guarded on done.length
+  // so that merely picking a category, or the init restore path, never leaves a
+  // phantom item behind. createItem() writes through loadItems/saveItems, so this
+  // is not a nested updateActiveItem.
+  if (!activeItem()) {
+    if (!done.length) return;
+    createItem('Untitled item');
+    renderItemForm();
+  }
   updateActiveItem(it => { it.photos = it.photos || {}; it.photos[cat] = done; });
 }
 
@@ -2655,6 +2706,129 @@ function updatePhotoScore() {
     pct < 100 ? `${checked} of ${all.length} shots — almost there, excellent coverage!` :
     '✅ Full coverage — your listing is photo-complete!';
   savePhotoState();
+}
+
+// ── AI photo review ────────────────────────────────────────────────────
+// The shots live in _phShots and nowhere else. They are deliberately never
+// written to localStorage: four base64 photos would blow the ~5MB quota on the
+// first save and take the whole item workspace down with them. Closing the tab
+// is the clear button.
+const PH_MAX_SHOTS = 4;
+const PH_MAX_EDGE = 1024;      // px on the long side — plenty to judge a photo by
+let _phShots = [];             // [{ name, mime, data (bare base64), url (data: for the thumb) }]
+
+function phAddShots(input) {
+  const files = Array.from(input.files || []);
+  input.value = '';            // so re-picking the same file still fires onchange
+  if (!files.length) return;
+
+  const room = PH_MAX_SHOTS - _phShots.length;
+  if (room <= 0) {
+    phShotError('That is the ' + PH_MAX_SHOTS + '-photo limit. Remove one to add another.');
+    return;
+  }
+  if (files.length > room) {
+    phShotError('Only the first ' + room + ' photo' + (room > 1 ? 's' : '') +
+                ' were added — the limit is ' + PH_MAX_SHOTS + '.');
+  }
+
+  Promise.all(files.slice(0, room).map(phShrink))
+    .then(shots => { _phShots = _phShots.concat(shots.filter(Boolean)); renderShots(); })
+    .catch(e => phShotError(e.message));
+}
+
+// Resize in the browser before anything leaves it. A 12MP phone photo is several
+// MB of base64 and buys nothing over a 1024px edge for a quality read, but it
+// costs real money in image tokens on the seller's own key.
+function phShrink(file) {
+  return new Promise((resolve, reject) => {
+    if (!/^image\//.test(file.type)) { resolve(null); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, PH_MAX_EDGE / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width * scale));
+      c.height = Math.max(1, Math.round(img.height * scale));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      const dataUrl = c.toDataURL('image/jpeg', 0.82);
+      resolve({ name: file.name, mime: 'image/jpeg', data: dataUrl.split(',')[1], url: dataUrl });
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      // An iPhone HEIC is the usual culprit: Safari decodes it, nothing else does.
+      reject(new Error('This browser could not open "' + file.name + '". If it is a HEIC from an ' +
+                       'iPhone, save or screenshot it as a JPEG first.'));
+    };
+    img.src = url;
+  });
+}
+
+function renderShots() {
+  const wrap = document.getElementById('ph-thumbs');
+  wrap.innerHTML = _phShots.map((s, i) =>
+    '<div class="ph-thumb">' +
+      '<img src="' + s.url + '" alt="' + escHtml(s.name) + '">' +
+      '<span class="ph-thumb-n">' + (i + 1) + '</span>' +
+      '<button class="ph-thumb-x" onclick="phRemoveShot(' + i + ')" title="Remove this photo">×</button>' +
+    '</div>'
+  ).join('');
+  wrap.style.display = _phShots.length ? 'flex' : 'none';
+  document.getElementById('ph-clear-btn').style.display = _phShots.length ? 'inline-flex' : 'none';
+}
+
+function phRemoveShot(i) { _phShots.splice(i, 1); renderShots(); }
+function phClearShots() { _phShots = []; renderShots(); }
+
+function phShotError(msg) {
+  document.getElementById('aix-photos-card').style.display = 'block';
+  const out = document.getElementById('aix-photos');
+  out.classList.add('ai-err');
+  out.textContent = '⚠️ ' + msg;
+}
+
+function aiPhotoReview(btn) {
+  if (!_phShots.length) { phShotError('Add at least one photo first.'); return; }
+
+  const cat = document.getElementById('ph-category').value;
+  const list = cat && PHOTO_LISTS[cat]
+    ? Object.entries(PHOTO_LISTS[cat]).map(([section, items]) => section + ': ' + items.join('; ')).join('\n')
+    : '';
+
+  const prompt =
+    'Those are the ' + _phShots.length + ' photo' + (_phShots.length > 1 ? 's' : '') +
+    ' I plan to put in this listing, numbered in the order a buyer would scroll them.\n\n' +
+    (list ? 'The shot list for this category is:\n' + list + '\n\n' : '') +
+    'Review them the way a buyer scrolling Marketplace would:\n' +
+    '1. Grade each photo by number — Strong, Usable, or Reshoot — with the one reason that decides ' +
+    'it. Judge lighting, focus, framing, background clutter, and whether the shot actually proves ' +
+    'what it claims to.\n' +
+    '2. The single worst problem across the whole set, and the exact fix: where to stand, what to ' +
+    'move, what light to use.\n' +
+    '3. Which shots' + (list ? ' from the list above' : ' a buyer expects') + ' are still missing, ' +
+    'ranked by which one costs me the sale first.\n' +
+    '4. Anything visible that would make a buyer suspicious, or push them to message a question a ' +
+    'better photo would have answered.\n' +
+    'Describe only what you can actually see. If a photo is too dark or too blurry to judge, say ' +
+    'that rather than guessing at it.';
+
+  // Label each image so the model can refer to "Photo 2" and mean the same one the
+  // seller sees numbered in the thumbnail strip.
+  const content = [];
+  _phShots.forEach((s, i) => {
+    content.push({ type: 'text', text: 'Photo ' + (i + 1) + ':' });
+    content.push({ type: 'image', mime: s.mime, data: s.data });
+  });
+  content.push({ type: 'text', text: aiWithContext(prompt) });
+
+  aiRunInto('aix-photos-card', 'aix-photos', btn, {
+    maxTokens: 1400,
+    system: AI_PERSONA + ' You are looking at the seller\'s own photos. Describe only what is ' +
+            'visible in them — never invent a detail the image does not show, and never claim an ' +
+            'item is flawless because a photo happens to hide the flaw.',
+    messages: [{ role: 'user', content: content }]
+  });
 }
 
 // ════════════════════════════════
@@ -3147,6 +3321,16 @@ function aiAbort() {
   if (_aiCtl) { _aiCtl.abort(); _aiCtl = null; }
 }
 
+// A message's `content` is either a plain string or an array of neutral parts:
+//   { type:'text', text:'…' }  |  { type:'image', mime:'image/jpeg', data:'<bare base64>' }
+// Only aiRequest() knows how each provider spells an image, exactly as with the
+// text-only shapes. On the OpenAI path a text-only message keeps its plain-string
+// form: custom and local endpoints are the least likely to accept the array shape
+// and the most likely to be pointed at a text-only model.
+function aiParts(content) {
+  return typeof content === 'string' ? [{ type: 'text', text: content }] : (content || []);
+}
+
 // Per-provider request shape and the one line that pulls text out of an SSE event.
 function aiRequest(cfg, messages, system, maxTokens) {
   const model = aiModel(cfg);
@@ -3161,7 +3345,15 @@ function aiRequest(cfg, messages, system, maxTokens) {
         // Anthropic refuses browser-origin calls unless the caller opts in by name.
         'anthropic-dangerous-direct-browser-access': 'true'
       },
-      body: { model: model, max_tokens: maxTokens, system: system, stream: true, messages: messages },
+      body: {
+        model: model, max_tokens: maxTokens, system: system, stream: true,
+        messages: messages.map(m => ({
+          role: m.role,
+          content: aiParts(m.content).map(p => p.type === 'image'
+            ? { type: 'image', source: { type: 'base64', media_type: p.mime, data: p.data } }
+            : { type: 'text', text: p.text })
+        }))
+      },
       extract: j => (j.type === 'content_block_delta' && j.delta && j.delta.text) || ''
     };
   }
@@ -3175,7 +3367,9 @@ function aiRequest(cfg, messages, system, maxTokens) {
         systemInstruction: { parts: [{ text: system }] },
         contents: messages.map(m => ({
           role: m.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.content }]
+          parts: aiParts(m.content).map(p => p.type === 'image'
+            ? { inline_data: { mime_type: p.mime, data: p.data } }
+            : { text: p.text })
         })),
         generationConfig: { maxOutputTokens: maxTokens }
       },
@@ -3197,7 +3391,14 @@ function aiRequest(cfg, messages, system, maxTokens) {
       model: model,
       max_tokens: maxTokens,
       stream: true,
-      messages: [{ role: 'system', content: system }].concat(messages)
+      messages: [{ role: 'system', content: system }].concat(messages.map(m =>
+        typeof m.content === 'string' ? m : {
+          role: m.role,
+          content: aiParts(m.content).map(p => p.type === 'image'
+            ? { type: 'image_url', image_url: { url: 'data:' + p.mime + ';base64,' + p.data } }
+            : { type: 'text', text: p.text })
+        }
+      ))
     },
     extract: j => (j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content) || ''
   };
@@ -3212,6 +3413,12 @@ function aiErrorText(status, raw, cfg) {
   } catch (e) { detail = String(raw || '').slice(0, 220); }
   detail = detail ? ' (' + detail + ')' : '';
   const name = (AI_PROVIDERS[cfg.provider] || {}).label || 'Your provider';
+
+  // A text-only model handed a photo fails in a dozen different wordings, and the
+  // raw status alone ("400") tells the seller nothing about what to change.
+  if (status < 500 && /image|vision|multimodal|image_url|inline_data/i.test(String(raw || '')))
+    return 'Model "' + aiModel(cfg) + '" cannot read photos. Pick a vision model under Connect AI — ' +
+           'Claude, GPT-4.1, GPT-4o and Gemini all read images.' + detail;
 
   if (status === 401 || status === 403)
     return name + ' rejected that key. Re-copy it from your provider dashboard — keys are easy to truncate when copying.' + detail;
