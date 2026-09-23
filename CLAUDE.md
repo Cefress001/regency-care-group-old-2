@@ -71,6 +71,43 @@ and `success.html` are standalone, so they carry their own copy of the `.ic` rul
   HTML, so it deliberately keeps its emoji. Do not "finish the job" by converting those.
 - Typographic marks (`✓`, `✗`, `→`, `·`) are not emoji and stay as characters.
 
+### Motion
+
+Two pieces of motion exist, and the rule between them is that **decorative motion stops at
+the checkout boundary**. The landing page may have personality; the toolkit is a workspace,
+so motion there is only ever feedback that something happened.
+
+- **Scroll reveal** is landing-page only. Its CSS lives in `index.html`'s inline `<style>`,
+  deliberately *not* in `styles.css`, which `toolkit.html` also loads — a stray `.reveal`
+  rule there could leave a tool panel at `opacity: 0`.
+- **The `.reveal` class is only ever added by JavaScript**, never written into the markup.
+  With JS off, an unsupported `IntersectionObserver`, or a script error before init, the page
+  is simply fully visible. Never hand-write `class="reveal"`.
+- Elements already on screen at load are skipped entirely, so nothing above the fold flashes
+  blank for a frame before the observer fires.
+- The observer's `rootMargin` has a **positive** bottom value, so the fade starts slightly
+  before an element reaches the viewport. The more common negative value means a fast scroll
+  shows the element blank first and only then fades it in.
+- **Every stylesheet honours `prefers-reduced-motion: reduce`.** Durations collapse to
+  `.01ms` rather than being removed, so anything that animates *into* view — the
+  `.tk-panel.active` fade, most importantly — still settles on its final frame instead of
+  sticking at `opacity: 0`. Reveal opts out entirely under that setting.
+
+### The photo lightbox
+
+`phZoom(i)` opens the AI Vision photos full size; state is just an index into `_phShots`.
+The markup is static at the bottom of `toolkit.html` and the styles are in `styles.css` —
+neither is built at runtime, so nothing accumulates in the document as it is reopened.
+
+- The thumbnail's photo is a `.ph-thumb-open` **button** so it is keyboard reachable, and it
+  is a *sibling* of the remove button rather than wrapping it — nested buttons are invalid.
+- It is modal: `phZoomKey(e)` runs first in the single `keydown` handler and returns `true`
+  when it consumed the event, so Escape closes the lightbox without also reaching the command
+  palette. Tab is trapped inside the dialog, and focus returns to the thumbnail on close.
+- Closing clears the `<img>` `src`, so a large `data:` URL is not retained by a hidden element.
+- `phZoomStep` and `phZoomPaint` both close the dialog if `_phShots` has emptied underneath
+  them, rather than throwing.
+
 ### Toolkit SPA pattern
 
 All 13 tools live in `toolkit.html` as sibling `<div class="tk-panel" id="panel-NAME">` elements. `showPanel(id)` toggles `.active` on the target panel and on every `[data-panel="NAME"]` nav item — the sidebar and the mobile tab bar are the same elements, restyled by media query.

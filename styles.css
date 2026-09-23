@@ -1141,6 +1141,54 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   display: flex; align-items: center; justify-content: center; transition: var(--transition);
 }
 .ph-thumb-x:hover { background: var(--red); }
+/* The photo itself is a button so it is reachable by keyboard, and sits under
+   the remove button rather than wrapping it — nested buttons are invalid. */
+.ph-thumb-open {
+  position: absolute; inset: 0; padding: 0; border: 0; background: none;
+  cursor: zoom-in; display: block; width: 100%; height: 100%;
+}
+.ph-thumb-open:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.ph-thumb-x { z-index: 2; }
+
+/* ── Photo lightbox ───────────────────────────────────────────────────────── */
+.ph-lb {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(15, 23, 42, .88);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  gap: .5rem; padding: 3.5rem 1rem 1rem;
+}
+.ph-lb[hidden] { display: none; }
+body.ph-lb-open { overflow: hidden; }
+.ph-lb-fig { margin: 0; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; gap: .75rem; min-width: 0; }
+.ph-lb-fig img {
+  max-width: 100%; max-height: calc(100vh - 9rem);
+  object-fit: contain; border-radius: var(--radius);
+  background: var(--white); box-shadow: 0 24px 60px rgba(0,0,0,.45);
+}
+.ph-lb-cap {
+  display: flex; align-items: center; justify-content: center; gap: .6rem;
+  flex-wrap: wrap; color: rgba(255,255,255,.82); font-size: .82rem; font-weight: 600;
+}
+.ph-lb-count { color: rgba(255,255,255,.55); font-variant-numeric: tabular-nums; }
+.ph-lb-btn {
+  border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.1);
+  color: var(--white); border-radius: 50%; cursor: pointer; flex: none;
+  width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.ph-lb-btn:hover { background: rgba(255,255,255,.22); }
+.ph-lb-btn:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; }
+.ph-lb-btn[hidden] { display: none; }
+.ph-lb-btn .ic { width: 20px; height: 20px; }
+.ph-lb-close { position: absolute; top: 1rem; right: 1rem; }
+@media (max-width: 640px) {
+  .ph-lb { padding: 3.25rem .5rem 1rem; }
+  .ph-lb-nav { position: absolute; bottom: 1rem; }
+  .ph-lb-nav.prev { left: 1rem; }
+  .ph-lb-nav.next { right: 1rem; }
+  .ph-lb-fig img { max-height: calc(100vh - 11rem); }
+}
 
 /* ── Not-connected notice shown in place of an AI result ── */
 .ai-locked-note {
@@ -1299,3 +1347,17 @@ h1 > .ic, h2 > .ic, h3 > .ic, h4 > .ic { width: .85em; height: .85em; opacity: .
 .checklist-section-title.sec-pickup   .ic { color: var(--green-dark); }
 /* Verdict icons follow the text color they sit in, which the
    .verdict-* rules already set, so they need no override. */
+
+/* ── Reduced motion ────────────────────────────────────────────────────────
+   Honour the OS-level "reduce motion" setting. Animations are not removed
+   outright — collapsing them to a near-zero duration lets them still settle on
+   their final frame, so anything that animates *into* view (the .tk-panel
+   fade-in, for one) still ends up visible rather than stuck at opacity 0. ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

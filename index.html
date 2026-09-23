@@ -68,6 +68,16 @@
 .shot-cap { font-size: .9rem; color: var(--gray-600); line-height: 1.6; text-align: center;
             margin-top: 1rem; max-width: 640px; margin-left: auto; margin-right: auto; }
 @media (max-width: 640px) { .shot-tab { font-size: .78rem; padding: .45rem .8rem; } }
+
+/* Scroll reveal. The .reveal class is added by JS, never written in the markup,
+   so with JS off (or an error before init) nothing is ever hidden. Skipped
+   entirely when the visitor asks for reduced motion. Landing page only — this
+   rule is deliberately not in styles.css, which toolkit.html also loads. */
+.reveal { opacity: 0; transform: translateY(16px); }
+.reveal.is-in { opacity: 1; transform: none; transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1); }
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.is-in { opacity: 1; transform: none; transition: none; }
+}
 </style>
 </head>
 <body>
@@ -832,6 +842,41 @@ function showShot(id) {
   const cap = document.getElementById('shot-cap');
   if (cap && SHOT_CAPS[id]) cap.textContent = SHOT_CAPS[id];
 }
+
+// Scroll reveal. Everything about this is opt-in: the class is only ever added
+// here, so a browser without IntersectionObserver, a visitor who asked for
+// reduced motion, or a script error before this point all leave the page fully
+// visible rather than blank. Elements already on screen reveal immediately.
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const SEL = '.section-header, .tool-card, .pain-card, .faq-item, .trust-card, .math-box, .compare-wrap, .feature-flow, .shots';
+  document.addEventListener('DOMContentLoaded', () => {
+    const els = [...document.querySelectorAll(SEL)];
+    if (!els.length) return;
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('is-in');
+        obs.unobserve(en.target);
+      });
+      // A positive bottom margin starts the fade slightly BEFORE the element
+      // reaches the viewport, so on a fast scroll it is already arriving rather
+      // than appearing blank and then fading. A negative margin here (the more
+      // common copy-paste value) produces exactly that blank frame.
+    }, { threshold: 0, rootMargin: '0px 0px 140px 0px' });
+    els.forEach((el, i) => {
+      // Never hide something the visitor can already see. The observer would
+      // reveal it a frame later anyway, which is a flash of blank content above
+      // the fold for no benefit.
+      if (el.getBoundingClientRect().top < window.innerHeight + 80) return;
+      el.classList.add('reveal');
+      // Stagger only within a row of cards, so a grid does not pop as one block.
+      el.style.transitionDelay = (i % 3) * 60 + 'ms';
+      io.observe(el);
+    });
+  });
+})();
 </script>
 </body>
 </html>

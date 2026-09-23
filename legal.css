@@ -107,3 +107,17 @@ body {
   .legal-card { padding: 28px 22px; }
   .legal-card h1 { font-size: 1.5rem; }
 }
+
+/* ── Reduced motion ────────────────────────────────────────────────────────
+   Honour the OS-level "reduce motion" setting. Animations are not removed
+   outright — collapsing them to a near-zero duration lets them still settle on
+   their final frame, so anything that animates *into* view (the .tk-panel
+   fade-in, for one) still ends up visible rather than stuck at opacity 0. ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
