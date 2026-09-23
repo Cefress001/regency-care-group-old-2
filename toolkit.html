@@ -443,6 +443,7 @@
           <button class="btn btn-primary" onclick="showCompleteListing()"><svg class="ic" aria-hidden="true"><use href="#i-file-text"/></svg> Build Complete Listing →</button>
           <button class="btn btn-outline btn-sm" onclick="newItemPrompt()">+ New Item</button>
           <button class="btn btn-outline btn-sm" onclick="addActiveItemToTracker()"><svg class="ic" aria-hidden="true"><use href="#i-chart-column"/></svg> Add to Sale Tracker</button>
+          <button class="btn btn-outline btn-sm" onclick="printListingSheet()"><svg class="ic" aria-hidden="true"><use href="#i-printer"/></svg> Print listing sheet</button>
           <button class="btn btn-outline btn-sm" onclick="deleteActiveItem()">Delete This Item</button>
         </div>
         <div class="empty-hint" id="it-empty">Create your first item to get started.</div>
@@ -810,7 +811,18 @@
             </select>
           </div>
         </div>
-        <div class="form-row">
+        <div class="form-grid">
+          <div class="form-row">
+            <label>Where you'll sell it <span style="font-weight:400;color:var(--gray-400)">— sets what you actually keep</span></label>
+            <select id="pc-platform" onchange="calcPrice(); calcPriceDrop(); saveLS('pc')">
+              <option value="Local cash">Local cash — Facebook / OfferUp / Craigslist</option>
+              <option value="Facebook shipping">Facebook shipping — 5%</option>
+              <option value="Mercari">Mercari — 10%</option>
+              <option value="eBay">eBay — 13.25% + $0.30</option>
+              <option value="Poshmark">Poshmark — 20%</option>
+            </select>
+          </div>
+          <div class="form-row">
           <label>Category (for tips)</label>
           <select id="pc-category" onchange="calcPrice(); saveLS('pc')">
             <option value="">Select category</option>
@@ -823,6 +835,7 @@
             <option value="appliances">Appliances</option>
             <option value="collectibles">Collectibles</option>
           </select>
+          </div>
         </div>
 
         <div class="action-row">
@@ -838,16 +851,19 @@
               <div class="rc-label">Ask First</div>
               <div class="rc-val" id="pc-ideal">—</div>
               <div class="rc-sub">List at this price first</div>
+              <div class="rc-net" id="pc-ideal-net"></div>
             </div>
             <div class="result-chip quick">
               <div class="rc-label">Quick Flip</div>
               <div class="rc-val" id="pc-quickflip">—</div>
               <div class="rc-sub">Accept to sell same day</div>
+              <div class="rc-net" id="pc-quickflip-net"></div>
             </div>
             <div class="result-chip floor">
               <div class="rc-label">Floor Price</div>
               <div class="rc-val" id="pc-floor">—</div>
               <div class="rc-sub">Never go below this</div>
+              <div class="rc-net" id="pc-floor-net"></div>
             </div>
           </div>
           <div class="price-viz">
@@ -1558,7 +1574,7 @@
           </div>
           <div style="overflow-x:auto;">
             <table class="sched-table" id="pd-table">
-              <thead><tr><th>Day</th><th>Date</th><th>Action</th><th>Price</th><th>% of Original</th><th>Status</th></tr></thead>
+              <thead><tr><th>Day</th><th>Date</th><th>Action</th><th>Price</th><th>You Keep</th><th>% of Original</th><th>Status</th></tr></thead>
               <tbody id="pd-tbody"></tbody>
             </table>
           </div>
@@ -2095,6 +2111,12 @@
   </main>
 </div>
 
+<!-- ══ PRINTABLE LISTING SHEET ══
+     Built on demand from the active item and only ever visible to the printer.
+     It is a direct child of <body> so the print rule can hide every sibling and
+     leave this alone, rather than trying to un-style the whole app. -->
+<div id="print-sheet" aria-hidden="true"></div>
+
 <!-- ══ COMMAND PALETTE — ⌘K from any panel ══ -->
 <div class="cmdk" id="cmdk" style="display:none;" onclick="if (event.target === this) closePalette()">
   <div class="cmdk-box" role="dialog" aria-label="Jump to">
@@ -2266,6 +2288,49 @@ const PLAYBOOKS = {
         guide: 'Log each sale as it lands and watch the totals. Revenue, sell-through, and which platform is carrying the batch.',
         why: 'This is the number that tells you whether the next pile is worth doing at all.' }
     ]
+  },
+
+  // Sourcing runs the other way round to every playbook above it: the question is
+  // not how to sell a thing you own, it is whether to own it at all.
+  source: {
+    icon: ic('hand'), name: 'Decide what to pay for it', time: '~5 min', pro: true,
+    blurb: 'Something is in front of you and somebody wants money for it. Work out the most you can pay and still make this worth doing.',
+    steps: [
+      { panel: 'pricing', icon: ic('search-check'), title: 'Find what it really sells for',
+        guide: 'Search sold listings for the same thing and paste three or more prices into the comps box. Use what actually sold, not what is still sitting there asking.',
+        why: 'Everything downstream is built on this number. Get it from a hopeful asking price and you will overpay by exactly that much.' },
+      { panel: 'sourcing', icon: ic('hand'), title: 'Work back to a buy price',
+        guide: 'Put the comps median in as the sale price, pick where you will sell it, and add anything it needs spending on. The number that comes out is your ceiling, not your opening offer.',
+        why: 'Fees and repair costs come out of your profit, not the buyer\'s. Ignoring them is how a 40% margin turns into 12%.' },
+      { panel: 'scripts', icon: ic('handshake'), title: 'Have the offer ready',
+        guide: 'Open well under your ceiling and let them move you up to it. Know the walk-away number before you open your mouth.',
+        why: 'The first number spoken anchors the whole conversation. It should be yours, and it should not be your maximum.' },
+      { panel: 'tracker', icon: ic('chart-column'), title: 'Log the buy',
+        guide: 'Record what you paid the moment you pay it, while you still remember. That is the cost basis every profit figure later depends on.',
+        why: 'A margin calculated from a half-remembered purchase price is a number that feels good and means nothing.' }
+    ]
+  },
+
+  stale: {
+    icon: ic('flame'), name: 'Clear out what will not sell', time: '~15 min', pro: true,
+    blurb: 'Things have been sitting for months. Work out which are worth another push, which need a cut, and which to be done with.',
+    steps: [
+      { panel: 'aging', icon: ic('flame'), title: 'See what is actually old',
+        guide: 'Sort by age and look at the cash parked in the oldest band. That figure is money you already spent that is doing nothing.',
+        why: 'Stale inventory is invisible until it is counted. Everyone underestimates how much of it they are holding.' },
+      { panel: 'audit', icon: ic('search-check'), title: 'Work out why it stalled',
+        guide: 'Run the oldest listings through the audit. Views without messages is a price problem; no views at all is a title or category problem.',
+        why: 'Cutting the price on a listing nobody can find just loses you money at the same rate.' },
+      { panel: 'pricedrop', icon: ic('trending-down'), title: 'Set one deadline for the batch',
+        guide: 'Give everything stale the same schedule and the same floor. One decision a week beats twenty separate second-guesses.',
+        why: 'Items sit longest when each drop is a fresh argument with yourself.' },
+      { panel: 'titles', icon: ic('pen-line'), title: 'Re-title and re-post',
+        guide: 'Rewrite the title, re-shoot the lead photo, and post it as a new listing rather than editing the old one.',
+        why: 'Most marketplaces rank on listing age. A stale listing cannot be rescued by editing it.' },
+      { panel: 'tracker', icon: ic('chart-column'), title: 'Close the books on the rest',
+        guide: 'Anything past ninety days that has had a re-post and a cut is done. Take the best offer, bundle it, or give it away.',
+        why: 'The storage, the mental load and the photographs already cost more than the last 20% you are holding out for.' }
+    ]
   }
 };
 
@@ -2355,10 +2420,18 @@ function flowNext() {
   flowGo(next);
 }
 
+// Playbooks a licence is allowed to see. The two business ones step through
+// Pro-only panels, so offering them on a free licence would walk somebody into a
+// panel that cannot be shown.
+function visiblePlaybooks() {
+  const pro = skIsPro();
+  return Object.entries(PLAYBOOKS).filter(([, pb]) => pro || !pb.pro);
+}
+
 function renderFlowCards() {
   const wrap = document.getElementById('flow-grid');
   if (!wrap) return;
-  wrap.innerHTML = Object.entries(PLAYBOOKS).map(([id, pb]) => {
+  wrap.innerHTML = visiblePlaybooks().map(([id, pb]) => {
     const done = flowDone(id).filter(i => i < pb.steps.length);
     const pct = Math.round(done.length / pb.steps.length * 100);
     const names = pb.steps.map(s => PANEL_NAMES[s.panel] || s.panel).filter((v, i, a) => a.indexOf(v) === i);
@@ -2521,7 +2594,7 @@ const PRO_PANELS = ['sourcing', 'aging', 'bulk'];
 let _cmdSel = 0, _cmdHits = [];
 
 function paletteItems() {
-  const out = Object.entries(PLAYBOOKS).map(([id, pb]) => ({
+  const out = visiblePlaybooks().map(([id, pb]) => ({
     label: pb.name, kind: 'Playbook', icon: pb.icon, run: () => openFlow(id)
   }));
   const pro = skIsPro();
@@ -2595,7 +2668,7 @@ function skIsPro() {
 }
 
 const TOOL_FIELDS = {
-  pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category','pc-comps'],
+  pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category','pc-comps','pc-platform'],
   tg: ['tg-item','tg-brand','tg-model','tg-condition','tg-cat','tg-feature'],
   db: ['db-item','db-brand','db-model','db-condition','db-features','db-dims','db-includes','db-reason','db-pickup','db-bundle'],
   ai: ['ai-item','ai-brand','ai-condition','ai-price','ai-details'],
@@ -3411,6 +3484,79 @@ function idpApply() {
             '. Check them against the item before you list it.', 'ok');
 }
 
+// ── Printable listing sheet ────────────────────────────────────────────
+// Printing the panel itself drags along the photo uploader, the backup card and
+// every button. This builds one clean page from the item instead: what it is, what
+// it costs, what it measures, and what still needs doing before it goes up.
+function printListingSheet() {
+  const it = activeItem();
+  if (!it) { alert('Create an item first — the sheet is built from it.'); return; }
+
+  const esc = escHtml;
+  const title = [it.brand, it.model, it.name].filter(Boolean).join(' ') || it.name || 'Item';
+  const rows = [];
+  const row = (k, v) => { if (v) rows.push('<tr><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>'); };
+  row('Category', it.category ? (IDP_CAT_LABEL[it.category] || it.category) : '');
+  row('Condition', it.condition ? (IDP_COND_LABEL[it.condition] || '') : '');
+  row('Brand', it.brand);
+  row('Model', it.model);
+  if (it.retail) row('Retail when new', money(Number(it.retail)));
+
+  let priceBlock = '';
+  if (it.asking) {
+    const platEl = document.getElementById('pc-platform');
+    const plat = platEl ? platEl.value : 'Local cash';
+    const fee = feeByName(plat, Number(it.asking));
+    priceBlock = '<div class="ps-price"><span class="ps-price-val">' + esc(money(Number(it.asking))) + '</span>' +
+      (fee > 0
+        ? '<span class="ps-price-sub">' + esc('You keep ' + money(Number(it.asking) - fee) + ' after ' + plat + ' fees') + '</span>'
+        : '<span class="ps-price-sub">No platform fees on a local cash sale</span>') +
+      '</div>';
+  }
+
+  const meas = Object.entries(it.measurements || {}).filter(([, v]) => String(v).trim());
+  const measBlock = meas.length
+    ? '<h2>Measurements</h2><table class="ps-table">' +
+      meas.map(([k, v]) => '<tr><th>' + esc(k) + '</th><td>' + esc(v) + '</td></tr>').join('') + '</table>'
+    : '';
+
+  const tools = it.tools || {};
+  const features = (tools.db || {})['db-features'] || '';
+  const includes = (tools.db || {})['db-includes'] || '';
+  const reason = (tools.db || {})['db-reason'] || '';
+  const detailBlock = (features || includes || reason)
+    ? '<h2>Details</h2>' +
+      (features ? '<p>' + esc(features) + '</p>' : '') +
+      (includes ? '<p><strong>Includes:</strong> ' + esc(includes) + '</p>' : '') +
+      (reason ? '<p><strong>Why it is being sold:</strong> ' + esc(reason) + '</p>' : '')
+    : '';
+
+  // What is still missing, so the sheet is useful to carry around rather than just
+  // a record of what is already done.
+  const gaps = [];
+  if (!it.asking) gaps.push('Set a price — Pricing Calculator');
+  if (!meas.length) gaps.push('Measure it — Measurement Sheet');
+  if (!features) gaps.push('Write the details — Description Builder');
+  const shotCount = Object.values(it.photos || {}).reduce((n, a) => n + (Array.isArray(a) ? a.length : 0), 0);
+  if (shotCount < 6) gaps.push('Take more photos — ' + shotCount + ' ticked so far, aim for 8 or more');
+  const gapBlock = gaps.length
+    ? '<h2>Still to do</h2><ul class="ps-gaps">' + gaps.map(g => '<li>' + esc(g) + '</li>').join('') + '</ul>'
+    : '';
+
+  document.getElementById('print-sheet').innerHTML =
+    '<div class="ps-head">' +
+      '<h1>' + esc(title) + '</h1>' +
+      '<div class="ps-brand">SellerKit Pro — listing sheet</div>' +
+    '</div>' +
+    priceBlock +
+    (rows.length ? '<table class="ps-table">' + rows.join('') + '</table>' : '') +
+    detailBlock + measBlock + gapBlock +
+    '<div class="ps-foot">Printed ' + esc(new Date().toLocaleDateString('en-US',
+      { year: 'numeric', month: 'long', day: 'numeric' })) + '</div>';
+
+  window.print();
+}
+
 // One-time move from the old single-item layout (sk_pc, sk_tg, … sk_photos).
 function migrateLegacyItem() {
   if (loadItems().length) return;
@@ -3646,7 +3792,19 @@ function calcPrice(fromButton) {
   }
   // Auto-fill offer floor
   document.getElementById('pc-offer-floor').placeholder = '$' + floor.toLocaleString() + ' (from calculator)';
-  renderFeeBreakdown(ideal);
+
+  // A price is not what you get. Every figure this tool prints now carries what
+  // lands in your hand on the platform you picked.
+  const platEl = document.getElementById('pc-platform');
+  const plat = platEl ? platEl.value : 'Local cash';
+  [['pc-ideal-net', ideal], ['pc-quickflip-net', quickflip], ['pc-floor-net', floor]].forEach(([id, amount]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const fee = feeByName(plat, amount);
+    el.textContent = fee > 0 ? 'keep ' + money(amount - fee) : 'no fees';
+    el.className = 'rc-net' + (fee > 0 ? '' : ' none');
+  });
+  renderFeeBreakdown(ideal, plat);
   results.style.display = 'block';
 }
 
@@ -3659,12 +3817,12 @@ const FEE_TABLE = [
   { name: 'Poshmark',          pct: 0.20,   flat: 0,    note: '20% over $15' }
 ];
 
-function renderFeeBreakdown(price) {
+function renderFeeBreakdown(price, chosen) {
   const rows = FEE_TABLE.map(f => {
     const fee = price * f.pct + (price > 0 ? f.flat : 0);
     const net = Math.max(0, price - fee);
     const width = price > 0 ? Math.round((net / price) * 100) : 0;
-    return `<div class="fee-row">
+    return `<div class="fee-row${f.name === chosen ? ' chosen' : ''}">
       <div class="fee-name">${f.name}<span class="fee-sub">${f.note}</span></div>
       <div class="fee-track"><div class="fee-bar" style="width:${width}%"></div></div>
       <div class="fee-net">$${Math.round(net).toLocaleString()}<span class="fee-sub">${fee > 0 ? '−$' + Math.round(fee).toLocaleString() + ' fees' : 'no fees'}</span></div>
@@ -3913,6 +4071,8 @@ function calcPriceDrop(fromButton) {
     60: [{day:1,pct:1.0,action:'List at asking price'},{day:14,pct:.92,action:'First review'},{day:28,pct:.83,action:'Price drop'},{day:45,pct:.75,action:'Second drop'},{day:60,pct:.65,action:'Final or donate'}]
   };
   const steps = schedules[deadline] || schedules[30];
+  const dropPlatEl = document.getElementById('pc-platform');
+  const dropPlatform = dropPlatEl ? dropPlatEl.value : 'Local cash';
   const today = new Date();
   const tbody = document.getElementById('pd-tbody');
   tbody.innerHTML = '';
@@ -3926,11 +4086,17 @@ function calcPriceDrop(fromButton) {
     const badge = step.pct === 1.0 ? '<span class="badge badge-green">Start</span>'
                 : newPrice <= floor ? '<span class="badge badge-red">Floor</span>'
                 : '<span class="badge badge-orange">Drop</span>';
+    // What each step actually leaves you, on the platform chosen in the pricing tool.
+    const stepFee = feeByName(dropPlatform, newPrice);
+    const netCell = stepFee > 0
+      ? `<span class="tnum">$${Math.round(newPrice - stepFee).toLocaleString()}</span>`
+      : '<span class="pd-net-none">no fees</span>';
     tbody.innerHTML += `<tr>
       <td><strong>Day ${step.day}</strong></td>
       <td>${dateStr}</td>
       <td>${step.action}</td>
-      <td><strong>$${newPrice.toLocaleString()}</strong></td>
+      <td><strong class="tnum">$${newPrice.toLocaleString()}</strong></td>
+      <td>${netCell}</td>
       <td>${Math.round(step.pct * 100)}%</td>
       <td>${badge}</td>
     </tr>`;

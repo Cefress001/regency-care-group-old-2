@@ -253,6 +253,102 @@ Adding an AI action to a tool:
 the calculator's current output, the description form, measurements. Extend it there rather than
 threading fields through individual prompts.
 
+### Licence tiers — free and business
+
+Two tiers ship from one file. The gate resolves an access code to a plan via
+`CODES`, stores it in `sk_plan`, and writes it onto `<html data-plan="…">`.
+`LOGINS` carries a plan beside each digest.
+
+- **CSS does the hiding, not JavaScript.** One rule — `html:not([data-plan="pro"])
+  [data-plan="pro"] { display: none !important; }` — lives in the gate's own inline
+  `<style>`, beside the lock CSS and for the same reason: a stylesheet arriving later
+  would let a Pro panel paint first. Marking something Pro is adding
+  `data-plan="pro"` to it, nothing more.
+- **`skIsPro()` is for the few places that must branch in JS** — an export that
+  should add columns, a list built at runtime. It reads the attribute rather than
+  `localStorage`, so it agrees with what is on screen even when storage threw.
+- **Anything built at runtime has to filter itself.** The command palette
+  (`PRO_PANELS`) and the playbook cards (`visiblePlaybooks()`) build their own lists
+  and would otherwise offer a jump into a panel that cannot be shown.
+- **A licence sold before the tier existed has no `sk_plan` and reads as free**, so
+  existing buyers keep exactly what they bought. `?lock=1` clears the plan as well as
+  the access flag.
+- **This is a UI convention, not entitlement.** There is no server to enforce
+  against, and the gate it hangs off is still trivially bypassed.
+
+**Business tools are not counted.** `sourcing`, `aging` and `bulk` live in their own
+Business nav section, are absent from the 13-card tools grid, and are absent from the
+four counted files — the same treatment My Items, the AI layer and the playbooks get.
+The advertised thirteen are the consumer product, so **adding a business tool never
+triggers the tool-count chore.** A playbook that steps through a Pro panel carries
+`pro: true`.
+
+### Pricing — the formula and the comps
+
+Two bases produce the three prices, and `#pc-basis` says which one ran.
+
+- **Three or more comps win.** `COMPS_MIN` is the threshold; below it the sample is
+  called too thin and the formula still rules. Above it the numbers come straight out
+  of the data — median to ask, lowest sold as the floor, halfway between for the quick
+  flip — with **no multiplier invented anywhere** on that path. Enough comps also make
+  retail, condition and demand optional, because someone pricing a trade-in has no
+  idea what it cost new.
+- **`parseComps` is deliberately not "find every number".** "Sold Sep 12 · $45" holds
+  two numbers and one price. When the text carries any `$`, only `$`-prefixed numbers
+  count; otherwise the last number on each line wins. Everything parsed is echoed back
+  as chips so a misread is visible *before* it reaches the price.
+- **Sell-time needs condition and demand**, so it hides on the comps-only path rather
+  than printing a number with nothing behind it.
+- **A price is not what you get.** `pc-platform` drives a net line under all three
+  result chips and a You Keep column on the drop schedule, and highlights its row in
+  the fee block.
+
+### Money — cost basis and profit
+
+- **The platform's cut is computed once, at the moment of sale, and stored on the
+  row.** Reading it back out of `FEE_TABLE` at render time would silently restate last
+  year's profit the day a platform changes its rates.
+- `trProfit()` returns `null` for anything unsold; callers must handle that rather
+  than treating it as zero.
+- **A free licence still gets the fee recorded** on every sale, so upgrading later
+  finds a correct history instead of a year of blanks.
+- Marking sold is an inline form, not `prompt()`. It pre-quotes the fee from the
+  listed price and re-quotes as the price is typed — until `dataset.touched` is set by
+  a hand edit, after which it is left alone.
+
+### Identify from a photo
+
+`aiIdentifyPhotos()` sends up to three shots and a strict JSON contract, then fills
+the item from the reply.
+
+- **Nothing is written until Apply.** A vision model names the wrong model number with
+  complete confidence; the result lands in a review list first.
+- **Rows that would replace an existing value arrive unticked** and say what they would
+  overwrite. Filling a blank is a favour; replacing typed work is the seller's call.
+- **The model is held to the app's vocabulary, not its own.** `IDP_CATEGORIES` and
+  `IDP_CONDITIONS` map the reply onto the eight categories and the condition
+  multipliers; anything that does not map is dropped rather than half-applied.
+- **`aiExtractJson` walks braces while tracking strings and escapes**, so a reply
+  wrapped in prose or a code fence — or carrying a brace or an escaped quote inside a
+  value — still parses. A plain `indexOf('}')` does not survive `12\" riser`.
+- Applying is **one `updateActiveItem` followed by propagation outside it**. Nesting
+  the two lets the outer write clobber the inner one.
+- `_idpShots` never reaches `localStorage`, for the same reason `_phShots` does not.
+
+### Backup, import and print
+
+- **The backup file carries no AI key.** `sk_ai_cfg` is excluded on purpose — a backup
+  is the sort of file people mail themselves.
+- Restore offers merge or replace, matches items by `id`, and always leaves the active
+  id pointing at something that exists.
+- **`parseCSV` is a real parser**, not a split on commas: quoted commas, doubled
+  quotes and newlines inside fields are the normal case in exported inventory.
+  `BK_ALIASES` folds the header names people actually use onto the item model's.
+- **The print sheet is a direct child of `<body>`** so the print rule can hide every
+  sibling and leave it alone, rather than trying to un-style the whole app. It is
+  built on demand and is empty until then, which is what the `:not(:empty)` guard
+  keys off.
+
 ### Playbooks — the job first, the tools second
 
 The toolkit opens on **Start Here** (`#panel-home`), which asks what the person came to do
@@ -321,8 +417,8 @@ that attaches a listener rather than using inline `onclick`.
 ## Gotchas
 
 - **Stripe is live.** `checkout.html` carries a real `<stripe-buy-button>` with a `pk_live_` publishable key. Only publishable keys belong in this repo — a `sk_live_`/`sk_test_` secret key must never be committed. The buy button's success URL is configured on the Stripe Dashboard, not here, and it must point at `success.html` or buyers never receive toolkit access.
-- **The toolkit is gated.** `toolkit.html` hides itself behind an access code (`199400`), checked by an inline `<head>` script that adds `.sk-locked` to `<html>`. Access is granted by `success.html` (sets `sk_access` in `localStorage`), by `?access=<code>`, by typing the code into the overlay, or by the username/password sign-in on the overlay's second view. `?lock=1` clears `sk_access` and puts the gate back, which is the only way to re-test the locked state and the purchase flow once access has stuck on a device. This is **interim and trivially bypassed** — the whole block sits between the `interim access gate` comment markers in `toolkit.html` and is meant to be deleted wholesale when Firebase Auth lands. Keep the gate CSS/JS inline in `<head>`: moving it to `styles.css` reintroduces a flash of unlocked content.
-- **Gate sign-in is browser-side, so the source carries a digest, not a password.** `LOGINS` maps a username to `PBKDF2-SHA256(user + ':' + pass, 'sellerkit-gate-v1', 150000)` as hex. There is no server to check a credential against, so this only raises the cost from reading the source to running an offline attack — pair it with a passphrase long enough that the attack is not worth running, and never treat it as real authentication. Add or rotate one with `node -e "console.log(require('crypto').pbkdf2Sync('user:password','sellerkit-gate-v1',150000,32,'sha256').toString('hex'))"`. `crypto.subtle` needs a secure context, so sign-in works on https and localhost but not `file://`; the access-code path stays as the fallback.
+- **The toolkit is gated.** `toolkit.html` hides itself behind an access code (`199400`), checked by an inline `<head>` script that adds `.sk-locked` to `<html>`. Access is granted by `success.html` (sets `sk_access` in `localStorage`), by `?access=<code>`, by typing the code into the overlay, or by the username/password sign-in on the overlay's second view. `?lock=1` clears `sk_access` and `sk_plan` and puts the gate back, which is the only way to re-test the locked state and the purchase flow once access has stuck on a device. This is **interim and trivially bypassed** — the whole block sits between the `interim access gate` comment markers in `toolkit.html` and is meant to be deleted wholesale when Firebase Auth lands. Keep the gate CSS/JS inline in `<head>`: moving it to `styles.css` reintroduces a flash of unlocked content.
+- **Gate sign-in is browser-side, so the source carries a digest, not a password.** `LOGINS` maps a username to `{ h: PBKDF2-SHA256(user + ':' + pass, 'sellerkit-gate-v1', 150000) as hex, plan }`. There is no server to check a credential against, so this only raises the cost from reading the source to running an offline attack — pair it with a passphrase long enough that the attack is not worth running, and never treat it as real authentication. Add or rotate one with `node -e "console.log(require('crypto').pbkdf2Sync('user:password','sellerkit-gate-v1',150000,32,'sha256').toString('hex'))"`. `crypto.subtle` needs a secure context, so sign-in works on https and localhost but not `file://`; the access-code path stays as the fallback.
 - **No invented social proof.** Testimonials, review counts, star ratings, forum quotes with vote counts, "average" result figures, countdown/scarcity chips, and struck-through reference prices were deliberately removed — they are a Stripe-account and chargeback risk on a live payment product, not just a style choice. Do not reintroduce them. Real numbers about the product (13 tools, 12 scam checks, condition percentages) are fine; the ROI table on `index.html` is allowed only because it is explicitly labelled an illustration.
 - **`ai-*` element ids belong to the AI Prompt tool (tool 4); the AI layer uses `aix-*`.**
   `ai-item`, `ai-brand`, `ai-condition`, `ai-price`, `ai-details`, `ai-prompt-result` and
@@ -334,5 +430,7 @@ that attaches a listener rather than using inline `onclick`.
   `alert()`, a `.value`, or any clipboard/download string) prints the literal tag. Use
   `innerHTML` and escape the surrounding text with `escHtml()`. Note the inverse too: an
   `"…"`-quoted JS string cannot hold the markup verbatim, since it contains `class="ic"`.
+- **Business tools and playbooks do not move the tool count.** Only the thirteen
+  consumer tools in the home grid are counted. See "Licence tiers" above.
 - **The tool count appears in four files.** When the count changes, update: `index.html` (hero badge, hero stat, two CTAs, section heading, FAQ, sticky CTA, and the `.price-includes` bullet list), `checkout.html` (order line, feature list), `success.html` (two strings), and the Stripe product description on the Stripe Dashboard (a fifth copy outside the repo). `index.html` also has a derived string ("N more") in its `<meta name="description">` and demo CTA — keep both consistent with the count minus the tools named inline.
 - **`toolkit.html` overrides global nav styles.** The `.tk-*` rules exist partly to undo landing-page nav styling that otherwise turned the dark sidebar white (`a44f685`). Be careful when editing shared nav selectors in `styles.css`.

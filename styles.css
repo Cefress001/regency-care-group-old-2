@@ -714,12 +714,45 @@ select { appearance: none; cursor: pointer; background-image: url("data:image/sv
   color: var(--gray-600); transition: var(--transition); font-family: inherit;
 }
 .print-btn:hover { background: var(--gray-100); }
+/* The listing sheet is hidden on screen and is the only thing on the page when
+   the sheet has been built. Printing anything else still falls through to the
+   panel rules below. */
+#print-sheet { display: none; }
+
 @media print {
   .tk-sidebar, .tk-nav-item, nav, .copy-btn-row, .print-btn, .btn, .panel-header .subtitle { display: none !important; }
   .tk-layout { grid-template-columns: 1fr; }
   .tk-main { background: white; }
   .tk-panel.active { padding: 0; }
   .tk-card { border: 1px solid #ccc; box-shadow: none; page-break-inside: avoid; }
+
+  /* Once printListingSheet() has filled it, the sheet replaces the page entirely
+     rather than trying to un-style the app around it. :has() is supported
+     everywhere this runs; without it the old whole-panel print still happens. */
+  body:has(#print-sheet:not(:empty)) > *:not(#print-sheet) { display: none !important; }
+  body:has(#print-sheet:not(:empty)) { background: #fff; }
+  #print-sheet:not(:empty) { display: block; color: #000; font-size: 11pt; line-height: 1.5; }
+
+  .ps-head { border-bottom: 2px solid #000; padding-bottom: .4rem; margin-bottom: 1rem; }
+  .ps-head h1 { font-size: 20pt; font-weight: 600; letter-spacing: -.02em; margin: 0; }
+  .ps-brand { font-size: 8.5pt; color: #555; margin-top: .15rem; }
+  .ps-price { margin: 0 0 1rem; }
+  .ps-price-val { display: block; font-size: 26pt; font-weight: 600; letter-spacing: -.03em; }
+  .ps-price-sub { display: block; font-size: 9.5pt; color: #444; }
+  #print-sheet h2 {
+    font-size: 11pt; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+    margin: 1.1rem 0 .35rem; color: #333;
+  }
+  #print-sheet p { margin: 0 0 .5rem; }
+  .ps-table { width: 100%; border-collapse: collapse; margin-bottom: .5rem; }
+  .ps-table th, .ps-table td {
+    text-align: left; padding: .28rem .5rem .28rem 0;
+    border-bottom: 1px solid #ddd; vertical-align: top;
+  }
+  .ps-table th { width: 11rem; font-weight: 500; color: #555; }
+  .ps-gaps { margin: 0; padding-left: 1.1rem; }
+  .ps-gaps li { margin-bottom: .2rem; }
+  .ps-foot { margin-top: 1.5rem; padding-top: .4rem; border-top: 1px solid #ddd; font-size: 8.5pt; color: #666; }
 }
 
 /* Keyword chips */
@@ -1742,4 +1775,19 @@ h1 > .ic, h2 > .ic, h3 > .ic, h4 > .ic { width: .85em; height: .85em; opacity: .
 
 @media (max-width: 760px) {
   .aging-buckets { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Net payout, surfaced wherever a price is printed ────────────────────
+   A price is not what you get. The result chips and the drop schedule now carry
+   what actually lands, on the platform chosen in the pricing tool. */
+.rc-net {
+  margin-top: .25rem; font-size: .72rem; font-weight: 600;
+  color: var(--green-dark); font-variant-numeric: tabular-nums;
+}
+.rc-net.none { color: var(--text-subtle); font-weight: 500; }
+.pd-net-none { font-size: .78rem; color: var(--text-subtle); }
+/* The row matching the chosen platform, so the number being used is obvious. */
+.fee-row.chosen {
+  background: var(--blue-light);
+  box-shadow: inset 2px 0 0 var(--blue);
 }
