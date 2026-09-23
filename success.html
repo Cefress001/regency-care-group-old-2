@@ -7,17 +7,34 @@
   <title>You're In — SellerKit Pro</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <meta name="theme-color" content="#0F172A">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#101318">
+  <link rel="preload" href="inter-var-latin.woff2" as="font" type="font/woff2" crossorigin>
   <style>
+/* Inter — vendored, not loaded from a CDN.
+   OFL-1.1, see NOTICE.md. One variable file covers 100–900, so every weight in
+   the product costs 48KB once. Self-hosted because a webfont on the CDN is a
+   third-party request on a page that takes payment, and because a blocked or
+   slow CDN is a visible layout shift on first paint.
+   unicode-range limits this to latin; anything outside it falls through to the
+   platform UI face instead of downloading a subset nobody on this site reads. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('inter-var-latin.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC,
+                 U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --green: #22c55e;
-      --green-dark: #16a34a;
-      --dark: #0f172a;
-      --text: #f8fafc;
-      --muted: #94a3b8;
+      --green: #10B981;
+      --green-dark: #059669;
+      --dark: #101318;
+      --text: #f9f9fb;
+      --muted: #8b8d98;
       --white: #ffffff;
     }
     body {
@@ -53,7 +70,7 @@
 
     h1 {
       font-size: 2rem;
-      font-weight: 800;
+      font-weight: 600;
       margin-bottom: 10px;
     }
     h1 em { color: var(--green); font-style: normal; }
@@ -66,8 +83,8 @@
     }
 
     .access-box {
-      background: #1e293b;
-      border: 1px solid #334155;
+      background: #26292e;
+      border: 1px solid #3d4149;
       border-radius: 14px;
       padding: 32px;
       margin-bottom: 32px;
@@ -99,24 +116,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
+      font-weight: 600;
       font-size: 0.8rem;
       flex-shrink: 0;
     }
-    .step-text { font-size: 0.9rem; line-height: 1.6; color: #cbd5e1; }
+    .step-text { font-size: 0.9rem; line-height: 1.6; color: #cdced6; }
     .step-text strong { color: var(--text); }
     .code-chip {
-      display: inline-block; background: #0f172a; border: 1px solid var(--green);
-      color: var(--green); font-weight: 800; letter-spacing: 1px;
+      display: inline-block; background: #101318; border: 1px solid var(--green);
+      color: var(--green); font-weight: 600; letter-spacing: 1px;
       padding: 4px 10px; border-radius: 6px; font-size: 0.9rem; margin-top: 6px;
     }
-    .key-chip { background: #334155; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+    .key-chip { background: #3d4149; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
 
     .btn-toolkit {
       display: inline-block;
       background: var(--green);
       color: var(--dark);
-      font-weight: 800;
+      font-weight: 600;
       font-size: 1rem;
       padding: 16px 36px;
       border-radius: 10px;
@@ -232,7 +249,7 @@
   try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
 
   // Simple confetti burst on load
-  const colors =['#22c55e','#86efac','#fbbf24','#60a5fa','#f472b6','#a78bfa'];
+  const colors =['#10B981','#86efac','#fbbf24','#60a5fa','#f472b6','#a78bfa'];
   const container = document.getElementById('confetti');
   for (let i = 0; i < 60; i++) {
     const el = document.createElement('div');

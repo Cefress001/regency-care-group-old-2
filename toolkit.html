@@ -8,7 +8,8 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#0F172A">
-<link rel="stylesheet" href="styles.css">
+  <link rel="preload" href="inter-var-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
 
 <!-- Interim access gate — everything between these markers is replaced by Firebase Auth.
      Inlined in <head> so locked content never flashes before styles.css loads. -->
@@ -285,7 +286,7 @@
     </div>
 
     <!-- ══ MY ITEMS ══ -->
-    <div class="tk-panel" id="panel-items">
+    <div class="tk-panel tk-panel-wide" id="panel-items">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-package"/></svg> My Items</h2>
         <div class="subtitle">Enter an item once here — every tool fills itself in from it.</div>
@@ -375,7 +376,7 @@
 
     <!-- ══ HOME DASHBOARD ══ -->
     <!-- ══ START HERE — the job first, the tools second ══ -->
-    <div class="tk-panel active" id="panel-home">
+    <div class="tk-panel tk-panel-wide active" id="panel-home">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg> What are you here to do?</h2>
         <div class="subtitle">Pick the job in front of you. Each one opens a playbook — the steps in order, and only the tools that job needs.</div>
@@ -417,13 +418,13 @@
     </div>
 
     <!-- ══ ALL TOOLS — the full grid, unchanged, one level in ══ -->
-    <div class="tk-panel" id="panel-alltools">
+    <div class="tk-panel tk-panel-wide" id="panel-alltools">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-wrench"/></svg> All Tools</h2>
         <div class="subtitle">Every tool, on its own. Use them in any order — or let a playbook sequence them for you.</div>
       </div>
 
-      <div class="tk-card" style="margin-bottom:.75rem; background:linear-gradient(135deg,#eff6ff,#f0fdf4);">
+      <div class="tk-card" style="margin-bottom:.75rem; background:var(--blue-light);">
         <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
           <div style="font-size:1.5rem;"><svg class="ic" aria-hidden="true"><use href="#i-lightbulb"/></svg></div>
           <div>
@@ -511,7 +512,7 @@
 
     <!-- ══ PLAYBOOK RUNNER — rendered from PLAYBOOKS; a layer over the 13 tools,
          not a 14th tool, so it stays out of the grid and the counted files. ══ -->
-    <div class="tk-panel" id="panel-flow">
+    <div class="tk-panel tk-panel-wide" id="panel-flow">
       <div class="panel-header">
         <h2 id="fl-title">Playbook</h2>
         <div class="subtitle" id="fl-sub"></div>
@@ -528,7 +529,7 @@
     </div>
 
     <!-- ══ AI COPILOT — a layer over the 13 tools, not one of them ══ -->
-    <div class="tk-panel" id="panel-copilot">
+    <div class="tk-panel tk-panel-wide" id="panel-copilot">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-sparkles"/></svg> AI Copilot</h2>
         <div class="subtitle">Ask anything about selling this item. The copilot already sees everything you've entered.</div>
@@ -1387,7 +1388,7 @@
     </div>
 
     <!-- ══ 8. PRICE DROP SCHEDULE ══ -->
-    <div class="tk-panel" id="panel-pricedrop">
+    <div class="tk-panel tk-panel-wide" id="panel-pricedrop">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-trending-down"/></svg> Price Drop Schedule</h2>
         <div class="subtitle">Know exactly when and how much to drop. No more guessing or random slashes.</div>
@@ -1583,7 +1584,7 @@
     </div>
 
     <!-- ══ 11. 7-DAY PLAN ══ -->
-    <div class="tk-panel" id="panel-sevenday">
+    <div class="tk-panel tk-panel-wide" id="panel-sevenday">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-calendar-days"/></svg> Sell It in 7 Days</h2>
         <div class="subtitle">A day-by-day action plan personalized to your item and start date.</div>
@@ -1709,7 +1710,7 @@
     </div>
 
     <!-- ══ 13. SALE TRACKER ══ -->
-    <div class="tk-panel" id="panel-tracker">
+    <div class="tk-panel tk-panel-wide" id="panel-tracker">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-chart-column"/></svg> Sale Tracker</h2>
         <div class="subtitle">Track every item you list. Revenue totals, sell rates, and platform performance — all saved in your browser.</div>

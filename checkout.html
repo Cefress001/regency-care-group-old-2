@@ -20,28 +20,45 @@
   <meta name="twitter:description" content="Lifetime access to all 13 selling tools. One payment, no subscription, 30-day money-back guarantee.">
   <meta name="twitter:image" content="https://sellerkit-five.vercel.app/og-image.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <meta name="theme-color" content="#0F172A">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#101318">
+  <link rel="preload" href="inter-var-latin.woff2" as="font" type="font/woff2" crossorigin>
   <style>
+/* Inter — vendored, not loaded from a CDN.
+   OFL-1.1, see NOTICE.md. One variable file covers 100–900, so every weight in
+   the product costs 48KB once. Self-hosted because a webfont on the CDN is a
+   third-party request on a page that takes payment, and because a blocked or
+   slow CDN is a visible layout shift on first paint.
+   unicode-range limits this to latin; anything outside it falls through to the
+   platform UI face instead of downloading a subset nobody on this site reads. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('inter-var-latin.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC,
+                 U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --green: #22c55e;
-      --green-dark: #16a34a;
-      --dark: #0f172a;
-      --dark2: #1e293b;
-      --dark3: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
+      --green: #10B981;
+      --green-dark: #059669;
+      --dark: #101318;
+      --dark2: #26292e;
+      --dark3: #3d4149;
+      --text: #f9f9fb;
+      --muted: #8b8d98;
       --white: #ffffff;
-      --border: #e2e8f0;
+      --border: #e0e1e6;
       --radius: 12px;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #f1f5f9;
+      background: #f0f0f3;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -57,7 +74,7 @@
     }
     .checkout-nav .brand {
       color: var(--green);
-      font-weight: 800;
+      font-weight: 600;
       font-size: 1.2rem;
       text-decoration: none;
     }
@@ -93,7 +110,7 @@
 
     .order-summary .product-name {
       font-size: 1.5rem;
-      font-weight: 800;
+      font-weight: 600;
       color: var(--green);
       margin-bottom: 4px;
     }
@@ -135,7 +152,7 @@
     .price-block .price-label { color: var(--muted); font-size: 0.85rem; }
     .price-block .price-amount {
       font-size: 2rem;
-      font-weight: 800;
+      font-weight: 600;
       color: var(--green);
     }
     .price-block .price-note {
@@ -161,7 +178,7 @@
       border-left: 3px solid var(--green);
       padding-left: 16px;
     }
-    .testimonial-block .t-quote { font-size: 0.88rem; color: #cbd5e1; font-style: italic; line-height: 1.6; }
+    .testimonial-block .t-quote { font-size: 0.88rem; color: #cdced6; font-style: italic; line-height: 1.6; }
     .testimonial-block .t-author { margin-top: 8px; font-size: 0.8rem; color: var(--muted); }
 
     /* RIGHT PANEL — PAYMENT */
@@ -169,7 +186,7 @@
       background: var(--white);
       border-radius: var(--radius);
       padding: 36px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 2px rgba(18,21,26,.05), 0 2px 6px -2px rgba(18,21,26,.06), 0 0 0 1px #0000330f;
     }
 
     .payment-panel h2 {
@@ -180,7 +197,7 @@
     }
     .payment-panel .payment-sub {
       font-size: 0.85rem;
-      color: #64748b;
+      color: #60646c;
       margin-bottom: 28px;
     }
 
@@ -220,7 +237,7 @@
       align-items: center;
       gap: 5px;
       font-size: 0.75rem;
-      color: #64748b;
+      color: #60646c;
     }
 
     /* Back link */
@@ -228,7 +245,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: #64748b;
+      color: #60646c;
       font-size: 0.85rem;
       text-decoration: none;
       margin-bottom: 20px;
@@ -239,10 +256,10 @@
     .checkout-footer {
       text-align: center;
       padding: 24px;
-      color: #94a3b8;
+      color: #8b8d98;
       font-size: 0.78rem;
     }
-    .checkout-footer a { color: #64748b; }
+    .checkout-footer a { color: #60646c; }
 
     @media (max-width: 700px) {
       .checkout-wrap {
@@ -289,7 +306,7 @@
 
   <!-- LEFT: Order Summary -->
   <div class="order-summary">
-    <a href="index.html" class="back-link" style="color:#64748b;">← Back to home</a>
+    <a href="index.html" class="back-link" style="color:#60646c;">← Back to home</a>
 
     <div class="product-name">SellerKit Pro</div>
     <div class="product-tagline">The complete toolkit for marketplace sellers</div>
@@ -312,7 +329,7 @@
 
     <!-- A layer over the 13 tools, not a 14th — kept outside the list so the count stays right. -->
     <div style="margin-top:14px;padding:14px 16px;border-radius:10px;background:linear-gradient(135deg,#1e1b4b,#1d4ed8);color:#fff;">
-      <div style="font-weight:800;font-size:.95rem;margin-bottom:4px;"><svg class="ic" aria-hidden="true"><use href="#i-sparkles"/></svg> Plus: AI mode on every tool</div>
+      <div style="font-weight:600;font-size:.95rem;margin-bottom:4px;"><svg class="ic" aria-hidden="true"><use href="#i-sparkles"/></svg> Plus: AI mode on every tool</div>
       <div style="font-size:.84rem;line-height:1.55;color:rgba(255,255,255,.75);">
         Connect your own Claude, ChatGPT, Gemini, or OpenRouter key and every tool above gains an AI mode —
         plus a copilot that already knows your item. No extra subscription; your key stays in your browser.
@@ -352,7 +369,7 @@
     </div>
     <div class="order-line">
       <span>One-time license</span>
-      <span class="line-price" style="color:#22c55e;">Lifetime</span>
+      <span class="line-price" style="color:#10B981;">Lifetime</span>
     </div>
     <div class="order-line total">
       <span>Total due today</span>

@@ -1,20 +1,43 @@
+/* Inter — vendored, not loaded from a CDN.
+   OFL-1.1, see NOTICE.md. One variable file covers 100–900, so every weight in
+   the product costs 48KB once. Self-hosted because a webfont on the CDN is a
+   third-party request on a page that takes payment, and because a blocked or
+   slow CDN is a visible layout shift on first paint.
+   unicode-range limits this to latin; anything outside it falls through to the
+   platform UI face instead of downloading a subset nobody on this site reads. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('inter-var-latin.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC,
+                 U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* Shared styles for terms.html, privacy.html, refund.html.
    Self-contained like checkout/success — does not use styles.css tokens. */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Same Radix slate ramp as styles.css. The file stays independent — the values
+   are copied, not imported — but the two must not drift, or the legal pages
+   read as a different product than the one the buyer just paid on. */
 :root {
-  --green: #22c55e;
-  --dark: #0f172a;
-  --text: #1f2937;
-  --muted: #64748b;
-  --border: #e2e8f0;
+  --green: #059669;
+  --dark: #101318;
+  --text: #1c2024;     /* slate-12 */
+  --muted: #60646c;    /* slate-11 */
+  --border: #00002d17; /* slate-a4 — alpha, composites over any surface */
   --white: #ffffff;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f1f5f9;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss03';
+  background: #f9f9fb;
   color: var(--text);
   line-height: 1.7;
   min-height: 100vh;
@@ -31,7 +54,7 @@ body {
 }
 .legal-nav .brand {
   color: var(--green);
-  font-weight: 800;
+  font-weight: 600;
   font-size: 1.2rem;
   text-decoration: none;
 }
@@ -60,7 +83,7 @@ body {
 
 .legal-card h1 {
   font-size: 1.9rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--dark);
   letter-spacing: -.02em;
   margin-bottom: 6px;
@@ -69,7 +92,7 @@ body {
 
 .legal-card h2 {
   font-size: 1.05rem;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--dark);
   margin: 32px 0 10px;
 }
