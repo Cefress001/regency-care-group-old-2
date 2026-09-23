@@ -335,6 +335,46 @@
         <div class="subtitle">Enter an item once here — every tool fills itself in from it.</div>
       </div>
 
+      <div class="tk-card idp-card">
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg> Start from a photo</h3>
+        <p class="card-lede">
+          Point your camera at the item and let your AI fill the rest in — name, brand, model,
+          category, condition and roughly what it cost new. Nothing is saved until you look it over
+          and press Apply. Add a second shot of the label or model plate if there is one; that is
+          usually what turns a guess into the right answer.
+        </p>
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="document.getElementById('idp-camera').click()"><svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg> Take a photo</button>
+          <button class="btn btn-neutral" onclick="document.getElementById('idp-file').click()"><svg class="ic" aria-hidden="true"><use href="#i-folder"/></svg> Choose photos</button>
+          <input type="file" id="idp-camera" accept="image/*" capture="environment" style="display:none;" onchange="idpAddShots(this)">
+          <input type="file" id="idp-file" accept="image/*" multiple style="display:none;" onchange="idpAddShots(this)">
+        </div>
+
+        <div class="ph-thumbs" id="idp-thumbs" style="display:none;"></div>
+
+        <div class="action-row">
+          <button class="btn btn-ai" id="idp-run" onclick="aiIdentifyPhotos(this)" disabled><svg class="ic" aria-hidden="true"><use href="#i-sparkles"/></svg> Identify with AI</button>
+          <button class="btn btn-outline btn-sm" id="idp-clear" onclick="idpClear()" style="display:none;">Clear photos</button>
+        </div>
+
+        <div class="backup-note" id="idp-status" style="display:none;"></div>
+
+        <div id="idp-review" style="display:none;">
+          <div class="idp-review-head" id="idp-review-head"></div>
+          <div class="idp-rows" id="idp-review-rows"></div>
+          <div class="idp-note" id="idp-note" style="display:none;"></div>
+          <div class="action-row">
+            <button class="btn btn-success" id="idp-apply" onclick="idpApply()"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg> Apply to this item</button>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('idp-review').style.display='none'">Discard</button>
+          </div>
+        </div>
+
+        <p class="card-foot">
+          Photos go straight from this browser to the AI provider you connected, on your own key.
+          They are shrunk to 1024px first and never stored.
+        </p>
+      </div>
+
       <div class="tk-card">
         <h3>Item details</h3>
         <div class="form-grid">
@@ -2882,6 +2922,303 @@ function applyRestore(data) {
   backupNote((mode === 'merge' ? 'Merged ' : 'Restored ') + added + ' item' + (added === 1 ? '' : 's') + '.' +
              (newer ? ' The file came from a newer version — anything this build does not understand was kept as-is.' : ''),
              false);
+}
+
+// ── Identify from a photo ──────────────────────────────────────────────
+// Point the camera at a thing, get the whole item filled in. This is the fastest
+// path from "I have this to sell" to a priced, titled, described listing.
+//
+// Two deliberate choices:
+//   1. Nothing is written until the seller presses Apply. A vision model will
+//      confidently name the wrong model number, and silently overwriting a field
+//      somebody typed by hand is worse than not filling it at all.
+//   2. Fields that would REPLACE existing non-empty values arrive unticked. Filling
+//      a blank is a favour; overwriting work is a decision the seller makes.
+//
+// The shots live in _idpShots and are never written to localStorage — same reason
+// as _phShots, three base64 photos would blow the ~5MB quota and take the item
+// workspace down with them.
+const IDP_MAX_SHOTS = 3;
+let _idpShots = [];
+let _idpFound = null;        // the parsed result awaiting Apply
+
+// The model must answer in this vocabulary, not its own, or nothing maps onto the
+// dropdowns. Condition arrives as a word and becomes the multiplier the tools use.
+const IDP_CATEGORIES = ['electronics','furniture','clothing','tools','toys','sports','appliances','collectibles'];
+const IDP_CONDITIONS = { 'new': '0.95', 'like-new': '0.75', 'good': '0.55', 'fair': '0.35', 'poor': '0.20' };
+const IDP_COND_LABEL = { '0.95': 'New / never used', '0.75': 'Like new', '0.55': 'Good — minor wear',
+                         '0.35': 'Fair — visible wear', '0.20': 'Poor — works but rough' };
+const IDP_CAT_LABEL = { electronics: 'Electronics', furniture: 'Furniture', clothing: 'Clothing / Shoes',
+                        tools: 'Tools / Hardware', toys: 'Toys / Kids', sports: 'Sports / Outdoors',
+                        appliances: 'Appliances', collectibles: 'Collectibles' };
+
+function idpAddShots(input) {
+  const files = Array.from(input.files || []);
+  input.value = '';
+  if (!files.length) return;
+  const room = IDP_MAX_SHOTS - _idpShots.length;
+  if (room <= 0) { idpStatus('That is the ' + IDP_MAX_SHOTS + '-photo limit. Clear one to add another.', 'err'); return; }
+  Promise.all(files.slice(0, room).map(phShrink))
+    .then(shots => { _idpShots = _idpShots.concat(shots.filter(Boolean)); renderIdpThumbs(); idpStatus('', ''); })
+    .catch(e => idpStatus(e.message, 'err'));
+}
+
+function renderIdpThumbs() {
+  const wrap = document.getElementById('idp-thumbs');
+  if (!wrap) return;
+  wrap.innerHTML = _idpShots.map((s, i) =>
+    '<div class="ph-thumb">' +
+      '<img src="' + s.url + '" alt="' + escHtml(s.name) + '">' +
+      '<span class="ph-thumb-n">' + (i + 1) + '</span>' +
+      '<button class="ph-thumb-x" onclick="idpRemove(' + i + ')" title="Remove this photo">×</button>' +
+    '</div>').join('');
+  wrap.style.display = _idpShots.length ? 'flex' : 'none';
+  document.getElementById('idp-run').disabled = !_idpShots.length;
+  document.getElementById('idp-clear').style.display = _idpShots.length ? 'inline-flex' : 'none';
+}
+
+function idpRemove(i) { _idpShots.splice(i, 1); renderIdpThumbs(); }
+
+function idpClear() {
+  _idpShots = [];
+  _idpFound = null;
+  renderIdpThumbs();
+  document.getElementById('idp-review').style.display = 'none';
+  idpStatus('', '');
+}
+
+function idpStatus(msg, kind) {
+  const el = document.getElementById('idp-status');
+  if (!el) return;
+  if (!msg) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.className = 'backup-note ' + (kind === 'err' ? 'err' : 'ok');
+  el.innerHTML = (kind === 'err' ? ic('triangle-alert') : ic('circle-check')) + ' ' + escHtml(msg);
+  el.style.display = 'flex';
+}
+
+// Models wrap JSON in prose, in ```json fences, or both. Take the outermost
+// brace-balanced span and parse that, rather than trusting the whole reply.
+function aiExtractJson(text) {
+  const raw = String(text || '');
+  const start = raw.indexOf('{');
+  if (start === -1) return null;
+  let depth = 0, inStr = false, esc = false;
+  for (let i = start; i < raw.length; i++) {
+    const c = raw[i];
+    if (esc) { esc = false; continue; }
+    if (c === '\\') { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === '{') depth++;
+    else if (c === '}') {
+      depth--;
+      if (depth === 0) {
+        try { return JSON.parse(raw.slice(start, i + 1)); } catch (e) { return null; }
+      }
+    }
+  }
+  return null;
+}
+
+const IDP_SYSTEM =
+  'You identify secondhand items from photographs for a reseller. You reply with a single ' +
+  'JSON object and nothing else — no prose, no code fence, no explanation before or after. ' +
+  'Report only what the photographs actually support. If you cannot tell a field from the ' +
+  'images, use an empty string for it rather than guessing; a wrong model number costs the ' +
+  'seller a sale and a return. Never invent a serial number, a certification or a flaw you ' +
+  'cannot see.';
+
+function idpPrompt() {
+  return 'Identify the item in ' + (_idpShots.length > 1 ? 'these photographs' : 'this photograph') +
+    ' and reply with exactly this JSON shape:\n\n' +
+    '{\n' +
+    '  "name": "what a buyer would search for, no brand",\n' +
+    '  "brand": "",\n' +
+    '  "model": "model name or number ONLY if legible in a photo",\n' +
+    '  "category": "one of: ' + IDP_CATEGORIES.join(', ') + '",\n' +
+    '  "condition": "one of: new, like-new, good, fair, poor",\n' +
+    '  "retail": 0,\n' +
+    '  "features": ["short selling points a buyer cares about"],\n' +
+    '  "flaws": ["visible damage or wear, each one you can actually see"],\n' +
+    '  "confidence": "high, medium or low",\n' +
+    '  "notes": "one sentence: what a better photo would pin down"\n' +
+    '}\n\n' +
+    'Rules: "retail" is the approximate price of this item new, in US dollars, as a plain ' +
+    'number with no symbol — 0 if you have no idea. Judge "condition" from what is visible: ' +
+    'scuffs, fading, missing parts, wear on edges and contact points. Keep "features" and ' +
+    '"flaws" to at most four entries each, a few words each. Use "" for any field the photos ' +
+    'do not support.';
+}
+
+async function aiIdentifyPhotos(btn) {
+  if (!_idpShots.length) { idpStatus('Add a photo first.', 'err'); return; }
+  if (!aiReady()) {
+    const el = document.getElementById('idp-status');
+    el.className = 'backup-note err';
+    el.innerHTML = ic('plug-zap') + ' No AI is connected yet. This feature sends your photo to ' +
+      'your own AI provider, so it needs a key first. ' +
+      '<a href="#" onclick="showPanel(\'aisetup\'); return false;">Connect one →</a>';
+    el.style.display = 'flex';
+    return;
+  }
+
+  const label = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = ic('sparkles') + ' Looking at ' + (_idpShots.length > 1 ? 'the photos' : 'the photo') + '…';
+  document.getElementById('idp-review').style.display = 'none';
+  idpStatus('', '');
+
+  const content = [];
+  _idpShots.forEach((s, i) => {
+    content.push({ type: 'text', text: 'Photo ' + (i + 1) + ':' });
+    content.push({ type: 'image', mime: s.mime, data: s.data });
+  });
+  content.push({ type: 'text', text: idpPrompt() });
+
+  try {
+    const text = await aiStream([{ role: 'user', content: content }], {
+      system: IDP_SYSTEM, maxTokens: 900
+    });
+    const data = aiExtractJson(text);
+    if (!data) {
+      idpStatus('The model replied, but not with the JSON this needs. Try again, or pick a ' +
+                'different model under Connect AI.', 'err');
+      return;
+    }
+    idpRenderReview(data);
+  } catch (e) {
+    if (e && e.name === 'AbortError') { idpStatus('Stopped.', 'err'); return; }
+    idpStatus((e && e.message) || 'That did not work.', 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = label;
+  }
+}
+
+// Normalise whatever came back into the app's own vocabulary, dropping anything
+// that does not map. A model that answers "Furniture " or "like new" still lands.
+function idpNormalise(data) {
+  const str = v => (typeof v === 'string' ? v.trim() : (v == null ? '' : String(v).trim()));
+  const list = v => (Array.isArray(v) ? v.map(str).filter(Boolean).slice(0, 4) : []);
+
+  const catRaw = str(data.category).toLowerCase();
+  const category = IDP_CATEGORIES.indexOf(catRaw) !== -1 ? catRaw : '';
+
+  const condRaw = str(data.condition).toLowerCase().replace(/[\s_]+/g, '-');
+  const condition = IDP_CONDITIONS[condRaw] || '';
+
+  // Keep the sign while stripping symbols: stripping it first turns "-5" into 5,
+  // which then sails past the > 0 check below.
+  const retailNum = parseFloat(String(data.retail).replace(/[^0-9.\-]/g, ''));
+  const retail = isFinite(retailNum) && retailNum > 0 ? String(Math.round(retailNum)) : '';
+
+  const conf = str(data.confidence).toLowerCase();
+  return {
+    name: str(data.name), brand: str(data.brand), model: str(data.model),
+    category: category, condition: condition, retail: retail,
+    features: list(data.features), flaws: list(data.flaws),
+    confidence: ['high','medium','low'].indexOf(conf) !== -1 ? conf : '',
+    notes: str(data.notes)
+  };
+}
+
+const IDP_ROWS = [
+  { key: 'name',      label: 'Item name' },
+  { key: 'brand',     label: 'Brand' },
+  { key: 'model',     label: 'Model' },
+  { key: 'category',  label: 'Category',  show: v => IDP_CAT_LABEL[v] || v },
+  { key: 'condition', label: 'Condition', show: v => IDP_COND_LABEL[v] || v },
+  { key: 'retail',    label: 'Retail when new', show: v => '$' + Number(v).toLocaleString() }
+];
+
+function idpRenderReview(dataRaw) {
+  const d = idpNormalise(dataRaw);
+  _idpFound = d;
+  const it = activeItem();
+
+  const rows = IDP_ROWS.map(r => {
+    const val = d[r.key];
+    if (!val) return '';
+    const current = it ? String(it[r.key] || '') : '';
+    const clash = current && current !== val;
+    const shown = r.show ? r.show(val) : val;
+    const currentShown = clash ? (r.show ? r.show(current) : current) : '';
+    return '<label class="idp-row' + (clash ? ' clash' : '') + '">' +
+      '<input type="checkbox" class="idp-check" data-key="' + r.key + '"' + (clash ? '' : ' checked') + '>' +
+      '<span class="idp-key">' + escHtml(r.label) + '</span>' +
+      '<span class="idp-val">' + escHtml(shown) + '</span>' +
+      (clash ? '<span class="idp-clash">replaces ' + escHtml(currentShown) + '</span>' : '') +
+    '</label>';
+  }).join('');
+
+  const extra = [];
+  if (d.features.length) {
+    extra.push('<label class="idp-row"><input type="checkbox" class="idp-check" data-key="features" checked>' +
+      '<span class="idp-key">Selling points</span>' +
+      '<span class="idp-val">' + escHtml(d.features.join(' · ')) + '</span></label>');
+  }
+  if (d.flaws.length) {
+    extra.push('<label class="idp-row"><input type="checkbox" class="idp-check" data-key="flaws" checked>' +
+      '<span class="idp-key">Visible flaws</span>' +
+      '<span class="idp-val">' + escHtml(d.flaws.join(' · ')) + '</span></label>');
+  }
+
+  const confChip = d.confidence
+    ? '<span class="idp-conf ' + d.confidence + '">' + escHtml(d.confidence) + ' confidence</span>' : '';
+
+  const body = rows + extra.join('');
+  document.getElementById('idp-review-rows').innerHTML = body ||
+    '<div class="empty-hint">The model could not make anything out. Try a closer, brighter photo — ' +
+    'and one of the label or model plate if there is one.</div>';
+  document.getElementById('idp-review-head').innerHTML =
+    '<strong>Here is what it found</strong>' + confChip;
+  document.getElementById('idp-note').innerHTML = d.notes
+    ? ic('lightbulb') + ' ' + escHtml(d.notes) : '';
+  document.getElementById('idp-note').style.display = d.notes ? 'flex' : 'none';
+  document.getElementById('idp-apply').disabled = !body;
+  document.getElementById('idp-review').style.display = 'block';
+}
+
+function idpApply() {
+  if (!_idpFound) return;
+  const picked = {};
+  document.querySelectorAll('#idp-review-rows .idp-check').forEach(cb => {
+    if (cb.checked) picked[cb.dataset.key] = true;
+  });
+
+  const d = _idpFound;
+  const coreKeys = ['name','brand','model','category','condition','retail'];
+  const anyCore = coreKeys.some(k => picked[k] && d[k]);
+  if (!anyCore && !picked.features && !picked.flaws) {
+    idpStatus('Nothing was ticked, so nothing changed.', 'err');
+    return;
+  }
+
+  if (!activeItem()) createItem((picked.name && d.name) || 'Untitled item');
+
+  // One mutation, then the propagation outside it — a nested updateActiveItem
+  // would have its inner write clobbered by the outer one.
+  const it = updateActiveItem(item => {
+    coreKeys.forEach(k => { if (picked[k] && d[k]) item[k] = d[k]; });
+  });
+  if (it) applyItem(it);
+
+  // The description builder owns these two, so they go through its own save path.
+  if (picked.features && d.features.length) {
+    const el = document.getElementById('db-features');
+    if (el) { el.value = d.features.join(', '); saveLS('db'); }
+  }
+  if (picked.flaws && d.flaws.length) {
+    const el = document.getElementById('db-includes');
+    if (el && !el.value.trim()) { el.value = 'Note: ' + d.flaws.join(', '); saveLS('db'); }
+  }
+
+  renderItemBar(); renderItemList(); renderItemForm();
+  document.getElementById('idp-review').style.display = 'none';
+  _idpFound = null;
+  const n = Object.keys(picked).length;
+  idpStatus('Filled in ' + n + ' field' + (n === 1 ? '' : 's') +
+            '. Check them against the item before you list it.', 'ok');
 }
 
 // One-time move from the old single-item layout (sk_pc, sk_tg, … sk_photos).

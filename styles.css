@@ -1596,3 +1596,48 @@ h1 > .ic, h2 > .ic, h3 > .ic, h4 > .ic { width: .85em; height: .85em; opacity: .
 @media (max-width: 620px) {
   .comps-stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── Identify from a photo ───────────────────────────────────────────────
+   The review list is the safety rail on a model that will happily invent a model
+   number. Every row is a checkbox, and a row whose value would REPLACE something
+   already on the item arrives unticked and says what it would overwrite. */
+.idp-card { border-color: var(--line-strong); }
+.idp-review-head {
+  display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+  margin: 1.1rem 0 .6rem; font-size: .9rem; color: var(--text);
+}
+.idp-conf {
+  padding: .1rem .45rem; border-radius: var(--radius-xs);
+  font-size: .7rem; font-weight: 600; text-transform: capitalize;
+  background: var(--surface-raised); color: var(--text-muted); border: 1px solid var(--line);
+}
+.idp-conf.high   { background: var(--green-light); color: var(--green-dark); }
+.idp-conf.medium { background: var(--orange-light); color: #92400E; }
+.idp-conf.low    { background: var(--red-light); color: var(--red); }
+
+.idp-rows { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.idp-row {
+  display: grid; grid-template-columns: auto 8.5rem 1fr; align-items: baseline; gap: .6rem;
+  padding: .55rem .7rem; cursor: pointer;
+  border-bottom: 1px solid var(--line-subtle);
+  font-size: .8438rem; line-height: 1.45;
+}
+.idp-row:last-child { border-bottom: none; }
+.idp-row:hover { background: var(--surface-sunken); }
+.idp-row.clash { background: var(--orange-light); }
+.idp-check { width: 15px; height: 15px; margin: 0; accent-color: var(--blue); cursor: pointer; }
+.idp-key { font-weight: 500; color: var(--text-muted); }
+.idp-val { font-weight: 600; color: var(--text); word-break: break-word; }
+.idp-clash {
+  grid-column: 3; font-size: .75rem; font-weight: 500; color: #92400E;
+}
+.idp-note {
+  display: flex; align-items: flex-start; gap: .4rem;
+  margin-top: .7rem; font-size: .8125rem; line-height: 1.55; color: var(--text-muted);
+}
+.idp-note .ic { flex: none; margin-top: .15em; }
+
+@media (max-width: 620px) {
+  .idp-row { grid-template-columns: auto 1fr; }
+  .idp-clash { grid-column: 2; }
+}
