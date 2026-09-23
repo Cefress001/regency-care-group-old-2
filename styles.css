@@ -484,6 +484,15 @@ footer { background: var(--dark); color: rgba(255,255,255,.5); padding: 3rem 0; 
 }
 .tk-brand .logo { font-size: 1.05rem; font-weight: 600; letter-spacing: -.018em; color: var(--white); }
 .tk-brand .tagline { font-size: .72rem; color: rgba(255,255,255,.4); margin-top: .2rem; }
+/* Only rendered for a Pro licence — the gate's inline rule hides it otherwise. */
+.tk-plan-badge {
+  display: inline-flex; align-items: center; gap: .3rem; margin-top: .55rem;
+  padding: .15rem .45rem; border-radius: var(--radius-xs);
+  background: rgba(16,185,129,.14); color: #6ee7b7;
+  border: 1px solid rgba(16,185,129,.25);
+  font-size: .68rem; font-weight: 600; letter-spacing: .01em;
+}
+.tk-plan-badge .ic { width: .85em; height: .85em; }
 .tk-nav { padding: .6rem 0; flex: 1; overflow-y: auto; background: transparent; position: static; border-bottom: none; backdrop-filter: none; }
 .tk-nav-section { padding: .9rem 1.25rem .3rem; font-size: .6875rem; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,.34); }
 .tk-nav-item {
@@ -1519,3 +1528,26 @@ h1 > .ic, h2 > .ic, h3 > .ic, h4 > .ic { width: .85em; height: .85em; opacity: .
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Card prose and inline result notes ──────────────────────────────────
+   .card-lede explains what a card is for above its controls; .card-foot is the
+   quiet line under them. .backup-note is the after-the-fact result of an action
+   that has no output panel of its own — it borrows the callout colours rather
+   than inventing new ones. */
+.card-lede {
+  margin: 0 0 1rem; max-width: 62ch;
+  font-size: .875rem; line-height: 1.6; color: var(--text-muted);
+}
+.card-foot {
+  margin: .85rem 0 0;
+  font-size: .8125rem; color: var(--text-subtle);
+}
+.backup-note {
+  display: flex; align-items: flex-start; gap: .45rem;
+  margin-top: .9rem; padding: .6rem .75rem;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  font-size: .8438rem; line-height: 1.5;
+}
+.backup-note .ic { flex: none; margin-top: .15em; }
+.backup-note.ok  { background: var(--green-light); border-color: var(--line); color: var(--green-dark); }
+.backup-note.err { background: var(--red-light);   border-color: var(--line); color: var(--red); }

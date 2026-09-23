@@ -46,10 +46,19 @@
   .sk-gate-alt:hover { text-decoration: underline; }
   .sk-gate-err { color: #fca5a5; font-size: .85rem; min-height: 20px; margin-top: 10px; }
   .sk-gate-buy { display: block; margin-top: 18px; color: #94a3b8; font-size: .85rem; }
+
+  /* Pro gating. Anything marked data-plan="pro" is present in the markup for every
+     licence but only displayed for a Pro one. Inline here, beside the lock CSS, so a
+     Pro panel never paints for a free licence before a stylesheet arrives to hide it.
+     This is a UI convention, not entitlement — there is no server to enforce against. */
+  html:not([data-plan="pro"]) [data-plan="pro"] { display: none !important; }
 </style>
 <script>
 (function () {
-  var CODE = '199400';
+  // Access code -> plan. 'free' is the $49 consumer licence; 'pro' additionally
+  // unlocks everything marked data-plan="pro". A code is matched case-insensitively
+  // after trimming, so a pasted receipt line still works.
+  var CODES = { '199400': 'free', 'SKPRO500': 'pro' };
 
   // Owner / test sign-in. There is no SellerKit Pro server, so this is verified in the
   // browser and the source carries a PBKDF2-SHA256 digest rather than the password
@@ -60,28 +69,58 @@
   var SALT = 'sellerkit-gate-v1';
   var ITER = 150000;
   var LOGINS = {
-    'jonase01': '0f59c5a4ce583d402223dde110c4eb270b68ef4138060ce08c25ce07eaa3a569'
+    'jonase01': { h: '0f59c5a4ce583d402223dde110c4eb270b68ef4138060ce08c25ce07eaa3a569', plan: 'pro' }
   };
 
-  var granted = false;
-  try { granted = localStorage.getItem('sk_access') === 'granted'; } catch (e) {}
+  var granted = false, plan = 'free';
+  try {
+    granted = localStorage.getItem('sk_access') === 'granted';
+    // Licences bought before the Pro tier existed carry no sk_plan. They are 'free'.
+    if (localStorage.getItem('sk_plan') === 'pro') plan = 'pro';
+  } catch (e) {}
   var qs = new URLSearchParams(location.search);
+
+  // Look a code up in CODES, tolerating the whitespace and case a pasted receipt
+  // line carries. Returns 'free', 'pro' or null when the code is not one of ours.
+  function planFor(raw) {
+    var key = (raw || '').trim().toUpperCase();
+    var hit = Object.keys(CODES).filter(function (c) { return c.toUpperCase() === key; })[0];
+    return hit ? CODES[hit] : null;
+  }
 
   // ?lock=1 puts the gate back. Once access sticks on a device there is otherwise no
   // way to see the locked state or re-walk the purchase flow without clearing storage
-  // by hand, which is exactly what a test account needs to do repeatedly.
+  // by hand, which is exactly what a test account needs to do repeatedly. It clears
+  // the plan too, so the next unlock re-establishes the tier rather than inheriting it.
   if (qs.get('lock')) {
     granted = false;
-    try { localStorage.removeItem('sk_access'); } catch (e) {}
-  } else if ((qs.get('access') || '').trim().toUpperCase() === CODE) {
-    granted = true;
-    try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
+    plan = 'free';
+    try { localStorage.removeItem('sk_access'); localStorage.removeItem('sk_plan'); } catch (e) {}
+  } else {
+    var viaUrl = planFor(qs.get('access'));
+    if (viaUrl) {
+      granted = true;
+      plan = viaUrl;
+      try {
+        localStorage.setItem('sk_access', 'granted');
+        localStorage.setItem('sk_plan', viaUrl);
+      } catch (e) {}
+    }
   }
   if (!granted) document.documentElement.classList.add('sk-locked');
+  // The plan drives visibility of every data-plan="pro" element. It is set here, in
+  // the same inline block as the gate, so a Pro panel never paints for a free licence
+  // before a later stylesheet hides it.
+  document.documentElement.setAttribute('data-plan', granted ? plan : 'free');
 
   // Unlock still works for the session when localStorage throws (private browsing).
-  function grant() {
-    try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
+  function grant(asPlan) {
+    var p = asPlan === 'pro' ? 'pro' : 'free';
+    try {
+      localStorage.setItem('sk_access', 'granted');
+      localStorage.setItem('sk_plan', p);
+    } catch (e) {}
+    document.documentElement.setAttribute('data-plan', p);
     document.documentElement.classList.remove('sk-locked');
   }
   function err(msg) { document.getElementById('sk-err').textContent = msg; }
@@ -95,12 +134,12 @@
   };
 
   window.skUnlock = function () {
-    var entered = document.getElementById('sk-code').value.trim().toUpperCase();
-    if (entered !== CODE) {
+    var entered = planFor(document.getElementById('sk-code').value);
+    if (!entered) {
       err("That code isn't right — check your receipt email.");
       return;
     }
-    grant();
+    grant(entered);
   };
 
   window.skLogin = function () {
@@ -129,7 +168,8 @@
         var hex = Array.prototype.map.call(new Uint8Array(bits), function (b) {
           return ('0' + b.toString(16)).slice(-2);
         }).join('');
-        if (LOGINS[user] === hex) { grant(); return; }
+        var rec = LOGINS[user];
+        if (rec && rec.h === hex) { grant(rec.plan); return; }
         err('That username and password do not match.');
       })
       .catch(function () {
@@ -189,6 +229,9 @@
     <div class="tk-brand">
       <a href="index.html" class="logo">Seller<span>Kit</span><span class="logo-pro">Pro</span></a>
       <div class="tagline">Your selling toolkit</div>
+      <div class="tk-plan-badge" data-plan="pro">
+        <svg class="ic" aria-hidden="true"><use href="#i-store"/></svg> Business licence
+      </div>
     </div>
     <nav class="tk-nav">
       <div class="tk-nav-section">Overview</div>
@@ -371,6 +414,23 @@
         <h3>All Items</h3>
         <div id="it-list"></div>
         <div class="empty-hint" id="it-list-empty">Nothing here yet.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg> Backup &amp; restore</h3>
+        <p class="card-lede">
+          Everything you enter lives in this browser. Clearing your history, switching to a new
+          computer, or using a different browser all start you from nothing. Save a backup file and
+          you can restore the whole workspace anywhere — every item, every tool's inputs, and your
+          sale tracker.
+        </p>
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="exportWorkspace()"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Save backup file</button>
+          <button class="btn btn-outline" onclick="document.getElementById('it-restore-file').click()"><svg class="ic" aria-hidden="true"><use href="#i-rotate-ccw"/></svg> Restore from backup</button>
+          <input type="file" id="it-restore-file" accept="application/json,.json" style="display:none;" onchange="importWorkspaceFile(this)">
+        </div>
+        <div class="backup-note" id="it-backup-note" style="display:none;"></div>
+        <p class="card-foot">Your AI key is never written to the backup file.</p>
       </div>
     </div>
 
@@ -2274,6 +2334,15 @@ function paletteKey(e) {
 // ════════════════════════════════
 // Every tool's inputs live inside the active item, so switching items swaps the
 // whole workspace. Adding an input to a form means adding its ID to TOOL_FIELDS.
+// ── Plan ───────────────────────────────────────────────────────────────
+// The gate wrote data-plan onto <html> before this script ran. CSS does the hiding;
+// skIsPro() is for the handful of places that have to branch in JavaScript instead.
+// It reads the attribute rather than localStorage so it agrees with what is on screen
+// even when storage threw.
+function skIsPro() {
+  return document.documentElement.getAttribute('data-plan') === 'pro';
+}
+
 const TOOL_FIELDS = {
   pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category'],
   tg: ['tg-item','tg-brand','tg-model','tg-condition','tg-cat','tg-feature'],
@@ -2673,6 +2742,119 @@ function downloadCompleteListing() {
   const it = activeItem();
   const slug = (it.name || 'listing').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'listing';
   downloadFile(`${slug}-listing.txt`, 'text/plain;charset=utf-8', text);
+}
+
+// ── Backup and restore ─────────────────────────────────────────────────
+// Everything lives in this browser's localStorage, so a cleared cache is a total
+// loss and a new laptop starts empty. One file fixes both.
+//
+// The AI config (sk_ai_cfg) is deliberately NOT in the backup: it holds the user's
+// own provider key, and a backup file is the sort of thing people email themselves
+// or drop in a shared folder. Losing a key is a re-paste; leaking one costs money.
+const BACKUP_KIND = 'sellerkit-workspace';
+const BACKUP_VERSION = 1;
+
+function exportWorkspace() {
+  let flow = null, plan = 'free';
+  try { flow = JSON.parse(localStorage.getItem('sk_flow') || 'null'); } catch(e) {}
+  try { plan = localStorage.getItem('sk_plan') || 'free'; } catch(e) {}
+
+  const payload = {
+    kind: BACKUP_KIND,
+    version: BACKUP_VERSION,
+    exportedAt: new Date().toISOString(),
+    plan: plan,
+    items: loadItems(),
+    activeItemId: getActiveId() || null,
+    tracker: loadTracker(),
+    flow: flow
+  };
+  const stamp = new Date().toISOString().split('T')[0];
+  downloadFile('sellerkit-backup-' + stamp + '.json', 'application/json;charset=utf-8',
+               JSON.stringify(payload, null, 2));
+  backupNote('Saved ' + payload.items.length + ' item' + (payload.items.length === 1 ? '' : 's') +
+             ' and ' + payload.tracker.length + ' tracker row' +
+             (payload.tracker.length === 1 ? '' : 's') + '.', false);
+}
+
+function backupNote(msg, isError) {
+  const el = document.getElementById('it-backup-note');
+  if (!el) return;
+  el.innerHTML = (isError ? ic('triangle-alert') : ic('circle-check')) + ' ' + escHtml(msg);
+  el.className = 'backup-note' + (isError ? ' err' : ' ok');
+  el.style.display = 'flex';
+}
+
+function importWorkspaceFile(input) {
+  const file = (input.files || [])[0];
+  input.value = '';                 // so re-picking the same file fires onchange again
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(reader.result); }
+    catch(e) { backupNote('That file is not valid JSON. Pick the .json file the Save button produced.', true); return; }
+    applyRestore(data);
+  };
+  reader.onerror = () => backupNote('That file could not be read.', true);
+  reader.readAsText(file);
+}
+
+function applyRestore(data) {
+  if (!data || data.kind !== BACKUP_KIND || !Array.isArray(data.items)) {
+    backupNote('That JSON is not a SellerKit backup. Pick the file the Save button produced.', true);
+    return;
+  }
+  // A newer file may carry fields this build does not know. Restoring it is still
+  // better than refusing, so warn rather than stop.
+  const newer = Number(data.version) > BACKUP_VERSION;
+
+  const existing = loadItems();
+  const incoming = data.items.filter(i => i && i.id);
+  const mode = existing.length
+    ? (confirm('Restore ' + incoming.length + ' item' + (incoming.length === 1 ? '' : 's') + ' from this backup?\n\n' +
+               'OK  — merge into your ' + existing.length + ' current item' + (existing.length === 1 ? '' : 's') + '\n' +
+               'Cancel — replace everything with the backup')
+        ? 'merge' : 'replace')
+    : 'replace';
+
+  let items, added = 0;
+  if (mode === 'merge') {
+    const seen = new Set(existing.map(i => i.id));
+    const fresh = incoming.filter(i => !seen.has(i.id));
+    added = fresh.length;
+    items = existing.concat(fresh);
+  } else {
+    items = incoming;
+    added = incoming.length;
+  }
+  saveItems(items);
+
+  if (Array.isArray(data.tracker)) {
+    if (mode === 'merge') {
+      const seen = new Set(loadTracker().map(t => t.id));
+      saveTracker(loadTracker().concat(data.tracker.filter(t => t && !seen.has(t.id))));
+    } else {
+      saveTracker(data.tracker);
+    }
+  }
+  if (mode === 'replace' && data.flow) {
+    try { localStorage.setItem('sk_flow', JSON.stringify(data.flow)); } catch(e) {}
+  }
+
+  // Point at something that exists, whichever branch ran.
+  const wanted = items.find(i => i.id === data.activeItemId) || items[0];
+  setActiveId(wanted ? wanted.id : null);
+
+  clearAllTools();
+  if (wanted) applyItem(wanted);
+  renderItemForm();
+  renderItemList();
+  renderItemBar();
+  renderTracker();
+  backupNote((mode === 'merge' ? 'Merged ' : 'Restored ') + added + ' item' + (added === 1 ? '' : 's') + '.' +
+             (newer ? ' The file came from a newer version — anything this build does not understand was kept as-is.' : ''),
+             false);
 }
 
 // One-time move from the old single-item layout (sk_pc, sk_tg, … sk_photos).
