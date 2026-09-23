@@ -262,6 +262,17 @@
     h1 > .ic, h2 > .ic, h3 > .ic { width: .85em; height: .85em; opacity: .8; margin-right: .1em; }
     .lock-badge .ic, .trust-badge .ic { margin-right: .3em; }
     .guarantee-box .g-icon .ic { width: 1.5rem; height: 1.5rem; }
+  
+    /* Honour the OS-level "reduce motion" setting. Near-zero rather than none,
+       so anything animating into view still settles on its final frame. */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 <body>

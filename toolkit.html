@@ -1802,6 +1802,29 @@
   </div>
 </div>
 
+<!-- ══ PHOTO LIGHTBOX — opened from the AI Vision thumbnails. Markup and styles
+     live here rather than being built at runtime, so nothing is appended to the
+     document each time it opens. ══ -->
+<div class="ph-lb" id="ph-lb" role="dialog" aria-modal="true" aria-label="Photo viewer"
+     hidden onclick="if (event.target === this) phZoomClose()">
+  <button class="ph-lb-btn ph-lb-close" id="ph-lb-close" onclick="phZoomClose()" aria-label="Close photo viewer">
+    <svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>
+  </button>
+  <button class="ph-lb-btn ph-lb-nav prev" id="ph-lb-prev" onclick="phZoomStep(-1)" aria-label="Previous photo">
+    <svg class="ic" aria-hidden="true"><use href="#i-chevron-left"/></svg>
+  </button>
+  <figure class="ph-lb-fig">
+    <img id="ph-lb-img" alt="">
+    <figcaption class="ph-lb-cap">
+      <span id="ph-lb-name"></span>
+      <span id="ph-lb-count" class="ph-lb-count"></span>
+    </figcaption>
+  </figure>
+  <button class="ph-lb-btn ph-lb-nav next" id="ph-lb-next" onclick="phZoomStep(1)" aria-label="Next photo">
+    <svg class="ic" aria-hidden="true"><use href="#i-chevron-right"/></svg>
+  </button>
+</div>
+
 <script>
 // ════════════════════════════════
 // Navigation
@@ -3386,13 +3409,84 @@ function renderShots() {
   const wrap = document.getElementById('ph-thumbs');
   wrap.innerHTML = _phShots.map((s, i) =>
     '<div class="ph-thumb">' +
-      '<img src="' + s.url + '" alt="' + escHtml(s.name) + '">' +
+      '<button class="ph-thumb-open" onclick="phZoom(' + i + ')" ' +
+        'aria-label="View photo ' + (i + 1) + ' full size">' +
+        '<img src="' + s.url + '" alt="' + escHtml(s.name) + '">' +
+      '</button>' +
       '<span class="ph-thumb-n">' + (i + 1) + '</span>' +
       '<button class="ph-thumb-x" onclick="phRemoveShot(' + i + ')" title="Remove this photo">×</button>' +
     '</div>'
   ).join('');
   wrap.style.display = _phShots.length ? 'flex' : 'none';
   document.getElementById('ph-clear-btn').style.display = _phShots.length ? 'inline-flex' : 'none';
+}
+
+// ── Photo lightbox ──────────────────────────────────────────────────────────
+// The seller uploads photos to have them graded, so being able to actually look
+// at one full size matters. State is just an index into _phShots; the markup is
+// static and lives at the bottom of the page.
+let _phZoomIdx = -1;
+let _phZoomReturn = null;   // the thumbnail that opened it, so focus can go back
+
+function phZoom(i) {
+  if (!_phShots[i]) return;
+  _phZoomIdx = i;
+  _phZoomReturn = document.activeElement;
+  document.getElementById('ph-lb').hidden = false;
+  document.body.classList.add('ph-lb-open');
+  phZoomPaint();
+  document.getElementById('ph-lb-close').focus();
+}
+
+function phZoomPaint() {
+  const s = _phShots[_phZoomIdx];
+  if (!s) { phZoomClose(); return; }
+  const img = document.getElementById('ph-lb-img');
+  img.src = s.url;
+  img.alt = s.name || 'Uploaded photo';
+  document.getElementById('ph-lb-name').textContent = s.name || '';
+  document.getElementById('ph-lb-count').textContent = (_phZoomIdx + 1) + ' of ' + _phShots.length;
+  const many = _phShots.length > 1;
+  document.getElementById('ph-lb-prev').hidden = !many;
+  document.getElementById('ph-lb-next').hidden = !many;
+}
+
+function phZoomStep(d) {
+  if (!_phShots.length) { phZoomClose(); return; }
+  _phZoomIdx = (_phZoomIdx + d + _phShots.length) % _phShots.length;
+  phZoomPaint();
+}
+
+function phZoomClose() {
+  const lb = document.getElementById('ph-lb');
+  if (!lb || lb.hidden) return;
+  lb.hidden = true;
+  document.body.classList.remove('ph-lb-open');
+  // Drop the src so a large data: URL is not held by a hidden element.
+  document.getElementById('ph-lb-img').removeAttribute('src');
+  if (_phZoomReturn && document.contains(_phZoomReturn)) _phZoomReturn.focus();
+  _phZoomReturn = null;
+  _phZoomIdx = -1;
+}
+
+// Keyboard handling for the open lightbox. Returns true when it consumed the
+// event, so the command palette's own Escape handling does not also fire.
+function phZoomKey(e) {
+  const lb = document.getElementById('ph-lb');
+  if (!lb || lb.hidden) return false;
+  if (e.key === 'Escape')      { e.preventDefault(); phZoomClose(); return true; }
+  if (e.key === 'ArrowLeft')   { e.preventDefault(); phZoomStep(-1); return true; }
+  if (e.key === 'ArrowRight')  { e.preventDefault(); phZoomStep(1);  return true; }
+  if (e.key === 'Tab') {
+    // Trap focus inside the dialog — it is modal, so Tab must not reach the page.
+    const f = [...lb.querySelectorAll('button')].filter(b => !b.hidden);
+    if (!f.length) return true;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    return true;
+  }
+  return false;
 }
 
 function phRemoveShot(i) { _phShots.splice(i, 1); renderShots(); }
@@ -4662,6 +4756,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ⌘K / Ctrl+K opens the palette from anywhere; Escape closes it from anywhere.
   document.addEventListener('keydown', e => {
+    // The lightbox is modal, so it gets first refusal on every key.
+    if (phZoomKey(e)) return;
     if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
       document.getElementById('cmdk').style.display === 'flex' ? closePalette() : openPalette();
