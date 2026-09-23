@@ -782,6 +782,7 @@
         <div class="empty-hint" id="pc-empty">Fill in retail price, condition and demand — then hit Calculate.</div>
 
         <div id="pc-results" style="display:none;">
+          <div class="price-basis" id="pc-basis"></div>
           <div class="results-row">
             <div class="result-chip ideal">
               <div class="rc-label">Ask First</div>
@@ -832,6 +833,30 @@
             <span class="tip-icon"><svg class="ic" aria-hidden="true"><use href="#i-lightbulb"/></svg></span>
             <div class="tip-body"><h4>Category Tip</h4><p id="pc-tip-text"></p></div>
           </div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-search-check"/></svg> Sold comps — what it actually sold for</h3>
+        <p class="card-lede">
+          The calculator above is a formula. This is data. Search your platform for the same item,
+          filter to <strong>sold</strong> listings, and paste the prices in — one per line, or with a
+          $ in front of each. Three or more and they take over the pricing, because what similar
+          items really sold for beats any multiplier.
+        </p>
+        <div class="form-row">
+          <label>Sold prices <span style="font-weight:400;color:var(--gray-400)">— paste as many as you can find, in similar condition</span></label>
+          <textarea id="pc-comps" rows="4" placeholder="$45&#10;$52&#10;$48&#10;$60" oninput="calcComps(); saveLS('pc')"></textarea>
+        </div>
+        <div id="pc-comps-out" style="display:none;">
+          <div class="comps-chips" id="pc-comps-chips"></div>
+          <div class="comps-stats">
+            <div class="comps-stat"><span class="cs-label">Lowest</span><span class="cs-val tnum" id="pc-comps-low">—</span></div>
+            <div class="comps-stat mid"><span class="cs-label">Median</span><span class="cs-val tnum" id="pc-comps-med">—</span></div>
+            <div class="comps-stat"><span class="cs-label">Highest</span><span class="cs-val tnum" id="pc-comps-high">—</span></div>
+            <div class="comps-stat"><span class="cs-label">Comps</span><span class="cs-val tnum" id="pc-comps-n">—</span></div>
+          </div>
+          <div class="comps-note" id="pc-comps-note"></div>
         </div>
       </div>
 
@@ -2344,7 +2369,7 @@ function skIsPro() {
 }
 
 const TOOL_FIELDS = {
-  pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category'],
+  pc: ['pc-name','pc-retail','pc-condition','pc-demand','pc-category','pc-comps'],
   tg: ['tg-item','tg-brand','tg-model','tg-condition','tg-cat','tg-feature'],
   db: ['db-item','db-brand','db-model','db-condition','db-features','db-dims','db-includes','db-reason','db-pickup','db-bundle'],
   ai: ['ai-item','ai-brand','ai-condition','ai-price','ai-details'],
@@ -2510,7 +2535,7 @@ function applyItem(it) {
   const sdDate = document.getElementById('sd-date');
   if (sdDate && !sdDate.value) sdDate.value = new Date().toISOString().split('T')[0];
 
-  calcPrice();
+  calcComps();          // rebuilds the comps panel, then calls calcPrice itself
   calcPriceDrop();
   if (document.getElementById('ms-category').value) { loadMeasurements(); restoreMeasurements(); }
   if (document.getElementById('ph-category').value) loadPhotoChecklist();
@@ -2525,6 +2550,8 @@ function clearAllTools() {
   document.getElementById('ph-list').innerHTML = '';
   document.getElementById('ph-list').style.display = 'none';
   document.getElementById('ph-score').style.display = 'none';
+  const compsOut = document.getElementById('pc-comps-out');
+  if (compsOut) compsOut.style.display = 'none';
   calcPrice();
   calcPriceDrop();
 }
@@ -2894,6 +2921,78 @@ function migrateLegacyItem() {
 // ════════════════════════════════
 // 1. Pricing Calculator
 // ════════════════════════════════
+// ── Sold comps ─────────────────────────────────────────────────────────
+// retail x condition x demand is a starting guess. What the same item actually
+// sold for is the market. With enough comps the market wins, and the three prices
+// come straight out of the data — median to ask, the low comp as the floor — with
+// no multiplier invented anywhere.
+const COMPS_MIN = 3;          // below this the sample is too thin to price off
+
+// People paste messy text: "Sold Sep 12 · $45", "45.00", "2 bids  $60".
+// Taking every number would read dates and bid counts as prices, so:
+//   - if the text carries any $, only $-prefixed numbers count;
+//   - otherwise take the LAST number on each line, which is where a price sits.
+// Whatever is parsed is echoed back as chips, so a misread is visible rather than
+// silently folded into the price.
+function parseComps(text) {
+  const raw = String(text || '');
+  if (!raw.trim()) return [];
+  const out = [];
+  const num = tok => parseFloat(String(tok).replace(/[$,\s]/g, ''));
+  if (raw.indexOf('$') !== -1) {
+    (raw.match(/\$\s*\d[\d,]*(?:\.\d+)?/g) || []).forEach(t => out.push(num(t)));
+  } else {
+    raw.split(/[\n;]+/).forEach(line => {
+      const hits = line.match(/\d[\d,]*(?:\.\d+)?/g);
+      if (hits && hits.length) out.push(num(hits[hits.length - 1]));
+    });
+  }
+  return out.filter(n => isFinite(n) && n > 0 && n < 1000000).sort((a, b) => a - b);
+}
+
+function compStats(values) {
+  if (!values.length) return null;
+  const mid = Math.floor(values.length / 2);
+  const median = values.length % 2 ? values[mid] : (values[mid - 1] + values[mid]) / 2;
+  return { n: values.length, low: values[0], high: values[values.length - 1], median: median, values: values };
+}
+
+const money = n => '$' + Math.round(n).toLocaleString();
+
+function calcComps() {
+  const el = document.getElementById('pc-comps');
+  const out = document.getElementById('pc-comps-out');
+  if (!el || !out) return null;
+  const st = compStats(parseComps(el.value));
+  if (!st) { out.style.display = 'none'; calcPrice(); return null; }
+
+  document.getElementById('pc-comps-chips').innerHTML =
+    st.values.map(v => '<span class="comp-chip tnum">' + money(v) + '</span>').join('');
+  document.getElementById('pc-comps-low').textContent  = money(st.low);
+  document.getElementById('pc-comps-med').textContent  = money(st.median);
+  document.getElementById('pc-comps-high').textContent = money(st.high);
+  document.getElementById('pc-comps-n').textContent    = st.n;
+
+  const note = document.getElementById('pc-comps-note');
+  if (st.n < COMPS_MIN) {
+    note.className = 'comps-note thin';
+    note.innerHTML = ic('info') + ' ' + escHtml(
+      st.n + ' comp' + (st.n === 1 ? '' : 's') + ' is too thin to price off — find at least ' +
+      COMPS_MIN + '. Until then the formula above sets your price.');
+  } else {
+    const spread = st.low > 0 ? Math.round(((st.high - st.low) / st.low) * 100) : 0;
+    note.className = 'comps-note';
+    note.innerHTML = ic('circle-check') + ' ' + escHtml(
+      'Pricing from these ' + st.n + ' comps.' +
+      (spread > 80
+        ? ' They are spread ' + spread + '% apart, so condition or model probably differs between them — drop the ones that are not really your item.'
+        : ' Ask sits at the median, the floor at the lowest one that actually sold.'));
+  }
+  out.style.display = 'block';
+  calcPrice();
+  return st;
+}
+
 function calcPrice(fromButton) {
   const retail = parseFloat(document.getElementById('pc-retail').value);
   const condition = parseFloat(document.getElementById('pc-condition').value);
@@ -2901,7 +3000,14 @@ function calcPrice(fromButton) {
   const category = document.getElementById('pc-category').value;
   const results = document.getElementById('pc-results');
   const empty = document.getElementById('pc-empty');
-  if (!retail || !condition || !demand) {
+
+  // Enough comps and the formula is not needed at all — a reseller pricing someone
+  // else's trade-in often has no idea what it cost new, and should not have to guess.
+  const compsEl = document.getElementById('pc-comps');
+  const comps = compsEl ? compStats(parseComps(compsEl.value)) : null;
+  const byComps = !!comps && comps.n >= COMPS_MIN;
+
+  if (!byComps && (!retail || !condition || !demand)) {
     results.style.display = 'none';
     empty.style.display = 'block';
     if (fromButton) {
@@ -2909,16 +3015,38 @@ function calcPrice(fromButton) {
       if (!retail) missing.push('retail price');
       if (!condition) missing.push('condition');
       if (!demand) missing.push('local demand');
-      empty.textContent = 'Still need: ' + missing.join(', ') + '.';
+      empty.textContent = 'Still need: ' + missing.join(', ') +
+        ' — or paste ' + COMPS_MIN + ' sold comps below and none of it is needed.';
       empty.classList.add('warn');
     }
     return;
   }
   empty.style.display = 'none';
   empty.classList.remove('warn');
-  const ideal = Math.round(retail * condition * demand / 5) * 5;
-  const quickflip = Math.round(ideal * 0.80 / 5) * 5;
-  const floor = Math.round(ideal * 0.65 / 5) * 5;
+
+  const to5 = n => Math.max(1, Math.round(n / 5) * 5);
+  let ideal, quickflip, floor;
+  if (byComps) {
+    // Straight off the data: ask at the median, floor at the lowest that sold, quick
+    // flip halfway between. No multipliers.
+    ideal = to5(comps.median);
+    floor = to5(comps.low);
+    quickflip = to5((comps.low + comps.median) / 2);
+  } else {
+    ideal = Math.round(retail * condition * demand / 5) * 5;
+    quickflip = Math.round(ideal * 0.80 / 5) * 5;
+    floor = Math.round(ideal * 0.65 / 5) * 5;
+  }
+
+  const basis = document.getElementById('pc-basis');
+  if (basis) {
+    basis.className = 'price-basis' + (byComps ? ' from-comps' : '');
+    basis.innerHTML = byComps
+      ? ic('search-check') + ' <strong>From ' + comps.n + ' sold comps</strong> — median ' +
+        escHtml(money(comps.median)) + ', range ' + escHtml(money(comps.low)) + '–' + escHtml(money(comps.high))
+      : ic('info') + ' <strong>From the formula</strong> — retail x condition x demand. ' +
+        'Paste ' + COMPS_MIN + ' sold comps below to price off real sales instead.';
+  }
   document.getElementById('pc-ideal').textContent = '$' + ideal.toLocaleString();
   document.getElementById('pc-quickflip').textContent = '$' + quickflip.toLocaleString();
   document.getElementById('pc-floor').textContent = '$' + floor.toLocaleString();
@@ -2959,6 +3087,9 @@ function calcPrice(fromButton) {
     '0.35_1.15':'14–21 days','0.35_1.0':'14–28 days','0.35_0.85':'21–35 days',
     '0.20_1.15':'21–30 days','0.20_1.0':'30–45 days','0.20_0.85':'45+ days'
   };
+  if (!condition || !demand) {
+    document.getElementById('pc-selltime').style.display = 'none';
+  } else {
   const stKey = condition + '_' + demand;
   const stVal = sellTimes[stKey] || '7–21 days';
   const stNotes = {
@@ -2978,6 +3109,7 @@ function calcPrice(fromButton) {
   document.getElementById('pc-st-days').textContent = stVal;
   document.getElementById('pc-st-note').textContent = stNotes[stVal] || 'Monitor interest after the first week.';
   document.getElementById('pc-selltime').style.display = 'flex';
+  }
   // Comparables link
   const itemName = document.getElementById('pc-name').value.trim();
   if (itemName) {
@@ -3015,10 +3147,11 @@ function renderFeeBreakdown(price) {
 }
 
 function resetPricing() {
-  ['pc-name','pc-retail','pc-condition','pc-demand','pc-category','pc-offer-in','pc-offer-floor']
+  ['pc-name','pc-retail','pc-condition','pc-demand','pc-category','pc-comps','pc-offer-in','pc-offer-floor']
     .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   document.getElementById('pc-results').style.display = 'none';
   document.getElementById('pc-offer-result').style.display = 'none';
+  document.getElementById('pc-comps-out').style.display = 'none';
   const empty = document.getElementById('pc-empty');
   empty.style.display = 'block';
   empty.classList.remove('warn');
