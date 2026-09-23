@@ -484,6 +484,15 @@ footer { background: var(--dark); color: rgba(255,255,255,.5); padding: 3rem 0; 
 }
 .tk-brand .logo { font-size: 1.05rem; font-weight: 600; letter-spacing: -.018em; color: var(--white); }
 .tk-brand .tagline { font-size: .72rem; color: rgba(255,255,255,.4); margin-top: .2rem; }
+/* Only rendered for a Pro licence — the gate's inline rule hides it otherwise. */
+.tk-plan-badge {
+  display: inline-flex; align-items: center; gap: .3rem; margin-top: .55rem;
+  padding: .15rem .45rem; border-radius: var(--radius-xs);
+  background: rgba(16,185,129,.14); color: #6ee7b7;
+  border: 1px solid rgba(16,185,129,.25);
+  font-size: .68rem; font-weight: 600; letter-spacing: .01em;
+}
+.tk-plan-badge .ic { width: .85em; height: .85em; }
 .tk-nav { padding: .6rem 0; flex: 1; overflow-y: auto; background: transparent; position: static; border-bottom: none; backdrop-filter: none; }
 .tk-nav-section { padding: .9rem 1.25rem .3rem; font-size: .6875rem; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,.34); }
 .tk-nav-item {
@@ -705,12 +714,45 @@ select { appearance: none; cursor: pointer; background-image: url("data:image/sv
   color: var(--gray-600); transition: var(--transition); font-family: inherit;
 }
 .print-btn:hover { background: var(--gray-100); }
+/* The listing sheet is hidden on screen and is the only thing on the page when
+   the sheet has been built. Printing anything else still falls through to the
+   panel rules below. */
+#print-sheet { display: none; }
+
 @media print {
   .tk-sidebar, .tk-nav-item, nav, .copy-btn-row, .print-btn, .btn, .panel-header .subtitle { display: none !important; }
   .tk-layout { grid-template-columns: 1fr; }
   .tk-main { background: white; }
   .tk-panel.active { padding: 0; }
   .tk-card { border: 1px solid #ccc; box-shadow: none; page-break-inside: avoid; }
+
+  /* Once printListingSheet() has filled it, the sheet replaces the page entirely
+     rather than trying to un-style the app around it. :has() is supported
+     everywhere this runs; without it the old whole-panel print still happens. */
+  body:has(#print-sheet:not(:empty)) > *:not(#print-sheet) { display: none !important; }
+  body:has(#print-sheet:not(:empty)) { background: #fff; }
+  #print-sheet:not(:empty) { display: block; color: #000; font-size: 11pt; line-height: 1.5; }
+
+  .ps-head { border-bottom: 2px solid #000; padding-bottom: .4rem; margin-bottom: 1rem; }
+  .ps-head h1 { font-size: 20pt; font-weight: 600; letter-spacing: -.02em; margin: 0; }
+  .ps-brand { font-size: 8.5pt; color: #555; margin-top: .15rem; }
+  .ps-price { margin: 0 0 1rem; }
+  .ps-price-val { display: block; font-size: 26pt; font-weight: 600; letter-spacing: -.03em; }
+  .ps-price-sub { display: block; font-size: 9.5pt; color: #444; }
+  #print-sheet h2 {
+    font-size: 11pt; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+    margin: 1.1rem 0 .35rem; color: #333;
+  }
+  #print-sheet p { margin: 0 0 .5rem; }
+  .ps-table { width: 100%; border-collapse: collapse; margin-bottom: .5rem; }
+  .ps-table th, .ps-table td {
+    text-align: left; padding: .28rem .5rem .28rem 0;
+    border-bottom: 1px solid #ddd; vertical-align: top;
+  }
+  .ps-table th { width: 11rem; font-weight: 500; color: #555; }
+  .ps-gaps { margin: 0; padding-left: 1.1rem; }
+  .ps-gaps li { margin-bottom: .2rem; }
+  .ps-foot { margin-top: 1.5rem; padding-top: .4rem; border-top: 1px solid #ddd; font-size: 8.5pt; color: #666; }
 }
 
 /* Keyword chips */
@@ -1518,4 +1560,234 @@ h1 > .ic, h2 > .ic, h3 > .ic, h4 > .ic { width: .85em; height: .85em; opacity: .
     transition-duration: .01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ── Card prose and inline result notes ──────────────────────────────────
+   .card-lede explains what a card is for above its controls; .card-foot is the
+   quiet line under them. .backup-note is the after-the-fact result of an action
+   that has no output panel of its own — it borrows the callout colours rather
+   than inventing new ones. */
+.card-lede {
+  margin: 0 0 1rem; max-width: 62ch;
+  font-size: .875rem; line-height: 1.6; color: var(--text-muted);
+}
+.card-foot {
+  margin: .85rem 0 0;
+  font-size: .8125rem; color: var(--text-subtle);
+}
+.backup-note {
+  display: flex; align-items: flex-start; gap: .45rem;
+  margin-top: .9rem; padding: .6rem .75rem;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  font-size: .8438rem; line-height: 1.5;
+}
+.backup-note .ic { flex: none; margin-top: .15em; }
+.backup-note.ok  { background: var(--green-light); border-color: var(--line); color: var(--green-dark); }
+.backup-note.err { background: var(--red-light);   border-color: var(--line); color: var(--red); }
+
+/* ── Sold comps ──────────────────────────────────────────────────────────
+   The chips echo back exactly which numbers were parsed out of the pasted text,
+   so a misread line is visible before it reaches the price rather than after. */
+.comps-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .85rem; }
+.comp-chip {
+  padding: .2rem .5rem; border-radius: var(--radius-xs);
+  background: var(--surface-raised); border: 1px solid var(--line);
+  font-size: .8125rem; font-weight: 600; color: var(--text);
+}
+.comps-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); overflow: hidden;
+}
+.comps-stat {
+  display: flex; flex-direction: column; gap: .1rem;
+  padding: .6rem .7rem; background: var(--surface);
+}
+.comps-stat.mid { background: var(--blue-light); }
+.cs-label { font-size: .7rem; font-weight: 500; color: var(--text-muted); letter-spacing: .01em; }
+.cs-val { font-size: 1.05rem; font-weight: 600; color: var(--text); }
+.comps-stat.mid .cs-val { color: var(--blue-dark); }
+.comps-note {
+  display: flex; align-items: flex-start; gap: .4rem;
+  margin-top: .75rem; font-size: .8125rem; line-height: 1.55; color: var(--green-dark);
+}
+.comps-note.thin { color: var(--text-muted); }
+.comps-note .ic { flex: none; margin-top: .15em; }
+
+/* Says which of the two bases produced the three prices above it. */
+.price-basis {
+  display: flex; align-items: center; gap: .4rem;
+  margin-bottom: .85rem; padding: .5rem .7rem;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--surface-sunken); color: var(--text-muted);
+  font-size: .8125rem; line-height: 1.45;
+}
+.price-basis.from-comps { background: var(--green-light); color: var(--green-dark); }
+.price-basis .ic { flex: none; }
+.price-basis strong { font-weight: 600; }
+
+@media (max-width: 620px) {
+  .comps-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Identify from a photo ───────────────────────────────────────────────
+   The review list is the safety rail on a model that will happily invent a model
+   number. Every row is a checkbox, and a row whose value would REPLACE something
+   already on the item arrives unticked and says what it would overwrite. */
+.idp-card { border-color: var(--line-strong); }
+.idp-review-head {
+  display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+  margin: 1.1rem 0 .6rem; font-size: .9rem; color: var(--text);
+}
+.idp-conf {
+  padding: .1rem .45rem; border-radius: var(--radius-xs);
+  font-size: .7rem; font-weight: 600; text-transform: capitalize;
+  background: var(--surface-raised); color: var(--text-muted); border: 1px solid var(--line);
+}
+.idp-conf.high   { background: var(--green-light); color: var(--green-dark); }
+.idp-conf.medium { background: var(--orange-light); color: #92400E; }
+.idp-conf.low    { background: var(--red-light); color: var(--red); }
+
+.idp-rows { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.idp-row {
+  display: grid; grid-template-columns: auto 8.5rem 1fr; align-items: baseline; gap: .6rem;
+  padding: .55rem .7rem; cursor: pointer;
+  border-bottom: 1px solid var(--line-subtle);
+  font-size: .8438rem; line-height: 1.45;
+}
+.idp-row:last-child { border-bottom: none; }
+.idp-row:hover { background: var(--surface-sunken); }
+.idp-row.clash { background: var(--orange-light); }
+.idp-check { width: 15px; height: 15px; margin: 0; accent-color: var(--blue); cursor: pointer; }
+.idp-key { font-weight: 500; color: var(--text-muted); }
+.idp-val { font-weight: 600; color: var(--text); word-break: break-word; }
+.idp-clash {
+  grid-column: 3; font-size: .75rem; font-weight: 500; color: #92400E;
+}
+.idp-note {
+  display: flex; align-items: flex-start; gap: .4rem;
+  margin-top: .7rem; font-size: .8125rem; line-height: 1.55; color: var(--text-muted);
+}
+.idp-note .ic { flex: none; margin-top: .15em; }
+
+@media (max-width: 620px) {
+  .idp-row { grid-template-columns: auto 1fr; }
+  .idp-clash { grid-column: 2; }
+}
+
+/* ── Tracker: profit column and the inline sold form ─────────────────────
+   Profit is the business-licence column. The sold form replaces two blocking
+   prompt() calls with one row of fields, so the fee quote is visible while the
+   seller is deciding rather than after they have committed. */
+.tr-profit { white-space: nowrap; }
+.tr-profit strong { display: block; font-weight: 600; }
+.tr-profit.pos strong { color: var(--green-dark); }
+.tr-profit.neg strong { color: var(--red); }
+.tr-profit-sub { display: block; font-size: .7rem; color: var(--text-subtle); }
+
+.ts-num.pos { color: var(--green-dark); }
+.ts-num.neg { color: var(--red); }
+
+.tr-soldrow > td { background: var(--surface-sunken); padding: .85rem .75rem; }
+.tr-soldform {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: .7rem; align-items: end;
+}
+.tr-soldform-actions { display: flex; gap: .4rem; }
+.tr-soldform-note {
+  margin-top: .6rem; font-size: .78rem; color: var(--text-subtle);
+}
+
+/* ── Max Offer ───────────────────────────────────────────────────────────
+   The headline is the whole answer, so it gets the weight. The lines under it
+   are the arithmetic that produced it, readable top to bottom like a receipt. */
+.so-headline {
+  margin: 1.2rem 0 1rem; padding: 1.1rem 1.2rem;
+  background: var(--green-light); border: 1px solid var(--line); border-radius: var(--radius);
+  text-align: center;
+}
+.so-headline-label {
+  font-size: .78rem; font-weight: 600; letter-spacing: .03em;
+  text-transform: uppercase; color: var(--green-dark);
+}
+.so-headline-val {
+  margin: .15rem 0 .35rem;
+  font-size: clamp(2rem, 5vw, 2.6rem); font-weight: 600; letter-spacing: -.028em;
+  color: var(--green-dark); line-height: 1.1;
+}
+.so-headline-val.bad { color: var(--red); font-size: clamp(1.4rem, 3.5vw, 1.8rem); }
+.so-headline-sub {
+  font-size: .8438rem; line-height: 1.5; color: var(--text-muted);
+  max-width: 46ch; margin: 0 auto;
+}
+
+.so-lines { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.so-line {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  padding: .5rem .75rem; font-size: .8438rem;
+  border-bottom: 1px solid var(--line-subtle);
+}
+.so-line:last-child { border-bottom: none; }
+.so-line span:first-child { color: var(--text-muted); }
+.so-line span:last-child { font-weight: 600; color: var(--text); }
+.so-line.sub { background: var(--surface-sunken); }
+.so-line.total { background: var(--surface-raised); }
+.so-line.total span { font-weight: 600; color: var(--text); }
+
+.so-walk, .so-velocity {
+  display: flex; align-items: flex-start; gap: .45rem;
+  margin-top: .8rem; padding: .6rem .75rem;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  font-size: .8125rem; line-height: 1.55;
+}
+.so-walk { background: var(--orange-light); color: #92400E; }
+.so-velocity { background: var(--blue-light); color: var(--blue-dark); }
+.so-walk .ic, .so-velocity .ic { flex: none; margin-top: .15em; }
+
+/* ── Inventory aging ─────────────────────────────────────────────────────
+   The four bands are a traffic light on cash: how many listings sit in each age,
+   and how much money is parked in them. */
+.aging-buckets {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; margin-bottom: 1.1rem;
+}
+.age-bucket {
+  padding: .85rem .9rem; border-radius: var(--radius);
+  border: 1px solid var(--line); background: var(--surface);
+}
+.age-bucket.ok   { background: var(--green-light);  border-color: var(--line); }
+.age-bucket.warn { background: var(--orange-light); }
+.age-bucket.bad  { background: var(--red-light); }
+.age-bucket.dead { background: var(--slate-3); }
+.age-n { font-size: 1.6rem; font-weight: 600; letter-spacing: -.02em; color: var(--text); line-height: 1.1; }
+.age-label { font-size: .78rem; font-weight: 500; color: var(--text-muted); margin-top: .1rem; }
+.age-capital { font-size: .72rem; color: var(--text-subtle); margin-top: .25rem; }
+
+.age-pill {
+  display: inline-block; padding: .12rem .4rem; border-radius: var(--radius-xs);
+  font-size: .75rem; font-weight: 600; white-space: nowrap;
+  background: var(--surface-raised); color: var(--text-muted); border: 1px solid var(--line);
+}
+.age-pill.ok   { background: var(--green-light);  color: var(--green-dark); }
+.age-pill.warn { background: var(--orange-light); color: #92400E; }
+.age-pill.bad  { background: var(--red-light);    color: var(--red); }
+.age-pill.dead { background: var(--slate-12);     color: var(--white); border-color: transparent; }
+.age-act { font-size: .8rem; color: var(--text-muted); line-height: 1.45; min-width: 16rem; }
+
+@media (max-width: 760px) {
+  .aging-buckets { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Net payout, surfaced wherever a price is printed ────────────────────
+   A price is not what you get. The result chips and the drop schedule now carry
+   what actually lands, on the platform chosen in the pricing tool. */
+.rc-net {
+  margin-top: .25rem; font-size: .72rem; font-weight: 600;
+  color: var(--green-dark); font-variant-numeric: tabular-nums;
+}
+.rc-net.none { color: var(--text-subtle); font-weight: 500; }
+.pd-net-none { font-size: .78rem; color: var(--text-subtle); }
+/* The row matching the chosen platform, so the number being used is obvious. */
+.fee-row.chosen {
+  background: var(--blue-light);
+  box-shadow: inset 2px 0 0 var(--blue);
 }
