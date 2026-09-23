@@ -1641,3 +1641,26 @@ h1 > .ic, h2 > .ic, h3 > .ic, h4 > .ic { width: .85em; height: .85em; opacity: .
   .idp-row { grid-template-columns: auto 1fr; }
   .idp-clash { grid-column: 2; }
 }
+
+/* ── Tracker: profit column and the inline sold form ─────────────────────
+   Profit is the business-licence column. The sold form replaces two blocking
+   prompt() calls with one row of fields, so the fee quote is visible while the
+   seller is deciding rather than after they have committed. */
+.tr-profit { white-space: nowrap; }
+.tr-profit strong { display: block; font-weight: 600; }
+.tr-profit.pos strong { color: var(--green-dark); }
+.tr-profit.neg strong { color: var(--red); }
+.tr-profit-sub { display: block; font-size: .7rem; color: var(--text-subtle); }
+
+.ts-num.pos { color: var(--green-dark); }
+.ts-num.neg { color: var(--red); }
+
+.tr-soldrow > td { background: var(--surface-sunken); padding: .85rem .75rem; }
+.tr-soldform {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: .7rem; align-items: end;
+}
+.tr-soldform-actions { display: flex; gap: .4rem; }
+.tr-soldform-note {
+  margin-top: .6rem; font-size: .78rem; color: var(--text-subtle);
+}

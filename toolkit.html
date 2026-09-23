@@ -1838,7 +1838,7 @@
     <div class="tk-panel tk-panel-wide" id="panel-tracker">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-chart-column"/></svg> Sale Tracker</h2>
-        <div class="subtitle">Track every item you list. Revenue totals, sell rates, and platform performance — all saved in your browser.</div>
+        <div class="subtitle">Track every item you list — revenue, sell rate, platform performance, and what you actually kept after cost, shipping and fees.</div>
       </div>
 
       <div class="tk-card">
@@ -1863,6 +1863,10 @@
             <label>Listed Price ($)</label>
             <input type="number" id="tr-listed" placeholder="200">
           </div>
+          <div class="form-row" data-plan="pro" style="margin:0;">
+            <label>What it cost you ($)</label>
+            <input type="number" id="tr-cost" placeholder="60">
+          </div>
           <div class="form-row" style="margin:0;">
             <label>Category</label>
             <select id="tr-cat">
@@ -1885,6 +1889,8 @@
       <div class="tracker-stats" id="tracker-stats">
         <div class="tracker-stat"><div class="ts-num" id="ts-total">0</div><div class="ts-label">Items Tracked</div></div>
         <div class="tracker-stat"><div class="ts-num" id="ts-sold">$0</div><div class="ts-label">Total Revenue</div></div>
+        <div class="tracker-stat" data-plan="pro"><div class="ts-num" id="ts-net">$0</div><div class="ts-label">Net Profit</div></div>
+        <div class="tracker-stat" data-plan="pro"><div class="ts-num" id="ts-margin">—</div><div class="ts-label">Margin</div></div>
         <div class="tracker-stat"><div class="ts-num" id="ts-rate">—</div><div class="ts-label">Sell Rate</div></div>
         <div class="tracker-stat"><div class="ts-num" id="ts-days">—</div><div class="ts-label">Avg Days to Sell</div></div>
         <div class="tracker-stat"><div class="ts-num" id="ts-best">—</div><div class="ts-label">Best Platform</div></div>
@@ -1893,6 +1899,7 @@
       <div class="tk-card">
         <div class="action-row" style="margin-top:0;">
           <button class="btn btn-outline btn-sm" onclick="exportTrackerCSV()"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Export CSV</button>
+          <button class="btn btn-outline btn-sm" data-plan="pro" onclick="exportMonthlyPL()"><svg class="ic" aria-hidden="true"><use href="#i-file-text"/></svg> Monthly P&amp;L</button>
           <button class="btn btn-outline btn-sm" onclick="printSection('tracker-tbody')"><svg class="ic" aria-hidden="true"><use href="#i-printer"/></svg> Print</button>
         </div>
         <div class="tracker-table-wrap">
@@ -1903,6 +1910,7 @@
                 <th>Platform</th>
                 <th>Listed</th>
                 <th>Sold For</th>
+                <th data-plan="pro">Net Profit</th>
                 <th>Added</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -4485,12 +4493,16 @@ function addTrackerItem() {
   const listed = parseFloat(document.getElementById('tr-listed').value);
   if (!name) { alert('Enter an item name.'); return; }
   const items = loadTracker();
+  const cost = parseFloat(document.getElementById('tr-cost').value);
   items.unshift({
     id: Date.now(),
     name,
     platform: document.getElementById('tr-platform').value,
     category: document.getElementById('tr-cat').value,
     listedPrice: listed || 0,
+    cost: isFinite(cost) && cost > 0 ? cost : 0,
+    shipping: 0,
+    fees: 0,
     soldPrice: null,
     status: 'listed',
     dateAdded: new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'})
@@ -4498,16 +4510,84 @@ function addTrackerItem() {
   saveTracker(items);
   document.getElementById('tr-name').value = '';
   document.getElementById('tr-listed').value = '';
+  document.getElementById('tr-cost').value = '';
   renderTracker();
 }
 
+// ── Profit ─────────────────────────────────────────────────────────────
+// The tracker used to answer "how much did I take?" — gross. Anyone doing this for
+// a living needs "how much did I keep?", which is the sold price less what the item
+// cost, less shipping, less the platform's cut.
+//
+// The platform's cut is computed once, at the moment of sale, and STORED. Reading it
+// back out of FEE_TABLE at render time would silently restate last year's profit the
+// day a platform changes its rates.
+const TR_PLATFORM_FEE = {
+  'Facebook':   'Local cash',          // local pickup is the common case; editable at sale
+  'OfferUp':    'Local cash',
+  'Craigslist': 'Local cash',
+  'Mercari':    'Mercari',
+  'eBay':       'eBay',
+  'Other':      'Local cash'
+};
+
+function feeFor(platform, price) {
+  const row = FEE_TABLE.find(f => f.name === (TR_PLATFORM_FEE[platform] || 'Local cash'));
+  if (!row || !price) return 0;
+  return Math.round((price * row.pct + row.flat) * 100) / 100;
+}
+
+const trNum = v => { const n = parseFloat(v); return isFinite(n) && n > 0 ? n : 0; };
+
+// Net of everything. Only meaningful once an item has sold.
+function trProfit(it) {
+  if (it.status !== 'sold' || it.soldPrice == null) return null;
+  return it.soldPrice - trNum(it.cost) - trNum(it.shipping) - trNum(it.fees);
+}
+
+// Open the inline sold form on a row. Only one is ever open, so opening a second
+// closes the first by re-rendering from scratch.
+let _trSoldFor = null;
 function markSold(id) {
-  const soldPrice = parseFloat(prompt('Sold for how much? ($)'));
-  if (isNaN(soldPrice) || soldPrice < 0) return;
+  _trSoldFor = id;
+  renderTracker();
+  const el = document.getElementById('tr-sold-price');
+  if (el) { el.focus(); el.select(); }
+}
+function cancelSold() { _trSoldFor = null; renderTracker(); }
+
+// Re-quote the platform fee as the seller types a sold price, so the number they
+// are about to save is the number they can see.
+function soldFormRequote() {
   const items = loadTracker();
-  const item = items.find(i => i.id === id);
-  if (item) { item.status = 'sold'; item.soldPrice = soldPrice; item.soldAt = Date.now(); }
+  const it = items.find(i => i.id === _trSoldFor);
+  const priceEl = document.getElementById('tr-sold-price');
+  const feeEl = document.getElementById('tr-sold-fees');
+  if (!it || !priceEl || !feeEl || feeEl.dataset.touched === '1') return;
+  feeEl.value = feeFor(it.platform, trNum(priceEl.value)) || '';
+}
+
+function confirmSold() {
+  const price = parseFloat(document.getElementById('tr-sold-price').value);
+  if (!isFinite(price) || price < 0) {
+    alert('Enter what it actually sold for.');
+    return;
+  }
+  const shipEl = document.getElementById('tr-sold-ship');
+  const feeEl = document.getElementById('tr-sold-fees');
+  const items = loadTracker();
+  const item = items.find(i => i.id === _trSoldFor);
+  if (item) {
+    item.status = 'sold';
+    item.soldPrice = price;
+    item.soldAt = Date.now();
+    item.shipping = shipEl ? trNum(shipEl.value) : 0;
+    // A free licence has no fee field on screen; quote it from the platform so the
+    // number is still right if they upgrade later.
+    item.fees = feeEl ? trNum(feeEl.value) : feeFor(item.platform, price);
+  }
   saveTracker(items);
+  _trSoldFor = null;
   renderTracker();
 }
 
@@ -4537,21 +4617,67 @@ function renderTracker() {
     return;
   }
   empty.style.display = 'none';
+  const pro = skIsPro();
   tbody.innerHTML = items.map(it => {
     const statusClass = { listed:'status-listed', sold:'status-sold', expired:'status-expired', donated:'status-donated' }[it.status] || 'status-listed';
     const soldCell = it.soldPrice != null ? `<strong>$${it.soldPrice.toLocaleString()}</strong>` : '—';
     const actions = it.status === 'listed'
       ? `<button class="tracker-action-btn btn-mark-sold" onclick="markSold(${it.id})">✓ Sold</button><button class="tracker-action-btn btn-del" onclick="markExpired(${it.id})">Expire</button>`
       : `<button class="tracker-action-btn btn-del" onclick="deleteTrackerItem(${it.id})">Delete</button>`;
-    return `<tr>
-      <td><strong>${it.name}</strong><br><span style="font-size:.72rem;color:var(--gray-500)">${it.category}</span></td>
-      <td>${it.platform}</td>
-      <td>$${it.listedPrice.toLocaleString()}</td>
-      <td>${soldCell}</td>
-      <td style="font-size:.78rem;color:var(--gray-500)">${it.dateAdded}</td>
+
+    // Profit is a Pro column. The cell stays in the row for a free licence so the
+    // header and body keep the same column count; it is the header that hides.
+    const net = trProfit(it);
+    const profitCell = net === null
+      ? '<td class="tr-profit" data-plan="pro">—</td>'
+      : `<td class="tr-profit ${net < 0 ? 'neg' : 'pos'}" data-plan="pro">` +
+        `<strong class="tnum">${net < 0 ? '−' : ''}$${Math.abs(Math.round(net)).toLocaleString()}</strong>` +
+        `<span class="tr-profit-sub">${trNum(it.cost) ? 'cost $' + Math.round(trNum(it.cost)).toLocaleString() : 'no cost set'}` +
+        `${trNum(it.fees) ? ' · fees $' + Math.round(trNum(it.fees)).toLocaleString() : ''}</span></td>`;
+
+    const row = `<tr>
+      <td><strong>${escHtml(it.name)}</strong><br><span style="font-size:.72rem;color:var(--gray-500)">${escHtml(it.category || '')}</span></td>
+      <td>${escHtml(it.platform || '')}</td>
+      <td class="tnum">$${(it.listedPrice || 0).toLocaleString()}</td>
+      <td class="tnum">${soldCell}</td>
+      ${profitCell}
+      <td style="font-size:.78rem;color:var(--gray-500)">${escHtml(it.dateAdded || '')}</td>
       <td><span class="status-badge ${statusClass}">${it.status}</span></td>
       <td>${actions}</td>
     </tr>`;
+
+    if (_trSoldFor !== it.id) return row;
+
+    // The sold form replaces two blocking prompt() calls. Shipping and the platform
+    // cut are Pro fields; a free licence sees the sold price alone and the fee is
+    // still quoted from the platform behind the scenes.
+    const quoted = feeFor(it.platform, it.listedPrice || 0);
+    return row + `<tr class="tr-soldrow"><td colspan="8">
+      <div class="tr-soldform">
+        <div class="form-row" style="margin:0;">
+          <label>Sold for ($)</label>
+          <input type="number" id="tr-sold-price" value="${it.listedPrice || ''}" oninput="soldFormRequote()"
+                 onkeydown="if (event.key === 'Enter') confirmSold(); if (event.key === 'Escape') cancelSold();">
+        </div>
+        <div class="form-row" data-plan="pro" style="margin:0;">
+          <label>Shipping you paid ($)</label>
+          <input type="number" id="tr-sold-ship" placeholder="0">
+        </div>
+        <div class="form-row" data-plan="pro" style="margin:0;">
+          <label>${escHtml(it.platform)} fees ($)</label>
+          <input type="number" id="tr-sold-fees" value="${quoted || ''}" placeholder="0"
+                 oninput="this.dataset.touched='1'">
+        </div>
+        <div class="form-row" style="margin:0;">
+          <label>&nbsp;</label>
+          <div class="tr-soldform-actions">
+            <button class="btn btn-success btn-sm" onclick="confirmSold()">Save sale</button>
+            <button class="btn btn-outline btn-sm" onclick="cancelSold()">Cancel</button>
+          </div>
+        </div>
+      </div>
+      ${pro ? '' : '<div class="tr-soldform-note">Cost and profit tracking is part of the business licence.</div>'}
+    </td></tr>`;
   }).join('');
   updateTrackerStats(items);
 }
@@ -4575,6 +4701,18 @@ function updateTrackerStats(items) {
   document.getElementById('ts-rate').textContent = rate;
   document.getElementById('ts-days').textContent = avgDays === null ? '—' : avgDays;
   document.getElementById('ts-best').textContent = bestPlatform;
+
+  // Net of cost, shipping and platform fees — the number that decides whether this
+  // is a business or an expensive hobby.
+  const net = sold.reduce((s, i) => s + (trProfit(i) || 0), 0);
+  const margin = revenue > 0 ? Math.round((net / revenue) * 100) : null;
+  const netEl = document.getElementById('ts-net');
+  if (netEl) {
+    netEl.textContent = (net < 0 ? '−$' : '$') + Math.abs(Math.round(net)).toLocaleString();
+    netEl.className = 'ts-num' + (net < 0 ? ' neg' : net > 0 ? ' pos' : '');
+  }
+  const marginEl = document.getElementById('ts-margin');
+  if (marginEl) marginEl.textContent = margin === null ? '—' : margin + '%';
 }
 
 function exportTrackerCSV() {
@@ -4584,15 +4722,71 @@ function exportTrackerCSV() {
     const s = v === null || v === undefined ? '' : String(v);
     return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
   };
-  const header = ['Item','Platform','Category','Listed Price','Sold Price','Status','Date Added','Date Sold','Days to Sell'];
+  // The cost columns only mean anything on a licence that can enter them.
+  const pro = skIsPro();
+  const header = ['Item','Platform','Category','Listed Price','Sold Price','Status','Date Added','Date Sold','Days to Sell']
+    .concat(pro ? ['Cost','Shipping','Fees','Net Profit','Margin %'] : []);
   const rows = items.map(i => {
     const days = i.soldAt && i.id ? Math.max(1, Math.round((i.soldAt - i.id) / 86400000)) : '';
     const soldDate = i.soldAt ? new Date(i.soldAt).toLocaleDateString('en-US') : '';
-    return [i.name, i.platform, i.category, i.listedPrice, i.soldPrice ?? '', i.status, i.dateAdded, soldDate, days].map(esc).join(',');
+    const base = [i.name, i.platform, i.category, i.listedPrice, i.soldPrice ?? '', i.status, i.dateAdded, soldDate, days];
+    if (!pro) return base.map(esc).join(',');
+    const net = trProfit(i);
+    const margin = net !== null && i.soldPrice ? Math.round((net / i.soldPrice) * 100) : '';
+    return base.concat([
+      trNum(i.cost) || '', trNum(i.shipping) || '', trNum(i.fees) || '',
+      net === null ? '' : Math.round(net * 100) / 100, margin
+    ]).map(esc).join(',');
   });
   const csv = [header.join(','), ...rows].join('\r\n');
   const today = new Date().toISOString().split('T')[0];
   downloadFile(`sellerkit-sales-${today}.csv`, 'text/csv;charset=utf-8', csv);
+}
+
+// A bookkeeper does not want the item list, they want the months. One row per month
+// with what came in, what it cost, and what was left — the shape a Schedule C or a
+// quarterly estimate is built from.
+function exportMonthlyPL() {
+  const sold = loadTracker().filter(i => i.status === 'sold' && i.soldAt);
+  if (!sold.length) { alert('No sales to report yet. Mark something sold first.'); return; }
+
+  const months = {};
+  sold.forEach(i => {
+    const d = new Date(i.soldAt);
+    const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    const m = months[key] || (months[key] = { key, n: 0, revenue: 0, cost: 0, shipping: 0, fees: 0 });
+    m.n++;
+    m.revenue  += i.soldPrice || 0;
+    m.cost     += trNum(i.cost);
+    m.shipping += trNum(i.shipping);
+    m.fees     += trNum(i.fees);
+  });
+
+  const esc = v => {
+    const t = v === null || v === undefined ? '' : String(v);
+    return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+  };
+  const r2 = n => Math.round(n * 100) / 100;
+  const keys = Object.keys(months).sort();
+  const total = { n: 0, revenue: 0, cost: 0, shipping: 0, fees: 0 };
+
+  const rows = keys.map(k => {
+    const m = months[k];
+    ['n','revenue','cost','shipping','fees'].forEach(f => { total[f] += m[f]; });
+    const net = m.revenue - m.cost - m.shipping - m.fees;
+    const margin = m.revenue > 0 ? Math.round((net / m.revenue) * 100) : '';
+    const label = new Date(k + '-01T12:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return [label, m.n, r2(m.revenue), r2(m.cost), r2(m.shipping), r2(m.fees), r2(net), margin].map(esc).join(',');
+  });
+
+  const tNet = total.revenue - total.cost - total.shipping - total.fees;
+  rows.push(['TOTAL', total.n, r2(total.revenue), r2(total.cost), r2(total.shipping), r2(total.fees),
+             r2(tNet), total.revenue > 0 ? Math.round((tNet / total.revenue) * 100) : ''].map(esc).join(','));
+
+  const header = ['Month','Items Sold','Revenue','Cost of Goods','Shipping','Platform Fees','Net Profit','Margin %'];
+  const today = new Date().toISOString().split('T')[0];
+  downloadFile(`sellerkit-profit-and-loss-${today}.csv`, 'text/csv;charset=utf-8',
+               [header.join(','), ...rows].join('\r\n'));
 }
 
 // ════════════════════════════════
