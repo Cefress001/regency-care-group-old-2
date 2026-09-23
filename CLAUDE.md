@@ -35,8 +35,41 @@ Seven pages, no shared JS. Each page carries its own `<script>` at the bottom; t
 | `legal.css` | Styles for the three legal pages only. Own tokens — does not read `styles.css`. |
 | `robots.txt` | Keeps `toolkit.html` and `success.html` out of search results. |
 | `favicon.svg` | Linked from every page. |
+| `apple-touch-icon.png` | 180×180 home-screen icon, linked from every page. |
+| `og-image.png` | 1200×630 social share card, referenced by absolute URL in the `og:image` / `twitter:image` tags. |
+| `screen-*.webp` | Real 2× toolkit screenshots used by the "Inside the Toolkit" section on `index.html`. |
+| `NOTICE.md` | Third-party license text for the vendored Lucide icons. |
 
 Three styling worlds coexist deliberately: `index.html` and `toolkit.html` share `styles.css` and its `:root` custom properties (`--blue`, `--gray-600`, `--radius`, …); `checkout.html` and `success.html` are standalone with hardcoded colors and the Inter webfont; the legal pages share `legal.css`, which defines its own tokens. Editing a token in `styles.css` will not reach the checkout flow or the legal pages.
+
+### The icon system
+
+Every icon is an inline SVG from **Lucide** (ISC + MIT, see `NOTICE.md`), vendored rather
+than loaded from a CDN. Each page carries one `<svg class="sk-sprite">` block of `<symbol>`
+definitions immediately after `<body>`, and an icon is a reference to it:
+
+```html
+<svg class="ic" aria-hidden="true"><use href="#i-camera"/></svg>
+```
+
+`.ic` sets `stroke: currentColor`, so **an icon has no color of its own** — it inherits the
+parent's text color and themes itself from the existing tokens. Size defaults to `1em` and
+follows `font-size`; per-container overrides live at the bottom of `styles.css`. `checkout.html`
+and `success.html` are standalone, so they carry their own copy of the `.ic` rules.
+
+- **A `<use href="#i-NAME">` only resolves if that symbol is in the page's sprite.** The sprite
+  holds a fixed set; adding an icon means adding its symbol to *every* page that uses it.
+  The test suite asserts every reference resolves, so a missing symbol fails rather than
+  silently rendering nothing.
+- **In JavaScript, build icons with `ic('name')`**, which returns the same markup. Because it
+  returns *HTML*, anything built with it must be assigned through `innerHTML` — assigning it
+  to `textContent` prints the raw tag on screen. Several call sites were converted from
+  `textContent` to `innerHTML` for exactly this reason; text interpolated next to an icon
+  goes through `escHtml()`.
+- **Emoji are still correct in exported text.** The generated listing description
+  (the `desc +=` block) is copied to the clipboard and downloaded as `.txt`, never rendered as
+  HTML, so it deliberately keeps its emoji. Do not "finish the job" by converting those.
+- Typographic marks (`✓`, `✗`, `→`, `·`) are not emoji and stay as characters.
 
 ### Toolkit SPA pattern
 
@@ -201,5 +234,10 @@ that attaches a listener rather than using inline `onclick`.
   `ai-output` were taken long before the AI layer existed, and `ai-price` in particular is wired
   into `CORE_TWO_WAY.asking`. Reusing one silently breaks two-way propagation and gives you a
   duplicate id that `getElementById` resolves to the wrong element.
+- **Icon markup is HTML, so it cannot go into `textContent`.** `ic('name')` and the inline
+  `<svg class="ic">` form both return markup. Assigning either to `textContent` (or to
+  `alert()`, a `.value`, or any clipboard/download string) prints the literal tag. Use
+  `innerHTML` and escape the surrounding text with `escHtml()`. Note the inverse too: an
+  `"…"`-quoted JS string cannot hold the markup verbatim, since it contains `class="ic"`.
 - **The tool count appears in four files.** When the count changes, update: `index.html` (hero badge, hero stat, two CTAs, section heading, FAQ, sticky CTA, and the `.price-includes` bullet list), `checkout.html` (order line, feature list), `success.html` (two strings), and the Stripe product description on the Stripe Dashboard (a fifth copy outside the repo). `index.html` also has a derived string ("N more") in its `<meta name="description">` and demo CTA — keep both consistent with the count minus the tools named inline.
 - **`toolkit.html` overrides global nav styles.** The `.tk-*` rules exist partly to undo landing-page nav styling that otherwise turned the dark sidebar white (`a44f685`). Be careful when editing shared nav selectors in `styles.css`.

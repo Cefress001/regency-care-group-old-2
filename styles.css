@@ -1242,3 +1242,60 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   .ai-locked-note .btn { width: 100%; justify-content: center; }
   .ai-banner-row .btn { flex: 1 1 100%; justify-content: center; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Icon system — Lucide sprite (ISC License, Lucide Icons and Contributors)
+   The sprite is inlined once per page immediately after <body>; every icon is
+   an <svg class="ic"><use href="#i-NAME"/></svg>. Icons carry no color of
+   their own — `stroke: currentColor` means they inherit whatever the parent
+   text color is, so they theme themselves from the existing tokens. Size
+   defaults to 1em and follows font-size; override per container below.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sk-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ic {
+  width: 1em; height: 1em;
+  display: inline-block; vertical-align: -.14em; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  overflow: visible;
+}
+/* Headings: slightly smaller than the text so the icon does not shout. */
+h1 > .ic, h2 > .ic, h3 > .ic, h4 > .ic { width: .85em; height: .85em; opacity: .75; margin-right: .1em; }
+/* Buttons and chips: a hair smaller, with breathing room before the label. */
+.btn > .ic, .copy-btn > .ic, .print-btn > .ic, .ai-chip > .ic, .tab-btn > .ic { width: 1.05em; height: 1.05em; margin-right: .3em; }
+/* Landing page */
+.tool-icon .ic  { width: 22px; height: 22px; stroke-width: 1.9; }
+.trust-icon .ic { width: 26px; height: 26px; }
+.hero-badge .ic, .eyebrow .ic, .guarantee .ic, .mockup-label .ic { margin-right: .35em; }
+/* Toolkit chrome */
+.tk-nav-item .nav-icon .ic { width: 17px; height: 17px; }
+.ht-icon .ic { width: 24px; height: 24px; stroke-width: 1.9; }
+.ai-out-title .ic, .tip-icon .ic { margin-right: .3em; }
+.checklist-section-title .ic { width: 1em; height: 1em; margin-right: .35em; }
+.ai-avatar .ic { width: 15px; height: 15px; }
+.ace-icon .ic { width: 20px; height: 20px; }
+.fc-icon .ic, .cmdk-ic .ic { width: 1.1em; height: 1.1em; }
+.verdict-headline .ic { margin-right: .3em; }
+@media (max-width: 900px) {
+  .tk-nav-item .nav-icon .ic { width: 20px; height: 20px; }
+}
+
+/* Accent colors — the tile already carries a tinted background, so the icon
+   takes the matching saturated hue instead of inheriting body text color.
+   `.ic` strokes with currentColor, so setting `color` here is all it needs. */
+.tool-icon.blue   .ic { color: var(--blue); }
+.tool-icon.green  .ic { color: var(--green-dark); }
+.tool-icon.orange .ic { color: #D97706; }
+.tool-icon.purple .ic { color: var(--purple); }
+.trust-icon .ic       { color: var(--green-dark); }
+.fc-icon .ic          { color: var(--blue); }
+.flow-card.is-done .fc-icon .ic { color: var(--green-dark); }
+.ht-icon .ic          { color: var(--blue); }
+.ace-icon .ic         { color: var(--purple); }
+/* Scam checklist section headers kept their traffic-light meaning. */
+.checklist-section-title .ic { color: var(--gray-500); }
+.checklist-section-title.sec-payment  .ic { color: var(--red); }
+.checklist-section-title.sec-identity .ic { color: #D97706; }
+.checklist-section-title.sec-pickup   .ic { color: var(--green-dark); }
+/* Verdict icons follow the text color they sit in, which the
+   .verdict-* rules already set, so they need no override. */
