@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-SellerKit — a static marketing site plus a client-side web app that helps people list and sell secondhand items (pricing, titles, descriptions, negotiation scripts, scam screening, etc.). Despite the repo name, there is no Regency Care content left; the site was replaced wholesale in commit `8faed20`.
+SellerKit Pro — a static marketing site plus a client-side web app that helps people list and sell secondhand items (pricing, titles, descriptions, negotiation scripts, scam screening, etc.). Despite the repo name, there is no Regency Care content left; the site was replaced wholesale in commit `8faed20`.
 
 ## Build / run / test
 
@@ -27,7 +27,7 @@ Seven pages, no shared JS. Each page carries its own `<script>` at the bottom; t
 | File | Role |
 | --- | --- |
 | `index.html` | Marketing landing page. Inline `<style>` holds page-specific additions on top of `styles.css`. |
-| `toolkit.html` | The product. A single-page app (~2270 lines) holding all 13 tools, behind the interim access gate. |
+| `toolkit.html` | The product. A single-page app holding all 13 tools, the playbook layer, and the interim access gate. |
 | `checkout.html` | Payment page. **Self-contained** — inline `<style>`, Google Fonts, does not load `styles.css`. |
 | `success.html` | Post-purchase page. Also self-contained. Grants toolkit access. |
 | `terms.html` `privacy.html` `refund.html` | Legal pages. Share `legal.css`. |
@@ -125,6 +125,51 @@ Adding an AI action to a tool:
 the calculator's current output, the description form, measurements. Extend it there rather than
 threading fields through individual prompts.
 
+### Playbooks — the job first, the tools second
+
+The toolkit opens on **Start Here** (`#panel-home`), which asks what the person came to do
+rather than listing tools. Four playbooks cover the highest-intent jobs — sell one item, fix a
+listing nobody bites on, handle a buyer who just messaged, clear out a whole pile — and an
+**Access all tools** button drops to `#panel-alltools`, which holds the original 13-card grid
+unchanged.
+
+**A playbook is a layer over the 13 tools, not a 14th tool** — the same treatment My Items and
+the AI layer get. It sequences tools that already exist and owns no inputs of its own, so it is
+absent from the tools grid and from the four counted files. Adding one never triggers the
+tool-count chore below.
+
+Everything renders from one constant:
+
+```js
+PLAYBOOKS[id] = { icon, name, time, blurb, steps: [ { panel, icon, title, guide, why? } ] }
+```
+
+`panel` is the tool the step opens. Keep `guide` about what to actually do and `why` about what
+it costs to skip — a step that only says "open the pricing tool" is a menu, not a playbook.
+
+- **Progress rides on the item** (`item.flows[playbookId] = [stepIndex, …]`), like `photos` and
+  `measurements`, so it switches with the item. Ticking a step with no item yet auto-creates one,
+  the way `saveLS()` does; the write is guarded on a non-empty array so merely opening a playbook
+  leaves nothing behind.
+- **Position is UI state**, not item data, so it lives in the flat `sk_flow` key. That name is
+  deliberately not one of the legacy tool keys `migrateLegacyItem()` folds away.
+- **The flow bar** (`#flow-bar`) is one element for all 13 tools rather than a strip inside each.
+  `syncFlowBar(panelId)` is called from `showPanel`; `FLOW_BAR_HIDDEN` keeps it off the panels
+  that are about choosing a playbook rather than working one.
+- **Both top bars stick as one unit** via `.tk-topbars`. Making the flow bar separately sticky
+  with a hardcoded item-bar offset drifts the moment the item bar wraps to two lines.
+- `PANEL_NAMES` maps a panel id to its display name and is the single source for the palette,
+  the step buttons, and the tool list on a playbook card. A new tool panel belongs in it.
+
+**Listing readiness** (`RD_CHECKS`) scores the active item against seven signals a buyer looks
+for and renders each as a chip that opens the tool filling that gap. Every check reads state that
+already exists — none of them asks the user for anything new. Wrap a new check's `test` so a
+malformed item cannot throw the whole card away.
+
+**The command palette** (⌘K / Ctrl+K) lists every playbook and every entry in `PANEL_NAMES`.
+It is wired from the single `DOMContentLoaded` handler, which is the only place in the toolkit
+that attaches a listener rather than using inline `onclick`.
+
 ### Conventions
 
 - **`fromButton` argument** — calculators take an optional `fromButton` flag. Truthy means a user clicked the action button, so show validation warnings; falsy means the call came from the init restore path, where empty inputs are normal and must stay silent.
@@ -148,7 +193,8 @@ threading fields through individual prompts.
 ## Gotchas
 
 - **Stripe is live.** `checkout.html` carries a real `<stripe-buy-button>` with a `pk_live_` publishable key. Only publishable keys belong in this repo — a `sk_live_`/`sk_test_` secret key must never be committed. The buy button's success URL is configured on the Stripe Dashboard, not here, and it must point at `success.html` or buyers never receive toolkit access.
-- **The toolkit is gated.** `toolkit.html` hides itself behind an access code (`SK-PRO-2026`), checked by an inline `<head>` script that adds `.sk-locked` to `<html>`. Access is granted by `success.html` (sets `sk_access` in `localStorage`), by `?access=<code>`, or by typing the code into the overlay. This is **interim and trivially bypassed** — the whole block sits between the `interim access gate` comment markers in `toolkit.html` and is meant to be deleted wholesale when Firebase Auth lands. Keep the gate CSS/JS inline in `<head>`: moving it to `styles.css` reintroduces a flash of unlocked content.
+- **The toolkit is gated.** `toolkit.html` hides itself behind an access code (`SK-PRO-2026`), checked by an inline `<head>` script that adds `.sk-locked` to `<html>`. Access is granted by `success.html` (sets `sk_access` in `localStorage`), by `?access=<code>`, by typing the code into the overlay, or by the username/password sign-in on the overlay's second view. `?lock=1` clears `sk_access` and puts the gate back, which is the only way to re-test the locked state and the purchase flow once access has stuck on a device. This is **interim and trivially bypassed** — the whole block sits between the `interim access gate` comment markers in `toolkit.html` and is meant to be deleted wholesale when Firebase Auth lands. Keep the gate CSS/JS inline in `<head>`: moving it to `styles.css` reintroduces a flash of unlocked content.
+- **Gate sign-in is browser-side, so the source carries a digest, not a password.** `LOGINS` maps a username to `PBKDF2-SHA256(user + ':' + pass, 'sellerkit-gate-v1', 150000)` as hex. There is no server to check a credential against, so this only raises the cost from reading the source to running an offline attack — pair it with a passphrase long enough that the attack is not worth running, and never treat it as real authentication. Add or rotate one with `node -e "console.log(require('crypto').pbkdf2Sync('user:password','sellerkit-gate-v1',150000,32,'sha256').toString('hex'))"`. `crypto.subtle` needs a secure context, so sign-in works on https and localhost but not `file://`; the access-code path stays as the fallback.
 - **No invented social proof.** Testimonials, review counts, star ratings, forum quotes with vote counts, "average" result figures, countdown/scarcity chips, and struck-through reference prices were deliberately removed — they are a Stripe-account and chargeback risk on a live payment product, not just a style choice. Do not reintroduce them. Real numbers about the product (13 tools, 12 scam checks, condition percentages) are fine; the ROI table on `index.html` is allowed only because it is explicitly labelled an illustration.
 - **`ai-*` element ids belong to the AI Prompt tool (tool 4); the AI layer uses `aix-*`.**
   `ai-item`, `ai-brand`, `ai-condition`, `ai-price`, `ai-details`, `ai-prompt-result` and
