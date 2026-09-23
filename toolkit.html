@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>SellerKit — Toolkit</title>
+<title>SellerKit Pro — Toolkit</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
 
@@ -48,7 +48,7 @@
 (function () {
   var CODE = 'SK-PRO-2026';
 
-  // Owner / test sign-in. There is no SellerKit server, so this is verified in the
+  // Owner / test sign-in. There is no SellerKit Pro server, so this is verified in the
   // browser and the source carries a PBKDF2-SHA256 digest rather than the password
   // itself. That defeats a view-source read, not a determined offline attack — like
   // the access code above, the whole block is interim and goes when Firebase lands.
@@ -147,7 +147,7 @@
     <h1>🔒 Customers only</h1>
 
     <div id="sk-view-code">
-      <p>The SellerKit toolkit is for people who've bought a license. Enter your access code to unlock it on this device.</p>
+      <p>The SellerKit Pro toolkit is for people who've bought a license. Enter your access code to unlock it on this device.</p>
       <input id="sk-code" type="text" placeholder="Access code" autocomplete="off"
              onkeydown="if (event.key === 'Enter') skUnlock()">
       <button onclick="skUnlock()">Unlock toolkit</button>
@@ -155,7 +155,7 @@
     </div>
 
     <div id="sk-view-login" style="display:none;">
-      <p>Sign in with your SellerKit username and password.</p>
+      <p>Sign in with your SellerKit Pro username and password.</p>
       <input id="sk-user" type="text" placeholder="Username" autocomplete="username"
              onkeydown="if (event.key === 'Enter') document.getElementById('sk-pass').focus()">
       <input id="sk-pass" type="password" placeholder="Password" autocomplete="current-password"
@@ -165,7 +165,7 @@
     </div>
 
     <div class="sk-gate-err" id="sk-err"></div>
-    <a class="sk-gate-buy" href="checkout.html">Don't have one yet? Get SellerKit →</a>
+    <a class="sk-gate-buy" href="checkout.html">Don't have one yet? Get SellerKit Pro →</a>
   </div>
 </div>
 <script>
@@ -181,13 +181,16 @@
   <!-- ── Sidebar ── -->
   <aside class="tk-sidebar">
     <div class="tk-brand">
-      <a href="index.html" class="logo">Seller<span>Kit</span></a>
+      <a href="index.html" class="logo">Seller<span>Kit</span><span class="logo-pro">Pro</span></a>
       <div class="tagline">Your selling toolkit</div>
     </div>
     <nav class="tk-nav">
       <div class="tk-nav-section">Overview</div>
       <div class="tk-nav-item active" data-panel="home" onclick="showPanel('home')">
-        <span class="nav-icon">🏠</span>All Tools
+        <span class="nav-icon">🎯</span>Start Here
+      </div>
+      <div class="tk-nav-item" data-panel="alltools" onclick="showPanel('alltools')">
+        <span class="nav-icon">🧰</span>All Tools
       </div>
       <div class="tk-nav-item" data-panel="items" onclick="showPanel('items')">
         <span class="nav-icon">📦</span>My Items
@@ -250,6 +253,7 @@
   <!-- ── Main ── -->
   <main class="tk-main">
 
+    <div class="tk-topbars">
     <!-- ══ ITEM BAR — which item every tool is currently working on ══ -->
     <div class="item-bar">
       <span class="item-bar-label">Item</span>
@@ -257,6 +261,22 @@
       <span class="ib-hint" id="item-bar-hint">No item yet — create one and every tool fills itself in.</span>
       <button class="btn btn-primary btn-sm" onclick="newItemPrompt()">+ New</button>
       <button class="btn btn-outline btn-sm" onclick="showPanel('items')">Edit</button>
+    </div>
+
+    <!-- ══ FLOW BAR — visible only while a playbook is running, on tool panels.
+         One element for all 13 tools rather than a strip inside each. ══ -->
+    <div class="flow-bar" id="flow-bar" style="display:none;">
+      <span class="fb-tag" id="fb-tag"></span>
+      <div class="fb-body">
+        <div class="fb-step" id="fb-step"></div>
+        <div class="fb-guide" id="fb-guide"></div>
+      </div>
+      <div class="fb-actions">
+        <button class="btn btn-outline btn-sm" onclick="openFlow(_flowId)">☰ Steps</button>
+        <button class="btn btn-primary btn-sm" id="fb-next" onclick="flowNext()">Done →</button>
+        <button class="fb-x" onclick="exitFlow()" title="Leave this playbook">×</button>
+      </div>
+    </div>
     </div>
 
     <!-- ══ MY ITEMS ══ -->
@@ -349,26 +369,31 @@
     </div>
 
     <!-- ══ HOME DASHBOARD ══ -->
+    <!-- ══ START HERE — the job first, the tools second ══ -->
     <div class="tk-panel active" id="panel-home">
       <div class="panel-header">
-        <h2>🏠 All Tools</h2>
-        <div class="subtitle">Pick a tool to get started. Use them in order or jump to what you need.</div>
+        <h2>🎯 What are you here to do?</h2>
+        <div class="subtitle">Pick the job in front of you. Each one opens a playbook — the steps in order, and only the tools that job needs.</div>
       </div>
 
-      <div class="tk-card" style="margin-bottom:.75rem; background:linear-gradient(135deg,#eff6ff,#f0fdf4);">
-        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
-          <div style="font-size:1.5rem;">💡</div>
-          <div>
-            <strong style="font-size:.9rem;">Selling something new?</strong>
-            <div style="font-size:.82rem;color:var(--gray-600);margin-top:.1rem;">
-              Add it under <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('items')">My Items</span> →
-              then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('pricing')">Pricing Calc</span> →
-              then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('titles')">Title Gen</span> →
-              then <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('description')">Description</span>.
-              Takes about 10 minutes total.
-            </div>
+      <!-- Readiness reads the active item, so it stays hidden until there is one. -->
+      <div class="tk-card rd-card" id="rd-card" style="display:none;">
+        <div class="rd-head">
+          <div class="rd-headtext">
+            <h3>Listing readiness</h3>
+            <div class="rd-sub" id="rd-sub"></div>
           </div>
+          <div class="rd-score" id="rd-score">0%</div>
         </div>
+        <div class="rd-track"><div class="rd-fill" id="rd-fill"></div></div>
+        <div class="rd-gaps" id="rd-gaps"></div>
+      </div>
+
+      <div class="flow-grid" id="flow-grid"></div>
+
+      <div class="all-tools-row">
+        <button class="btn btn-outline btn-lg" onclick="showPanel('alltools')">🧰 Access all 13 tools →</button>
+        <span class="all-tools-hint">Know exactly what you need? Skip the playbooks — every tool is one click away, unchanged.</span>
       </div>
 
       <!-- AI is a layer over the 13 tools, not a 14th tool — same treatment as My Items,
@@ -376,12 +401,33 @@
       <div class="ai-banner">
         <h3>✨ Connect your own AI</h3>
         <p id="ai-banner-copy">
-          Bring your own Claude, ChatGPT, Gemini, or OpenRouter key and every tool below gains an AI mode —
+          Bring your own Claude, ChatGPT, Gemini, or OpenRouter key and every one of the 13 tools gains an AI mode —
           plus a copilot that already knows your item. Your key stays in this browser.
         </p>
         <div class="ai-banner-row">
           <button class="btn btn-ai btn-sm" onclick="showPanel('copilot')">✨ Open AI Copilot</button>
           <button class="btn btn-ghost btn-sm" id="ai-banner-btn" onclick="showPanel('aisetup')">🔌 Connect a provider</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ALL TOOLS — the full grid, unchanged, one level in ══ -->
+    <div class="tk-panel" id="panel-alltools">
+      <div class="panel-header">
+        <h2>🧰 All Tools</h2>
+        <div class="subtitle">Every tool, on its own. Use them in any order — or let a playbook sequence them for you.</div>
+      </div>
+
+      <div class="tk-card" style="margin-bottom:.75rem; background:linear-gradient(135deg,#eff6ff,#f0fdf4);">
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+          <div style="font-size:1.5rem;">💡</div>
+          <div>
+            <strong style="font-size:.9rem;">Not sure where to start?</strong>
+            <div style="font-size:.82rem;color:var(--gray-600);margin-top:.1rem;">
+              The <span style="font-weight:700;color:var(--blue);cursor:pointer;" onclick="showPanel('home')">playbooks</span>
+              put these tools in the right order for what you are actually trying to do, and track how far you got.
+            </div>
+          </div>
         </div>
       </div>
 
@@ -458,6 +504,24 @@
       </div>
     </div>
 
+    <!-- ══ PLAYBOOK RUNNER — rendered from PLAYBOOKS; a layer over the 13 tools,
+         not a 14th tool, so it stays out of the grid and the counted files. ══ -->
+    <div class="tk-panel" id="panel-flow">
+      <div class="panel-header">
+        <h2 id="fl-title">Playbook</h2>
+        <div class="subtitle" id="fl-sub"></div>
+      </div>
+
+      <div class="tk-card fl-summary" id="fl-summary"></div>
+      <div id="fl-steps"></div>
+
+      <div class="action-row">
+        <button class="btn btn-outline btn-sm" onclick="showPanel('home')">← All playbooks</button>
+        <button class="btn btn-outline btn-sm" onclick="resetFlow()">Reset progress</button>
+        <button class="btn btn-outline btn-sm" onclick="showPanel('alltools')">🧰 All tools</button>
+      </div>
+    </div>
+
     <!-- ══ AI COPILOT — a layer over the 13 tools, not one of them ══ -->
     <div class="tk-panel" id="panel-copilot">
       <div class="panel-header">
@@ -516,7 +580,7 @@
     <div class="tk-panel" id="panel-aisetup">
       <div class="panel-header">
         <h2>🔌 Connect Your AI</h2>
-        <div class="subtitle">Use your own account with Claude, ChatGPT, Gemini, OpenRouter, or a local model. No SellerKit subscription, no markup.</div>
+        <div class="subtitle">Use your own account with Claude, ChatGPT, Gemini, OpenRouter, or a local model. No SellerKit Pro subscription, no markup.</div>
       </div>
 
       <div class="tk-card">
@@ -566,7 +630,7 @@
       <div class="tk-card">
         <h3>What "bring your own key" means</h3>
         <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.865rem;color:var(--gray-700);line-height:1.6;">
-          <div>✓ Your key is stored in this browser's local storage and sent <strong>only</strong> to the provider you picked — SellerKit has no server and never sees it.</div>
+          <div>✓ Your key is stored in this browser's local storage and sent <strong>only</strong> to the provider you picked — SellerKit Pro has no server and never sees it.</div>
           <div>✓ You pay your provider directly for what you use. Most of these tools cost a fraction of a cent per run.</div>
           <div>✓ Disconnecting erases the key from this device immediately.</div>
           <div>⚠️ A key in a browser is only as private as the device and browser profile it sits in. On a shared or public computer, disconnect when you're done.</div>
@@ -1481,7 +1545,7 @@
         </div>
 
         <div class="info-callout" style="margin-top:.7rem;">
-          <strong>Your photos never reach SellerKit.</strong> They are resized in this browser and sent
+          <strong>Your photos never reach SellerKit Pro.</strong> They are resized in this browser and sent
           straight to the AI provider you connected, on your own key. Nothing is saved — they clear when
           you close the tab.
         </div>
@@ -1723,16 +1787,457 @@
   </main>
 </div>
 
+<!-- ══ COMMAND PALETTE — ⌘K from any panel ══ -->
+<div class="cmdk" id="cmdk" style="display:none;" onclick="if (event.target === this) closePalette()">
+  <div class="cmdk-box" role="dialog" aria-label="Jump to">
+    <input id="cmdk-input" type="text" autocomplete="off" spellcheck="false"
+           placeholder="Jump to a tool or playbook…" oninput="renderPalette()" onkeydown="paletteKey(event)">
+    <div class="cmdk-list" id="cmdk-list"></div>
+    <div class="cmdk-foot"><span>↑↓ move</span><span>↵ open</span><span>esc close</span></div>
+  </div>
+</div>
+
 <script>
 // ════════════════════════════════
 // Navigation
 // ════════════════════════════════
+let _currentPanel = 'home';
 function showPanel(id) {
   document.querySelectorAll('.tk-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tk-nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
-  document.querySelectorAll(`[data-panel="${id}"]`).forEach(el => el.classList.add('active'));
+  // The playbook runner has no nav entry of its own — it belongs to Start Here,
+  // so that stays lit while you are inside one.
+  document.querySelectorAll(`[data-panel="${id === 'flow' ? 'home' : id}"]`).forEach(el => el.classList.add('active'));
+  _currentPanel = id;
+  if (id === 'home') renderStart();
+  if (id === 'flow') renderFlow();
+  syncFlowBar(id);
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ════════════════════════════════
+// Playbooks — the job first, the tools second
+// ════════════════════════════════
+// A playbook is a layer over the 13 tools, exactly like My Items and the AI layer:
+// it sequences tools that already exist and owns no inputs of its own. It is
+// deliberately absent from the home grid and from the four counted files, so
+// adding one never triggers the tool-count chore.
+//
+// `panel` on a step is the tool it opens. Keep `guide` about what to actually do
+// and `why` about what it costs to skip — a step that only says "open the pricing
+// tool" is a menu, not a playbook.
+const PLAYBOOKS = {
+  sell: {
+    icon: '📦', name: 'Sell one item fast', time: '~10 min',
+    blurb: 'One thing to list, and you want it up today — priced right, shot properly, and written so buyers actually reply.',
+    steps: [
+      { panel: 'items', icon: '📝', title: 'Describe it once',
+        guide: 'Name, brand, model, condition, and what it cost new. Every other step reads from here, so this is the only time you type any of it.',
+        why: 'Retail price and condition are what the calculator prices from. A guess here becomes a guess in every tool downstream.' },
+      { panel: 'pricing', icon: '💰', title: 'Price it from a formula',
+        guide: 'Run the calculator, take the ideal price, and write down the floor. Decide your walk-away number now, while you are calm, not mid-haggle with a stranger.',
+        why: 'Most items sit unsold because they are priced from what the owner paid rather than what the category clears at.' },
+      { panel: 'photos', icon: '📸', title: 'Shoot the whole list',
+        guide: 'Pick your category and work the checklist. Daylight, clean background, and photograph the flaw on purpose — a visible flaw closes sales, a hidden one causes no-shows.',
+        why: 'Photos decide whether anyone reads the title at all. Nothing else on this list moves the needle as hard.' },
+      { panel: 'measurements', icon: '📐', title: 'Measure it',
+        guide: 'Fill the fields for your category and copy the formatted block — it goes straight into the description in two steps.',
+        why: '"Will it fit?" is the most common buyer question and the one most likely to go unanswered until they lose interest.' },
+      { panel: 'titles', icon: '✍️', title: 'Generate the title',
+        guide: 'Take the option that leads with brand and model. Buyers search those words; they do not search adjectives.',
+        why: 'Marketplace search weights the title far more heavily than the description.' },
+      { panel: 'description', icon: '📄', title: 'Write the description',
+        guide: 'Fill the form, paste your measurements in, and say plainly why you are selling.',
+        why: 'Naming your reason kills the "so what is wrong with it" suspicion before a buyer has to ask.' },
+      { panel: 'audit', icon: '🔍', title: 'Audit before you post',
+        guide: 'Paste the finished listing back in and fix whatever it scores you down on.',
+        why: 'Two minutes here is cheaper than a week of silence and a repost.' }
+    ]
+  },
+
+  revive: {
+    icon: '🔁', name: 'Fix a listing nobody bites on', time: '~8 min',
+    blurb: 'It has been up for days. Views, maybe, but no real messages. Work out which of the four things is wrong and fix that one.',
+    steps: [
+      { panel: 'audit', icon: '🔍', title: 'Score the listing you have',
+        guide: 'Paste the live listing in exactly as posted. Do not fix anything yet — you want the diagnosis before the treatment.',
+        why: 'Sellers almost always reach for the price first. It is the fourth most common problem, not the first.' },
+      { panel: 'photos', icon: '📸', title: 'Rule the photos in or out',
+        guide: 'Run your shots against the category checklist. If the lead photo is dim, cluttered, or shot at night, reshoot before touching anything else.',
+        why: 'A bad lead photo means nobody ever sees the rest of your work, so no other fix can help.' },
+      { panel: 'titles', icon: '✍️', title: 'Rewrite the title for search',
+        guide: 'If your title opens with a word nobody would type into a search box, regenerate it and lead with brand and model.',
+        why: 'Views with no messages means the listing is being found. Views that never happen means the title is not matching.' },
+      { panel: 'pricing', icon: '💰', title: 'Re-run the price honestly',
+        guide: 'Recalculate with the condition you would admit to out loud, not the one you hoped for when you posted.',
+        why: 'The market has already voted on your price. Silence is the vote.' },
+      { panel: 'pricedrop', icon: '📉', title: 'Schedule the drops',
+        guide: 'Set your deadline and floor and take the table. Drop on the dates it gives you rather than whenever you get impatient.',
+        why: 'Scheduled drops re-surface a listing and signal movement. Random ones just train watchers to keep waiting.' },
+      { panel: 'description', icon: '📄', title: 'Rebuild the description',
+        guide: 'Rewrite it with measurements, condition stated plainly, and pickup details. Then repost rather than edit, so it enters the feed fresh.',
+        why: 'An edited old listing stays buried; a new one starts at the top.' },
+      { panel: 'sevenday', icon: '🗓️', title: 'Commit to seven days',
+        guide: 'Generate the plan and follow it. If it has not sold by the end of it, the floor price was wrong, not the listing.' }
+    ]
+  },
+
+  buyer: {
+    icon: '🤝', name: 'Handle a buyer who just messaged', time: '~5 min',
+    blurb: 'Someone is in your inbox right now. Screen them, answer well, hold your price, and meet safely.',
+    steps: [
+      { panel: 'scam', icon: '🛡️', title: 'Screen the message first',
+        guide: 'Run what they sent through the checklist before you reply. Do this even when the message looks ordinary.',
+        why: 'Every scam script is designed to look ordinary for the first two messages. That is the whole trick.' },
+      { panel: 'scripts', icon: '💬', title: 'Reply with a script, not a reflex',
+        guide: 'Find the situation — lowball, "is this still available", trade offer, delivery request — and send that response.',
+        why: 'The reply you fire off annoyed is the one that loses a buyer who would have paid asking.' },
+      { panel: 'pricing', icon: '💰', title: 'Know your floor before you counter',
+        guide: 'Check the floor the calculator gave you. Counter once, hold there, and be willing to let it go.',
+        why: 'A number you decided in advance is the only thing that survives a confident haggler.' },
+      { panel: 'pickup', icon: '📍', title: 'Set up the handoff',
+        guide: 'Send the confirmation message with a public place and a firm time window. Daylight, cash, somewhere with cameras.',
+        why: 'Vague plans are what no-shows are made of, and private addresses are what you cannot take back.' },
+      { panel: 'pickup', icon: '⏰', title: 'Send the reminder',
+        guide: 'Send the day-of reminder a few hours ahead and ask them to confirm.',
+        why: 'A reminder that goes unanswered tells you it is a no-show while you can still relist the slot.' },
+      { panel: 'tracker', icon: '📊', title: 'Log the sale',
+        guide: 'Record what it sold for, where, and how long it took.',
+        why: 'After a handful of items the tracker tells you which platform is actually worth your time — that is real data, not a hunch.' }
+    ]
+  },
+
+  declutter: {
+    icon: '🧹', name: 'Clear out a whole pile', time: '~30 min setup',
+    blurb: 'A garage, a closet, a move. Many items, limited patience — batch the work instead of doing all of it once per item.',
+    steps: [
+      { panel: 'items', icon: '📦', title: 'Triage and enter everything',
+        guide: 'Add every item worth listing. If something would sell for under about $20, it is a donation — your hour is worth more than the listing is.',
+        why: 'The pile stalls on the low-value items. Cutting them first is what makes the rest happen.' },
+      { panel: 'pricing', icon: '💰', title: 'Price the pile in one sitting',
+        guide: 'Switch between items from the bar at the top and price them back to back while your judgement is calibrated.',
+        why: 'Pricing one item a day means every item is priced by a different mood.' },
+      { panel: 'photos', icon: '📸', title: 'Shoot everything in one session',
+        guide: 'Set up one spot with good light and bring items to it. One background, one session, all of it.',
+        why: 'Setup is the expensive part of photography. Doing it once instead of twenty times is most of the time you save.' },
+      { panel: 'description', icon: '📄', title: 'Write them back to back',
+        guide: 'Work the description form item by item. The form is the same each time, so the tenth is far faster than the first.' },
+      { panel: 'sevenday', icon: '🗓️', title: 'Stagger the posting',
+        guide: 'Post two or three a day rather than all of them at once, and use the plan to keep the order straight.',
+        why: 'Twenty listings posted at once bury each other and all go stale on the same day.' },
+      { panel: 'pricedrop', icon: '📉', title: 'Set one drop rhythm',
+        guide: 'Give the whole batch the same deadline and drop schedule so you are making one decision a week, not twenty.' },
+      { panel: 'tracker', icon: '📊', title: 'Track the whole run',
+        guide: 'Log each sale as it lands and watch the totals. Revenue, sell-through, and which platform is carrying the batch.',
+        why: 'This is the number that tells you whether the next pile is worth doing at all.' }
+    ]
+  }
+};
+
+// Flow position is UI state, not item data, so it lives in its own flat key.
+// `sk_flow` is not one of the legacy tool keys migrateLegacyItem() folds away.
+let _flowId = null, _flowStep = 0;
+try {
+  const f = JSON.parse(localStorage.getItem('sk_flow') || 'null');
+  if (f && PLAYBOOKS[f.id]) { _flowId = f.id; _flowStep = f.step || 0; }
+} catch (e) {}
+
+function saveFlowPos() {
+  try {
+    if (_flowId) localStorage.setItem('sk_flow', JSON.stringify({ id: _flowId, step: _flowStep }));
+    else localStorage.removeItem('sk_flow');
+  } catch (e) {}
+}
+
+// Progress rides on the item, like photos and measurements, so it switches with it.
+function flowDone(id) {
+  const it = activeItem();
+  return (((it || {}).flows || {})[id] || []).slice();
+}
+function setFlowDone(id, arr) {
+  // Ticking a step with no item yet creates one, the way saveLS() does for every
+  // other tool. Guarded on length so merely opening a playbook leaves nothing behind.
+  if (!activeItem()) {
+    if (!arr.length) return;
+    createItem('Untitled item');
+    renderItemBar(); renderItemList(); renderItemForm();
+  }
+  updateActiveItem(it => { it.flows = it.flows || {}; it.flows[id] = arr; });
+}
+
+function openFlow(id) {
+  if (!PLAYBOOKS[id]) return;
+  _flowId = id;
+  const done = flowDone(id);
+  const next = PLAYBOOKS[id].steps.findIndex((s, i) => done.indexOf(i) === -1);
+  _flowStep = next === -1 ? 0 : next;
+  saveFlowPos();
+  showPanel('flow');
+}
+
+function exitFlow() {
+  _flowId = null; _flowStep = 0;
+  saveFlowPos();
+  syncFlowBar(_currentPanel);
+  showPanel('home');
+}
+
+function resetFlow() {
+  if (!_flowId) return;
+  setFlowDone(_flowId, []);
+  _flowStep = 0;
+  saveFlowPos();
+  renderFlow(); renderFlowCards();
+}
+
+function toggleFlowStep(i) {
+  const done = flowDone(_flowId);
+  const at = done.indexOf(i);
+  if (at === -1) done.push(i); else done.splice(at, 1);
+  setFlowDone(_flowId, done);
+  renderFlow(); renderFlowCards(); renderReadiness();
+}
+
+// Open a step's tool and make the flow bar follow it.
+function flowGo(i) {
+  _flowStep = i;
+  saveFlowPos();
+  showPanel(PLAYBOOKS[_flowId].steps[i].panel);
+}
+
+// The flow bar's primary action: tick where you are, then move to the next
+// step that is not already done.
+function flowNext() {
+  const pb = PLAYBOOKS[_flowId];
+  if (!pb) return;
+  const done = flowDone(_flowId);
+  if (done.indexOf(_flowStep) === -1) done.push(_flowStep);
+  setFlowDone(_flowId, done);
+  renderFlowCards(); renderReadiness();
+
+  const next = pb.steps.findIndex((s, i) => done.indexOf(i) === -1);
+  if (next === -1) { renderFlow(); showPanel('flow'); return; }
+  flowGo(next);
+}
+
+function renderFlowCards() {
+  const wrap = document.getElementById('flow-grid');
+  if (!wrap) return;
+  wrap.innerHTML = Object.entries(PLAYBOOKS).map(([id, pb]) => {
+    const done = flowDone(id).filter(i => i < pb.steps.length);
+    const pct = Math.round(done.length / pb.steps.length * 100);
+    const names = pb.steps.map(s => PANEL_NAMES[s.panel] || s.panel).filter((v, i, a) => a.indexOf(v) === i);
+    const tools = escHtml(names.slice(0, 4).join(' · ')) +
+                  (names.length > 4 ? ' <span class="fc-more">+' + (names.length - 4) + ' more</span>' : '');
+    return '' +
+      '<div class="flow-card' + (pct === 100 ? ' is-done' : '') + '" onclick="openFlow(\'' + id + '\')" ' +
+           'role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openFlow(\'' + id + '\');}">' +
+        '<div class="fc-top">' +
+          '<span class="fc-icon">' + pb.icon + '</span>' +
+          '<span class="fc-meta">' + pb.steps.length + ' steps · ' + escHtml(pb.time) + '</span>' +
+        '</div>' +
+        '<h4>' + escHtml(pb.name) + '</h4>' +
+        '<p>' + escHtml(pb.blurb) + '</p>' +
+        '<div class="fc-tools">' + tools + '</div>' +
+        (done.length
+          ? '<div class="fc-prog"><div class="fc-track"><div class="fc-fill" style="width:' + pct + '%;"></div></div>' +
+            '<span class="fc-pct">' + (pct === 100 ? 'Complete' : done.length + '/' + pb.steps.length) + '</span></div>'
+          : '') +
+        '<div class="fc-go">' + (done.length && pct < 100 ? 'Resume' : pct === 100 ? 'Run it again' : 'Start playbook') + ' →</div>' +
+      '</div>';
+  }).join('');
+}
+
+function renderFlow() {
+  const pb = PLAYBOOKS[_flowId];
+  if (!pb) { showPanel('home'); return; }
+  const done = flowDone(_flowId);
+  const pct = Math.round(done.filter(i => i < pb.steps.length).length / pb.steps.length * 100);
+
+  document.getElementById('fl-title').textContent = pb.icon + ' ' + pb.name;
+  document.getElementById('fl-sub').textContent = pb.blurb;
+
+  document.getElementById('fl-summary').innerHTML =
+    '<div class="fl-sum-row">' +
+      '<div class="fl-sum-text"><strong>' + done.length + ' of ' + pb.steps.length + ' steps done</strong>' +
+        '<div class="fl-sum-hint">' + (pct === 100
+          ? 'Every step is ticked. Reset it below to run this playbook on another item.'
+          : 'Open a step to jump to its tool. The bar at the top keeps your place while you work.') + '</div></div>' +
+      '<div class="fl-sum-pct">' + pct + '%</div>' +
+    '</div>' +
+    '<div class="rd-track"><div class="rd-fill" style="width:' + pct + '%;"></div></div>';
+
+  document.getElementById('fl-steps').innerHTML = pb.steps.map((s, i) => {
+    const isDone = done.indexOf(i) !== -1;
+    return '' +
+      '<div class="fl-step' + (isDone ? ' is-done' : '') + (i === _flowStep && !isDone ? ' is-current' : '') + '">' +
+        '<button class="fl-tick" onclick="toggleFlowStep(' + i + ')" ' +
+                'title="' + (isDone ? 'Mark as not done' : 'Mark this step done') + '" ' +
+                'aria-pressed="' + isDone + '">' + (isDone ? '✓' : (i + 1)) + '</button>' +
+        '<div class="fl-body">' +
+          '<h4>' + s.icon + ' ' + escHtml(s.title) + '</h4>' +
+          '<p>' + escHtml(s.guide) + '</p>' +
+          (s.why ? '<p class="fl-why"><strong>Why it matters:</strong> ' + escHtml(s.why) + '</p>' : '') +
+          '<button class="btn btn-outline btn-sm" onclick="flowGo(' + i + ')">Open ' + escHtml(PANEL_NAMES[s.panel] || s.panel) + ' →</button>' +
+        '</div>' +
+      '</div>';
+  }).join('');
+}
+
+// The bar is hidden on the panels that are about choosing a flow rather than
+// working one, so it never competes with the playbook list itself.
+const FLOW_BAR_HIDDEN = ['home', 'flow', 'alltools'];
+
+function syncFlowBar(panelId) {
+  const bar = document.getElementById('flow-bar');
+  if (!bar) return;
+  const pb = PLAYBOOKS[_flowId];
+  if (!pb || FLOW_BAR_HIDDEN.indexOf(panelId) !== -1) { bar.style.display = 'none'; return; }
+
+  // Landing on a tool from the nav rather than the playbook still orients the bar:
+  // if this panel is a step, that is where you are.
+  const here = pb.steps.findIndex(s => s.panel === panelId);
+  if (here !== -1) _flowStep = here;
+  const step = pb.steps[_flowStep];
+  if (!step) { bar.style.display = 'none'; return; }
+
+  const done = flowDone(_flowId).indexOf(_flowStep) !== -1;
+  bar.style.display = 'flex';
+  bar.classList.toggle('off-step', here === -1);
+  document.getElementById('fb-tag').textContent = pb.icon + ' ' + pb.name;
+  document.getElementById('fb-step').textContent =
+    'Step ' + (_flowStep + 1) + ' of ' + pb.steps.length + ' · ' + step.title;
+  document.getElementById('fb-guide').textContent = here === -1
+    ? 'You have stepped outside the playbook — “Steps” takes you back to it.'
+    : step.guide;
+  const next = document.getElementById('fb-next');
+  next.textContent = done ? 'Next →' : 'Done →';
+  saveFlowPos();
+}
+
+// ════════════════════════════════
+// Listing readiness — what is still missing before this can go up
+// ════════════════════════════════
+// Each check reads state that already exists rather than asking for anything new,
+// and points at the tool that fills the gap.
+const RD_CHECKS = [
+  { label: 'Item named',      panel: 'items',
+    test: it => !!(it.name && it.name.trim() && it.name !== 'Untitled item') },
+  { label: 'Condition + retail', panel: 'items',
+    test: it => !!(it.condition && it.retail) },
+  { label: 'Asking price',    panel: 'pricing',
+    test: it => !!it.asking },
+  { label: 'Photos planned',  panel: 'photos',
+    test: it => Object.values(it.photos || {}).some(a => (a || []).length >= 4) },
+  { label: 'Measurements',    panel: 'measurements',
+    test: it => Object.values(it.measurements || {}).some(v => String(v == null ? '' : v).trim()) },
+  { label: 'Title drafted',   panel: 'titles',
+    test: it => !!(((it.tools || {}).tg || {})['tg-cat']) },
+  { label: 'Description drafted', panel: 'description',
+    test: it => !!(((it.tools || {}).db || {})['db-features']) }
+];
+
+function renderReadiness() {
+  const card = document.getElementById('rd-card');
+  if (!card) return;
+  const it = activeItem();
+  if (!it) { card.style.display = 'none'; return; }
+
+  const results = RD_CHECKS.map(c => {
+    let ok = false;
+    try { ok = !!c.test(it); } catch (e) {}
+    return { c: c, ok: ok };
+  });
+  const got = results.filter(r => r.ok).length;
+  const pct = Math.round(got / results.length * 100);
+
+  card.style.display = 'block';
+  document.getElementById('rd-score').textContent = pct + '%';
+  document.getElementById('rd-fill').style.width = pct + '%';
+  document.getElementById('rd-sub').textContent = pct === 100
+    ? '“' + it.name + '” has everything a buyer looks for. Post it.'
+    : got + ' of ' + results.length + ' ready for “' + it.name + '” — the gaps below are what is left.';
+
+  document.getElementById('rd-gaps').innerHTML = results.map(r =>
+    '<button class="rd-chip' + (r.ok ? ' ok' : '') + '" onclick="showPanel(\'' + r.c.panel + '\')">' +
+      (r.ok ? '✓ ' : '+ ') + escHtml(r.c.label) +
+    '</button>'
+  ).join('');
+}
+
+function renderStart() { renderFlowCards(); renderReadiness(); }
+
+// ════════════════════════════════
+// Command palette — ⌘K / Ctrl+K
+// ════════════════════════════════
+const PANEL_NAMES = {
+  home: 'Start Here', alltools: 'All Tools', items: 'My Items',
+  copilot: 'AI Copilot', aisetup: 'Connect AI',
+  pricing: 'Pricing Calc', titles: 'Title Generator', description: 'Description Builder',
+  aiprompt: 'AI Listing Prompt', scripts: 'Negotiation Scripts', scam: 'Scam Checklist',
+  pickup: 'Pickup Messages', pricedrop: 'Price Drop Schedule', measurements: 'Measurement Sheet',
+  photos: 'Photo Checklist', sevenday: '7-Day Plan', audit: 'Listing Audit', tracker: 'Sale Tracker'
+};
+
+let _cmdSel = 0, _cmdHits = [];
+
+function paletteItems() {
+  const out = Object.entries(PLAYBOOKS).map(([id, pb]) => ({
+    label: pb.name, kind: 'Playbook', icon: pb.icon, run: () => openFlow(id)
+  }));
+  Object.entries(PANEL_NAMES).forEach(([id, name]) => {
+    out.push({ label: name, kind: 'Tool', icon: '→', run: () => showPanel(id) });
+  });
+  return out;
+}
+
+function openPalette() {
+  const el = document.getElementById('cmdk');
+  el.style.display = 'flex';
+  const input = document.getElementById('cmdk-input');
+  input.value = ''; _cmdSel = 0;
+  renderPalette();
+  input.focus();
+}
+function closePalette() { document.getElementById('cmdk').style.display = 'none'; }
+
+function renderPalette() {
+  const q = document.getElementById('cmdk-input').value.trim().toLowerCase();
+  _cmdHits = paletteItems().filter(i => !q || i.label.toLowerCase().indexOf(q) !== -1);
+  if (_cmdSel >= _cmdHits.length) _cmdSel = 0;
+  document.getElementById('cmdk-list').innerHTML = _cmdHits.length
+    ? _cmdHits.map((i, n) =>
+        '<div class="cmdk-row' + (n === _cmdSel ? ' sel' : '') + '" onclick="runPalette(' + n + ')" onmousemove="cmdHover(' + n + ')">' +
+          '<span class="cmdk-ic">' + i.icon + '</span>' +
+          '<span class="cmdk-label">' + escHtml(i.label) + '</span>' +
+          '<span class="cmdk-kind">' + i.kind + '</span>' +
+        '</div>').join('')
+    : '<div class="cmdk-empty">Nothing matches “' + escHtml(q) + '”.</div>';
+}
+function cmdHover(n) {
+  if (n === _cmdSel) return;
+  _cmdSel = n;
+  const rows = document.querySelectorAll('.cmdk-row');
+  rows.forEach((r, i) => r.classList.toggle('sel', i === n));
+}
+function runPalette(n) {
+  const hit = _cmdHits[n];
+  closePalette();
+  if (hit) hit.run();
+}
+function paletteKey(e) {
+  if (e.key === 'Escape') { closePalette(); return; }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (!_cmdHits.length) return;
+    _cmdSel = (_cmdSel + (e.key === 'ArrowDown' ? 1 : -1) + _cmdHits.length) % _cmdHits.length;
+    renderPalette();
+    const sel = document.querySelector('.cmdk-row.sel');
+    if (sel && sel.scrollIntoView) sel.scrollIntoView({ block: 'nearest' });
+    return;
+  }
+  if (e.key === 'Enter') { e.preventDefault(); runPalette(_cmdSel); }
 }
 
 // ════════════════════════════════
@@ -2594,7 +3099,7 @@ function exportDropICS() {
       `DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${y}${m}${d}`,
       `DTEND;VALUE=DATE:${ey}${em}${ed}`,
-      `SUMMARY:${icsEscape('SellerKit: ' + s.action + ' — $' + s.price)}`,
+      `SUMMARY:${icsEscape('SellerKit Pro: ' + s.action + ' — $' + s.price)}`,
       `DESCRIPTION:${icsEscape('Day ' + s.day + ' of your price drop plan. Update your listing price to $' + s.price + ' today. Editing the price also bumps your listing to fresh buyers.')}`,
       'BEGIN:VALARM',
       'TRIGGER:-PT1H',
@@ -3334,7 +3839,7 @@ function exportTrackerCSV() {
 // ════════════════════════════════
 // AI — bring your own provider
 // ════════════════════════════════
-// Every AI feature in the toolkit goes through aiStream(). There is no SellerKit
+// Every AI feature in the toolkit goes through aiStream(). There is no SellerKit Pro
 // server: the browser talks straight to whichever provider the user connected,
 // using the user's own key from localStorage under `sk_ai_cfg`. Nothing is proxied,
 // nothing is logged, and the key never leaves this device except in the request
@@ -3389,7 +3894,7 @@ const AI_PROVIDERS = {
 
 // One persona behind every feature — the tone the rest of the toolkit is written in.
 const AI_PERSONA =
-  'You are the AI inside SellerKit, a toolkit for people selling secondhand items on ' +
+  'You are the AI inside SellerKit Pro, a toolkit for people selling secondhand items on ' +
   'Facebook Marketplace, OfferUp, Craigslist and Mercari. You are practical, direct and ' +
   'concise. You write the way a seasoned flipper talks: no filler, no hype, no invented ' +
   'facts about the item. If a detail is missing, say what to add rather than making it up. ' +
@@ -3669,7 +4174,7 @@ function requireAI(cardId, outId) {
   out.innerHTML =
     '<strong>No AI connected yet.</strong>\n\n' +
     'This runs on your own API key from Claude, ChatGPT, Gemini or OpenRouter — ' +
-    'the key stays in this browser and SellerKit never sees it.\n\n' +
+    'the key stays in this browser and SellerKit Pro never sees it.\n\n' +
     '<button class="btn btn-ai btn-sm" onclick="showPanel(\'aisetup\')">🔌 Connect a provider →</button>';
   card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   return false;
@@ -3698,9 +4203,9 @@ function aiItemContext() {
 
   if (document.getElementById('pc-results') &&
       document.getElementById('pc-results').style.display !== 'none') {
-    push('SellerKit calculated ask', txt('pc-ideal'));
-    push('SellerKit quick-flip price', txt('pc-quickflip'));
-    push('SellerKit walk-away floor', txt('pc-floor'));
+    push('SellerKit Pro calculated ask', txt('pc-ideal'));
+    push('SellerKit Pro quick-flip price', txt('pc-quickflip'));
+    push('SellerKit Pro walk-away floor', txt('pc-floor'));
   }
   push('Local demand', val('pc-demand') === '1.15' ? 'high' : val('pc-demand') === '0.85' ? 'low' : val('pc-demand') ? 'normal' : '');
   push('Key features', val('db-features').replace(/\n+/g, '; '));
@@ -3825,7 +4330,7 @@ async function saveAndTestAI() {
   out.textContent = 'Testing ' + model + '…';
   try {
     const reply = await aiStream(
-      [{ role: 'user', content: 'Reply with exactly: SellerKit connected.' }],
+      [{ role: 'user', content: 'Reply with exactly: SellerKit Pro connected.' }],
       { maxTokens: 24, system: 'Reply with exactly the words the user asks for. Nothing else.' }
     );
     out.textContent = '✅ Connected. ' + p.label + ' answered: ' + reply.trim();
@@ -4024,7 +4529,7 @@ function aiPriceCheck(btn) {
       'Give me a second opinion on pricing this item on local marketplaces.\n' +
       'Cover, in this order:\n' +
       '1. A realistic asking price range, and why this category holds or loses value.\n' +
-      '2. Whether the SellerKit calculated ask above is too high, too low, or about right.\n' +
+      '2. Whether the SellerKit Pro calculated ask above is too high, too low, or about right.\n' +
       '3. The price that sells it within a week, and the floor I should walk away below.\n' +
       '4. One specific thing I could do to justify a higher price.\n' +
       'You are working from general knowledge, not live listings — say so in one line at the end, ' +
@@ -4140,6 +4645,18 @@ document.addEventListener('DOMContentLoaded', () => {
   renderItemForm();
   renderTracker();
   initAI();
+  renderStart();
+  syncFlowBar(_currentPanel);
+
+  // ⌘K / Ctrl+K opens the palette from anywhere; Escape closes it from anywhere.
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      document.getElementById('cmdk').style.display === 'flex' ? closePalette() : openPalette();
+    } else if (e.key === 'Escape' && document.getElementById('cmdk').style.display === 'flex') {
+      closePalette();
+    }
+  });
 });
 </script>
 </body>

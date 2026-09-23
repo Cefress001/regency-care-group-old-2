@@ -1,4 +1,4 @@
-/* SellerKit — Design System */
+/* SellerKit Pro — Design System */
 :root {
   --blue: #2563EB;
   --blue-dark: #1D4ED8;
@@ -68,6 +68,14 @@ nav {
 nav .inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
 .logo { font-size: 1.3rem; font-weight: 900; color: var(--dark); letter-spacing: -.5px; }
 .logo span { color: var(--green); }
+/* The Pro badge rides inside .logo, so it has to out-specify `.logo span`
+   above — which would otherwise paint it green on every page. */
+.logo .logo-pro {
+  display: inline-block; margin-left: .35rem; padding: .08rem .34rem;
+  border-radius: var(--radius-xs); background: var(--blue); color: var(--white);
+  font-size: .55em; font-weight: 900; letter-spacing: .6px; text-transform: uppercase;
+  vertical-align: middle; position: relative; top: -1px;
+}
 nav .nav-links { display: flex; gap: 1.5rem; align-items: center; }
 nav .nav-links a.nav-link { color: var(--gray-700); font-weight: 500; font-size: .9rem; transition: var(--transition); }
 nav .nav-links a.nav-link:hover { color: var(--blue); }
@@ -915,6 +923,198 @@ select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmln
   background: var(--purple); margin-left: 2px; animation: aiBlink 1s steps(2) infinite;
 }
 @keyframes aiBlink { 50% { opacity: 0; } }
+
+/* ══════════════════════════════════════════════════════════════
+   Playbooks, readiness, flow bar and command palette
+   A layer over the 13 tools — none of this adds a tool.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Both top bars stick as one unit. Offsetting a sticky flow bar by a hardcoded
+   item-bar height drifts the moment the item bar wraps to two lines. */
+.tk-topbars { position: sticky; top: 0; z-index: 50; }
+.tk-topbars .item-bar { position: static; top: auto; z-index: auto; }
+
+/* ── Playbook chooser ── */
+.flow-grid {
+  /* Fixed 2-up rather than auto-fit: with exactly four playbooks, auto-fit lands
+     on three columns at common desktop widths and orphans the fourth. */
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .9rem; margin-bottom: 1.1rem;
+}
+.flow-card {
+  position: relative; overflow: hidden; cursor: pointer;
+  background: var(--white); border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius); padding: 1.35rem 1.35rem 1.15rem;
+  box-shadow: var(--shadow-sm); transition: var(--transition);
+  display: flex; flex-direction: column;
+}
+/* The accent wash only paints on hover, so four cards at rest stay calm. */
+.flow-card::before {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+  opacity: 0; transition: var(--transition);
+}
+.flow-card:hover, .flow-card:focus-visible {
+  border-color: var(--blue); box-shadow: var(--shadow-lg);
+  transform: translateY(-3px); outline: none;
+}
+.flow-card:hover::before, .flow-card:focus-visible::before { opacity: 1; }
+.flow-card.is-done { border-color: var(--green); background: linear-gradient(180deg, var(--green-light), var(--white) 55%); }
+
+.fc-top { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .7rem; }
+.fc-icon {
+  width: 42px; height: 42px; border-radius: 11px; background: var(--blue-light);
+  display: flex; align-items: center; justify-content: center; font-size: 1.35rem;
+}
+.flow-card.is-done .fc-icon { background: #d1fae5; }
+.fc-meta {
+  font-size: .68rem; font-weight: 800; letter-spacing: .03em; text-transform: uppercase;
+  color: var(--gray-400); background: var(--gray-50); border: 1px solid var(--gray-200);
+  padding: .22rem .5rem; border-radius: 999px; white-space: nowrap;
+}
+.flow-card h4 { font-size: 1rem; font-weight: 800; margin-bottom: .35rem; line-height: 1.3; }
+.flow-card p { font-size: .82rem; color: var(--gray-600); line-height: 1.55; margin-bottom: .8rem; flex: 1; }
+.fc-tools { font-size: .74rem; font-weight: 700; color: var(--gray-500); margin-bottom: .75rem; line-height: 1.5; }
+.fc-more { color: var(--gray-400); font-weight: 600; }
+.fc-prog { display: flex; align-items: center; gap: .55rem; margin-bottom: .7rem; }
+.fc-track { flex: 1; height: 6px; border-radius: 999px; background: var(--gray-200); overflow: hidden; }
+.fc-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--blue), var(--green)); transition: width .3s ease; }
+.fc-pct { font-size: .7rem; font-weight: 800; color: var(--gray-500); white-space: nowrap; }
+.fc-go { font-size: .82rem; font-weight: 800; color: var(--blue); }
+.flow-card.is-done .fc-go { color: var(--green-dark); }
+
+.all-tools-row {
+  display: flex; align-items: center; gap: .9rem; flex-wrap: wrap;
+  padding: 1.1rem 1.25rem; margin-bottom: 1.1rem;
+  background: var(--white); border: 1.5px dashed var(--gray-300); border-radius: var(--radius);
+}
+.all-tools-row .btn-lg { padding: .8rem 1.5rem; font-size: .95rem; }
+.all-tools-hint { font-size: .8rem; color: var(--gray-500); flex: 1; min-width: 180px; }
+
+/* ── Listing readiness ── */
+.rd-card { background: linear-gradient(135deg, #f8fafc, var(--white)); }
+.rd-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .75rem; }
+.rd-headtext h3 { margin-bottom: .15rem; }
+.rd-sub { font-size: .82rem; color: var(--gray-600); line-height: 1.5; }
+.rd-score { font-size: 2rem; font-weight: 900; line-height: 1; color: var(--blue); letter-spacing: -1px; }
+.rd-track { height: 9px; border-radius: 999px; background: var(--gray-200); overflow: hidden; }
+.rd-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--blue), var(--green)); transition: width .35s ease; }
+.rd-gaps { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .85rem; }
+.rd-chip {
+  font-family: inherit; font-size: .75rem; font-weight: 700; cursor: pointer;
+  padding: .3rem .6rem; border-radius: 999px;
+  border: 1px solid var(--gray-300); background: var(--white); color: var(--gray-600);
+  transition: var(--transition);
+}
+.rd-chip:hover { border-color: var(--blue); color: var(--blue); }
+.rd-chip.ok { border-color: #a7f3d0; background: var(--green-light); color: var(--green-dark); }
+
+/* ── Flow bar ── */
+.flow-bar {
+  display: flex; align-items: center; gap: .85rem; flex-wrap: wrap;
+  padding: .6rem 2rem;
+  background: linear-gradient(90deg, var(--blue-light), #f0fdf4);
+  border-bottom: 1px solid var(--blue-mid);
+}
+.flow-bar.off-step { background: var(--gray-50); border-bottom-color: var(--gray-200); }
+.fb-tag {
+  font-size: .7rem; font-weight: 900; letter-spacing: .03em; text-transform: uppercase;
+  color: var(--blue-dark); background: var(--white); border: 1px solid var(--blue-mid);
+  padding: .25rem .55rem; border-radius: 999px; white-space: nowrap;
+}
+.fb-body { flex: 1; min-width: 160px; }
+.fb-step { font-size: .82rem; font-weight: 800; color: var(--gray-900); }
+.fb-guide {
+  font-size: .76rem; color: var(--gray-600); line-height: 1.45;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.fb-actions { display: flex; align-items: center; gap: .4rem; }
+.fb-x {
+  width: 26px; height: 26px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 1px solid var(--gray-300); background: var(--white); color: var(--gray-500);
+  font-size: 1rem; line-height: 1; font-family: inherit; transition: var(--transition);
+}
+.fb-x:hover { border-color: var(--red); color: var(--red); }
+
+/* ── Playbook runner ── */
+.fl-summary { background: linear-gradient(135deg, var(--blue-light), #f0fdf4); }
+.fl-sum-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .7rem; }
+.fl-sum-text strong { font-size: .95rem; }
+.fl-sum-hint { font-size: .8rem; color: var(--gray-600); line-height: 1.5; margin-top: .1rem; }
+.fl-sum-pct { font-size: 1.75rem; font-weight: 900; line-height: 1; color: var(--blue-dark); letter-spacing: -1px; }
+
+.fl-step {
+  position: relative; display: flex; gap: .9rem;
+  background: var(--white); border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+  padding: 1.1rem 1.25rem; margin-bottom: .6rem; transition: var(--transition);
+}
+.fl-step.is-current { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-light); }
+.fl-step.is-done { background: var(--gray-50); border-color: var(--gray-200); }
+.fl-step.is-done .fl-body h4, .fl-step.is-done .fl-body p { opacity: .62; }
+.fl-tick {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+  border: 2px solid var(--gray-300); background: var(--white); color: var(--gray-500);
+  font-size: .82rem; font-weight: 900; font-family: inherit; transition: var(--transition);
+  display: flex; align-items: center; justify-content: center;
+}
+.fl-tick:hover { border-color: var(--blue); color: var(--blue); }
+.fl-step.is-done .fl-tick { background: var(--green); border-color: var(--green); color: var(--white); }
+.fl-body { flex: 1; min-width: 0; }
+.fl-body h4 { font-size: .92rem; font-weight: 800; margin-bottom: .3rem; }
+.fl-body p { font-size: .83rem; color: var(--gray-600); line-height: 1.6; margin-bottom: .5rem; }
+.fl-why {
+  background: var(--orange-light); border-left: 3px solid var(--orange);
+  padding: .5rem .7rem; border-radius: var(--radius-xs); font-size: .79rem !important;
+}
+.fl-why strong { color: #92400e; }
+
+/* ── Command palette ── */
+.cmdk {
+  position: fixed; inset: 0; z-index: 400; display: flex;
+  align-items: flex-start; justify-content: center; padding: 12vh 20px 20px;
+  background: rgba(15,23,42,.45); backdrop-filter: blur(3px);
+}
+.cmdk-box {
+  width: 100%; max-width: 520px; background: var(--white);
+  border-radius: var(--radius); box-shadow: var(--shadow-xl); overflow: hidden;
+  animation: fadeIn .14s ease both;
+}
+.cmdk-box input {
+  width: 100%; padding: 1rem 1.15rem; border: 0; border-bottom: 1px solid var(--gray-200);
+  font-size: 1rem; font-family: inherit; color: var(--gray-900); outline: none;
+}
+.cmdk-list { max-height: 46vh; overflow-y: auto; padding: .4rem; }
+.cmdk-row {
+  display: flex; align-items: center; gap: .7rem; cursor: pointer;
+  padding: .55rem .75rem; border-radius: var(--radius-sm); font-size: .88rem;
+}
+.cmdk-row.sel { background: var(--blue-light); }
+.cmdk-ic { width: 20px; text-align: center; }
+.cmdk-label { flex: 1; font-weight: 600; }
+.cmdk-kind { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--gray-400); }
+.cmdk-row.sel .cmdk-kind { color: var(--blue); }
+.cmdk-empty { padding: 1.4rem; text-align: center; font-size: .85rem; color: var(--gray-500); }
+.cmdk-foot {
+  display: flex; gap: 1rem; padding: .55rem 1.15rem;
+  border-top: 1px solid var(--gray-200); background: var(--gray-50);
+  font-size: .7rem; color: var(--gray-500);
+}
+
+@media (max-width: 900px) {
+  .flow-grid { grid-template-columns: 1fr; gap: .7rem; }
+  .flow-card { padding: 1.1rem; }
+  .flow-bar { padding: .55rem 1rem; gap: .55rem; }
+  /* The guide text is the first thing to go when the bar has to wrap — the step
+     name and the Done button are what make it usable one-handed. */
+  .fb-guide { display: none; }
+  .fb-body { min-width: 110px; }
+  .rd-head { gap: .6rem; }
+  .rd-score { font-size: 1.6rem; }
+  .fl-step { padding: .95rem 1rem; gap: .7rem; }
+  .all-tools-row { padding: .9rem 1rem; }
+  .all-tools-row .btn-lg { width: 100%; }
+  .cmdk { padding: 8vh 14px 14px; }
+}
 
 /* ── Photo review — shots held in memory only, never persisted ── */
 .ph-drop {

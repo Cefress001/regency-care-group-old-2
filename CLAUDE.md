@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-SellerKit — a static marketing site plus a client-side web app that helps people list and sell secondhand items (pricing, titles, descriptions, negotiation scripts, scam screening, etc.). Despite the repo name, there is no Regency Care content left; the site was replaced wholesale in commit `8faed20`.
+SellerKit Pro — a static marketing site plus a client-side web app that helps people list and sell secondhand items (pricing, titles, descriptions, negotiation scripts, scam screening, etc.). Despite the repo name, there is no Regency Care content left; the site was replaced wholesale in commit `8faed20`.
 
 ## Build / run / test
 
@@ -27,7 +27,7 @@ Seven pages, no shared JS. Each page carries its own `<script>` at the bottom; t
 | File | Role |
 | --- | --- |
 | `index.html` | Marketing landing page. Inline `<style>` holds page-specific additions on top of `styles.css`. |
-| `toolkit.html` | The product. A single-page app (~2270 lines) holding all 13 tools, behind the interim access gate. |
+| `toolkit.html` | The product. A single-page app holding all 13 tools, the playbook layer, and the interim access gate. |
 | `checkout.html` | Payment page. **Self-contained** — inline `<style>`, Google Fonts, does not load `styles.css`. |
 | `success.html` | Post-purchase page. Also self-contained. Grants toolkit access. |
 | `terms.html` `privacy.html` `refund.html` | Legal pages. Share `legal.css`. |
@@ -124,6 +124,51 @@ Adding an AI action to a tool:
 `aiItemContext()` is what every feature knows before the user types: the active item's core fields,
 the calculator's current output, the description form, measurements. Extend it there rather than
 threading fields through individual prompts.
+
+### Playbooks — the job first, the tools second
+
+The toolkit opens on **Start Here** (`#panel-home`), which asks what the person came to do
+rather than listing tools. Four playbooks cover the highest-intent jobs — sell one item, fix a
+listing nobody bites on, handle a buyer who just messaged, clear out a whole pile — and an
+**Access all tools** button drops to `#panel-alltools`, which holds the original 13-card grid
+unchanged.
+
+**A playbook is a layer over the 13 tools, not a 14th tool** — the same treatment My Items and
+the AI layer get. It sequences tools that already exist and owns no inputs of its own, so it is
+absent from the tools grid and from the four counted files. Adding one never triggers the
+tool-count chore below.
+
+Everything renders from one constant:
+
+```js
+PLAYBOOKS[id] = { icon, name, time, blurb, steps: [ { panel, icon, title, guide, why? } ] }
+```
+
+`panel` is the tool the step opens. Keep `guide` about what to actually do and `why` about what
+it costs to skip — a step that only says "open the pricing tool" is a menu, not a playbook.
+
+- **Progress rides on the item** (`item.flows[playbookId] = [stepIndex, …]`), like `photos` and
+  `measurements`, so it switches with the item. Ticking a step with no item yet auto-creates one,
+  the way `saveLS()` does; the write is guarded on a non-empty array so merely opening a playbook
+  leaves nothing behind.
+- **Position is UI state**, not item data, so it lives in the flat `sk_flow` key. That name is
+  deliberately not one of the legacy tool keys `migrateLegacyItem()` folds away.
+- **The flow bar** (`#flow-bar`) is one element for all 13 tools rather than a strip inside each.
+  `syncFlowBar(panelId)` is called from `showPanel`; `FLOW_BAR_HIDDEN` keeps it off the panels
+  that are about choosing a playbook rather than working one.
+- **Both top bars stick as one unit** via `.tk-topbars`. Making the flow bar separately sticky
+  with a hardcoded item-bar offset drifts the moment the item bar wraps to two lines.
+- `PANEL_NAMES` maps a panel id to its display name and is the single source for the palette,
+  the step buttons, and the tool list on a playbook card. A new tool panel belongs in it.
+
+**Listing readiness** (`RD_CHECKS`) scores the active item against seven signals a buyer looks
+for and renders each as a chip that opens the tool filling that gap. Every check reads state that
+already exists — none of them asks the user for anything new. Wrap a new check's `test` so a
+malformed item cannot throw the whole card away.
+
+**The command palette** (⌘K / Ctrl+K) lists every playbook and every entry in `PANEL_NAMES`.
+It is wired from the single `DOMContentLoaded` handler, which is the only place in the toolkit
+that attaches a listener rather than using inline `onclick`.
 
 ### Conventions
 
