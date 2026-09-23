@@ -29,34 +29,113 @@
     background: #0f172a; color: #f8fafc; font-size: 1rem; text-align: center;
     letter-spacing: 1px; margin-bottom: 12px; font-family: inherit;
   }
+  /* A username and a passphrase are read left-to-right; only the access code wants
+     the centred, letter-spaced treatment. */
+  #sk-view-login input { text-align: left; letter-spacing: normal; }
   .sk-gate-card button {
     width: 100%; padding: 13px; border: none; border-radius: 8px; cursor: pointer;
     background: #22c55e; color: #0f172a; font-weight: 800; font-size: .95rem; font-family: inherit;
   }
+  .sk-gate-card button[disabled] { opacity: .6; cursor: default; }
+  .sk-gate-alt {
+    display: block; margin-top: 14px; color: #60a5fa; font-size: .82rem; text-decoration: none;
+  }
+  .sk-gate-alt:hover { text-decoration: underline; }
   .sk-gate-err { color: #fca5a5; font-size: .85rem; min-height: 20px; margin-top: 10px; }
   .sk-gate-buy { display: block; margin-top: 18px; color: #94a3b8; font-size: .85rem; }
 </style>
 <script>
 (function () {
   var CODE = 'SK-PRO-2026';
+
+  // Owner / test sign-in. There is no SellerKit server, so this is verified in the
+  // browser and the source carries a PBKDF2-SHA256 digest rather than the password
+  // itself. That defeats a view-source read, not a determined offline attack — like
+  // the access code above, the whole block is interim and goes when Firebase lands.
+  // Rotate a credential with:
+  //   node -e "console.log(require('crypto').pbkdf2Sync('user:password','sellerkit-gate-v1',150000,32,'sha256').toString('hex'))"
+  var SALT = 'sellerkit-gate-v1';
+  var ITER = 150000;
+  var LOGINS = {
+    'sk-tester': 'c07ea94f86e8212eab055a37de4af3b3958b049a345fc565e52d9b2f05f4b446'
+  };
+
   var granted = false;
   try { granted = localStorage.getItem('sk_access') === 'granted'; } catch (e) {}
-  var qs = new URLSearchParams(location.search).get('access');
-  if (qs && qs.trim().toUpperCase() === CODE) {
+  var qs = new URLSearchParams(location.search);
+
+  // ?lock=1 puts the gate back. Once access sticks on a device there is otherwise no
+  // way to see the locked state or re-walk the purchase flow without clearing storage
+  // by hand, which is exactly what a test account needs to do repeatedly.
+  if (qs.get('lock')) {
+    granted = false;
+    try { localStorage.removeItem('sk_access'); } catch (e) {}
+  } else if ((qs.get('access') || '').trim().toUpperCase() === CODE) {
     granted = true;
     try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
   }
   if (!granted) document.documentElement.classList.add('sk-locked');
 
   // Unlock still works for the session when localStorage throws (private browsing).
+  function grant() {
+    try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
+    document.documentElement.classList.remove('sk-locked');
+  }
+  function err(msg) { document.getElementById('sk-err').textContent = msg; }
+
+  window.skShow = function (view) {
+    err('');
+    document.getElementById('sk-view-code').style.display  = view === 'code'  ? 'block' : 'none';
+    document.getElementById('sk-view-login').style.display = view === 'login' ? 'block' : 'none';
+    var first = document.getElementById(view === 'code' ? 'sk-code' : 'sk-user');
+    if (first) first.focus();
+  };
+
   window.skUnlock = function () {
     var entered = document.getElementById('sk-code').value.trim().toUpperCase();
     if (entered !== CODE) {
-      document.getElementById('sk-err').textContent = "That code isn't right — check your receipt email.";
+      err("That code isn't right — check your receipt email.");
       return;
     }
-    try { localStorage.setItem('sk_access', 'granted'); } catch (e) {}
-    document.documentElement.classList.remove('sk-locked');
+    grant();
+  };
+
+  window.skLogin = function () {
+    var user = document.getElementById('sk-user').value.trim().toLowerCase();
+    var pass = document.getElementById('sk-pass').value;
+    var btn  = document.getElementById('sk-login-btn');
+    if (!user || !pass) { err('Enter both a username and a password.'); return; }
+
+    // crypto.subtle only exists in a secure context — https, or localhost while
+    // developing. Say that plainly instead of failing as a wrong password.
+    if (!(window.crypto && window.crypto.subtle)) {
+      err('Sign-in needs a secure connection. Open this page over https, or on localhost.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    err('');
+    var enc = new TextEncoder();
+    window.crypto.subtle.importKey('raw', enc.encode(user + ':' + pass), 'PBKDF2', false, ['deriveBits'])
+      .then(function (key) {
+        return window.crypto.subtle.deriveBits(
+          { name: 'PBKDF2', salt: enc.encode(SALT), iterations: ITER, hash: 'SHA-256' }, key, 256);
+      })
+      .then(function (bits) {
+        var hex = Array.prototype.map.call(new Uint8Array(bits), function (b) {
+          return ('0' + b.toString(16)).slice(-2);
+        }).join('');
+        if (LOGINS[user] === hex) { grant(); return; }
+        err('That username and password do not match.');
+      })
+      .catch(function () {
+        err('Sign-in could not run in this browser. Use an access code instead.');
+      })
+      .then(function () {
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+      });
   };
 })();
 </script>
@@ -66,14 +145,35 @@
 <div id="sk-gate">
   <div class="sk-gate-card">
     <h1>🔒 Customers only</h1>
-    <p>The SellerKit toolkit is for people who've bought a license. Enter your access code to unlock it on this device.</p>
-    <input id="sk-code" type="text" placeholder="Access code" autocomplete="off"
-           onkeydown="if (event.key === 'Enter') skUnlock()">
-    <button onclick="skUnlock()">Unlock toolkit</button>
+
+    <div id="sk-view-code">
+      <p>The SellerKit toolkit is for people who've bought a license. Enter your access code to unlock it on this device.</p>
+      <input id="sk-code" type="text" placeholder="Access code" autocomplete="off"
+             onkeydown="if (event.key === 'Enter') skUnlock()">
+      <button onclick="skUnlock()">Unlock toolkit</button>
+      <a class="sk-gate-alt" href="#" onclick="skShow('login'); return false;">Sign in with a username instead</a>
+    </div>
+
+    <div id="sk-view-login" style="display:none;">
+      <p>Sign in with your SellerKit username and password.</p>
+      <input id="sk-user" type="text" placeholder="Username" autocomplete="username"
+             onkeydown="if (event.key === 'Enter') document.getElementById('sk-pass').focus()">
+      <input id="sk-pass" type="password" placeholder="Password" autocomplete="current-password"
+             onkeydown="if (event.key === 'Enter') skLogin()">
+      <button id="sk-login-btn" onclick="skLogin()">Sign in</button>
+      <a class="sk-gate-alt" href="#" onclick="skShow('code'); return false;">Use an access code instead</a>
+    </div>
+
     <div class="sk-gate-err" id="sk-err"></div>
     <a class="sk-gate-buy" href="checkout.html">Don't have one yet? Get SellerKit →</a>
   </div>
 </div>
+<script>
+  // The "Log in" link on the landing page lands here — open on the sign-in view
+  // rather than making the person find the toggle. Runs inline, right after the
+  // elements above exist, so it stays inside the gate markers.
+  if (location.hash === '#signin') skShow('login');
+</script>
 <!-- end interim access gate -->
 
 <div class="tk-layout">

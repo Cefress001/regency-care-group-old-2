@@ -71,6 +71,11 @@ nav .inner { display: flex; align-items: center; justify-content: space-between;
 nav .nav-links { display: flex; gap: 1.5rem; align-items: center; }
 nav .nav-links a.nav-link { color: var(--gray-700); font-weight: 500; font-size: .9rem; transition: var(--transition); }
 nav .nav-links a.nav-link:hover { color: var(--blue); }
+/* Deliberately not a .nav-link: this is the only way back into the toolkit for a
+   customer whose localStorage was cleared, so it has to survive the 560px rule
+   below that drops the secondary links. */
+nav .nav-links a.nav-login { color: var(--gray-700); font-weight: 600; font-size: .9rem; transition: var(--transition); }
+nav .nav-links a.nav-login:hover { color: var(--blue); }
 
 /* ── Hero ── */
 .hero {
