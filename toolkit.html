@@ -293,6 +293,16 @@
       <div class="tk-nav-item" data-panel="tracker" onclick="showPanel('tracker')">
         <span class="nav-icon"><svg class="ic" aria-hidden="true"><use href="#i-chart-column"/></svg></span>Sale Tracker
       </div>
+      <div class="tk-nav-section" data-plan="pro">Business</div>
+      <div class="tk-nav-item" data-plan="pro" data-panel="sourcing" onclick="showPanel('sourcing')">
+        <span class="nav-icon"><svg class="ic" aria-hidden="true"><use href="#i-hand"/></svg></span>Max Offer
+      </div>
+      <div class="tk-nav-item" data-plan="pro" data-panel="aging" onclick="showPanel('aging')">
+        <span class="nav-icon"><svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg></span>Inventory Aging
+      </div>
+      <div class="tk-nav-item" data-plan="pro" data-panel="bulk" onclick="showPanel('bulk')">
+        <span class="nav-icon"><svg class="ic" aria-hidden="true"><use href="#i-repeat"/></svg></span>Bulk Tools
+      </div>
     </nav>
     <div class="tk-nav-footer">
       <a href="index.html">← Back to site</a>
@@ -1835,6 +1845,165 @@
     </div>
 
     <!-- ══ 13. SALE TRACKER ══ -->
+    <!-- ══ BUSINESS TOOLS — the business licence. Deliberately absent from the
+         13-card tools grid and from the four counted files: they are not part of
+         the advertised consumer product, so adding one never moves the count. ══ -->
+    <div class="tk-panel" id="panel-sourcing" data-plan="pro">
+      <div class="panel-header">
+        <h2><svg class="ic" aria-hidden="true"><use href="#i-hand"/></svg> Max Offer Calculator</h2>
+        <div class="subtitle">Work backwards from what it will sell for to the most you can pay and still make money.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3>The deal in front of you</h3>
+        <p class="card-lede">
+          Every other tool here helps you sell. This one decides whether to buy. Put in what you can
+          realistically get for it — the Pricing Calculator's comps number, not the hopeful one — and
+          it works back through fees, shipping and the profit you need to a walk-away price.
+        </p>
+        <div class="form-grid">
+          <div class="form-row">
+            <label>You can realistically sell it for ($)</label>
+            <input type="number" id="so-sell" placeholder="200" oninput="calcSourcing(); saveLS('so')">
+          </div>
+          <div class="form-row">
+            <label>Where you'll sell it</label>
+            <select id="so-platform" onchange="calcSourcing(); saveLS('so')">
+              <option value="Local cash">Local cash — Facebook / OfferUp / Craigslist</option>
+              <option value="Facebook shipping">Facebook shipping — 5%</option>
+              <option value="Mercari">Mercari — 10%</option>
+              <option value="eBay">eBay — 13.25% + $0.30</option>
+              <option value="Poshmark">Poshmark — 20%</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-3">
+          <div class="form-row">
+            <label>Profit you need</label>
+            <select id="so-margin" onchange="calcSourcing(); saveLS('so')">
+              <option value="0.20">20% of the sale price</option>
+              <option value="0.30">30% of the sale price</option>
+              <option value="0.40" selected>40% of the sale price</option>
+              <option value="0.50">50% of the sale price</option>
+              <option value="0.60">60% of the sale price</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>Parts, cleaning, repair ($)</label>
+            <input type="number" id="so-refurb" placeholder="0" oninput="calcSourcing(); saveLS('so')">
+          </div>
+          <div class="form-row">
+            <label>Shipping / fuel ($)</label>
+            <input type="number" id="so-ship" placeholder="0" oninput="calcSourcing(); saveLS('so')">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Days you expect it to sit <span style="font-weight:400;color:var(--gray-400)">— optional, shows what the money earns while tied up</span></label>
+          <input type="number" id="so-days" placeholder="30" oninput="calcSourcing(); saveLS('so')">
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="calcSourcing(true)"><svg class="ic" aria-hidden="true"><use href="#i-hand"/></svg> What can I pay? →</button>
+          <button class="btn btn-outline btn-sm" onclick="resetSourcing()">Reset</button>
+        </div>
+        <div class="empty-hint" id="so-empty">Enter what you can sell it for — that is the only number this needs.</div>
+
+        <div id="so-results" style="display:none;">
+          <div class="so-headline">
+            <div class="so-headline-label">Pay no more than</div>
+            <div class="so-headline-val tnum" id="so-max">—</div>
+            <div class="so-headline-sub" id="so-roi"></div>
+          </div>
+          <div class="so-lines" id="so-lines"></div>
+          <div class="so-walk" id="so-walk"></div>
+          <div class="so-velocity" id="so-velocity" style="display:none;"></div>
+          <div class="action-row">
+            <button class="btn btn-outline btn-sm" onclick="copyText('so-lines', this)"><svg class="ic" aria-hidden="true"><use href="#i-clipboard"/></svg> Copy the breakdown</button>
+            <button class="btn btn-outline btn-sm" onclick="sourcingToTracker()"><svg class="ic" aria-hidden="true"><use href="#i-chart-column"/></svg> Log this buy in the tracker</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tk-panel tk-panel-wide" id="panel-aging" data-plan="pro">
+      <div class="panel-header">
+        <h2><svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg> Inventory Aging</h2>
+        <div class="subtitle">Which listings have gone stale, how much cash is stuck in them, and what to do about each one.</div>
+      </div>
+
+      <div class="aging-buckets" id="aging-buckets"></div>
+
+      <div class="tk-card">
+        <div class="output-header" style="margin-bottom:.9rem;">
+          <strong>Everything still listed, oldest first</strong>
+          <button class="btn btn-outline btn-sm" onclick="exportAgingCSV()"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Export CSV</button>
+        </div>
+        <div class="tracker-table-wrap">
+          <table class="tracker-table">
+            <thead>
+              <tr>
+                <th>Item</th><th>Platform</th><th>Listed</th><th>Cost</th>
+                <th>Days Listed</th><th>What to do</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="aging-tbody"></tbody>
+          </table>
+          <div class="tracker-empty" id="aging-empty">Nothing is listed right now. Add items in the Sale Tracker and they show up here as they age.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tk-panel tk-panel-wide" id="panel-bulk" data-plan="pro">
+      <div class="panel-header">
+        <h2><svg class="ic" aria-hidden="true"><use href="#i-repeat"/></svg> Bulk Tools</h2>
+        <div class="subtitle">Get a whole shelf in at once, and get titles and descriptions out for all of it.</div>
+      </div>
+
+      <div class="tk-card">
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Import a spreadsheet</h3>
+        <p class="card-lede">
+          Paste or upload a CSV and every row becomes an item. The first row must be the header.
+          Recognised columns are <strong>name, category, brand, model, condition, retail, asking</strong>
+          — anything else is ignored, and anything missing is simply left blank.
+        </p>
+        <div class="form-row">
+          <label>Paste CSV</label>
+          <textarea id="bk-csv" rows="5" placeholder="name,brand,model,condition,retail&#10;Aeron chair,Herman Miller,Size B,good,1400&#10;Drill,DeWalt,DCD777,like-new,180"></textarea>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="bulkPreview()"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> Check it →</button>
+          <button class="btn btn-neutral" onclick="document.getElementById('bk-file').click()"><svg class="ic" aria-hidden="true"><use href="#i-folder"/></svg> Upload a .csv</button>
+          <input type="file" id="bk-file" accept=".csv,text/csv" style="display:none;" onchange="bulkLoadFile(this)">
+        </div>
+        <div class="backup-note" id="bk-note" style="display:none;"></div>
+        <div id="bk-preview" style="display:none;">
+          <div class="tracker-table-wrap" style="margin-top:.9rem;">
+            <table class="tracker-table">
+              <thead><tr><th>Name</th><th>Brand</th><th>Model</th><th>Category</th><th>Condition</th><th>Retail</th></tr></thead>
+              <tbody id="bk-preview-body"></tbody>
+            </table>
+          </div>
+          <div class="action-row">
+            <button class="btn btn-success" id="bk-import" onclick="bulkImport()"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg> Import these</button>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('bk-preview').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tk-card">
+        <h3><svg class="ic" aria-hidden="true"><use href="#i-pen-line"/></svg> Titles and descriptions for everything</h3>
+        <p class="card-lede">
+          Run the title and description builders across every item you have at once and get the lot
+          back as a spreadsheet — one row per item, ready to paste into a listing tool or hand to
+          whoever does your posting.
+        </p>
+        <div class="action-row">
+          <button class="btn btn-primary" onclick="bulkGenerate()"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg> Generate for all items →</button>
+        </div>
+        <div class="backup-note" id="bk-gen-note" style="display:none;"></div>
+      </div>
+    </div>
+
     <div class="tk-panel tk-panel-wide" id="panel-tracker">
       <div class="panel-header">
         <h2><svg class="ic" aria-hidden="true"><use href="#i-chart-column"/></svg> Sale Tracker</h2>
@@ -1965,6 +2134,9 @@
 // ════════════════════════════════
 let _currentPanel = 'home';
 function showPanel(id) {
+  // Aging is a view over the tracker rather than state of its own, so it is built
+  // on the way in instead of being kept in sync from every tracker mutation.
+  if (id === 'aging') renderAging();
   document.querySelectorAll('.tk-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tk-nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
@@ -2339,8 +2511,12 @@ const PANEL_NAMES = {
   pricing: 'Pricing Calc', titles: 'Title Generator', description: 'Description Builder',
   aiprompt: 'AI Listing Prompt', scripts: 'Negotiation Scripts', scam: 'Scam Checklist',
   pickup: 'Pickup Messages', pricedrop: 'Price Drop Schedule', measurements: 'Measurement Sheet',
-  photos: 'Photo Checklist', sevenday: '7-Day Plan', audit: 'Listing Audit', tracker: 'Sale Tracker'
+  photos: 'Photo Checklist', sevenday: '7-Day Plan', audit: 'Listing Audit', tracker: 'Sale Tracker',
+  sourcing: 'Max Offer', aging: 'Inventory Aging', bulk: 'Bulk Tools'
 };
+// Business-licence panels. CSS hides their nav items; the palette has to filter
+// them itself or it would offer a jump to a panel that cannot be shown.
+const PRO_PANELS = ['sourcing', 'aging', 'bulk'];
 
 let _cmdSel = 0, _cmdHits = [];
 
@@ -2348,7 +2524,9 @@ function paletteItems() {
   const out = Object.entries(PLAYBOOKS).map(([id, pb]) => ({
     label: pb.name, kind: 'Playbook', icon: pb.icon, run: () => openFlow(id)
   }));
+  const pro = skIsPro();
   Object.entries(PANEL_NAMES).forEach(([id, name]) => {
+    if (!pro && PRO_PANELS.indexOf(id) !== -1) return;
     out.push({ label: name, kind: 'Tool', icon: '→', run: () => showPanel(id) });
   });
   return out;
@@ -2424,6 +2602,7 @@ const TOOL_FIELDS = {
   pd: ['pd-price','pd-deadline','pd-floor'],
   ms: ['ms-name','ms-category'],
   sd: ['sd-item','sd-date'],
+  so: ['so-sell','so-platform','so-margin','so-refurb','so-ship','so-days'],
   ap: ['ap-location'],
   ar: ['ar-message','ar-goal','ar-tone'],
   sm: ['sm-message']
@@ -2585,6 +2764,7 @@ function applyItem(it) {
 
   calcComps();          // rebuilds the comps panel, then calls calcPrice itself
   calcPriceDrop();
+  calcSourcing();
   if (document.getElementById('ms-category').value) { loadMeasurements(); restoreMeasurements(); }
   if (document.getElementById('ph-category').value) loadPhotoChecklist();
   renderCopilot();
@@ -2600,6 +2780,8 @@ function clearAllTools() {
   document.getElementById('ph-score').style.display = 'none';
   const compsOut = document.getElementById('pc-comps-out');
   if (compsOut) compsOut.style.display = 'none';
+  const soOut = document.getElementById('so-results');
+  if (soOut) soOut.style.display = 'none';
   calcPrice();
   calcPriceDrop();
 }
@@ -4481,6 +4663,413 @@ function runAudit() {
 // ════════════════════════════════
 // Sale Tracker
 // ════════════════════════════════
+// ════════════════════════════════
+// Max Offer — the buy decision (business licence)
+// ════════════════════════════════
+// Every other tool here helps sell something already owned. This one runs the
+// arithmetic backwards: from what it will fetch, through the platform's cut and
+// the work it needs, to the most that can be paid for it. That is a pawn shop's
+// whole job and a reseller's most expensive habit when done by feel.
+function feeByName(name, price) {
+  const row = FEE_TABLE.find(f => f.name === name) || FEE_TABLE[0];
+  if (!price) return 0;
+  return Math.round((price * row.pct + row.flat) * 100) / 100;
+}
+
+function calcSourcing(fromButton) {
+  const sell = parseFloat(document.getElementById('so-sell').value);
+  const platform = document.getElementById('so-platform').value;
+  const margin = parseFloat(document.getElementById('so-margin').value) || 0.4;
+  const refurb = trNum(document.getElementById('so-refurb').value);
+  const ship = trNum(document.getElementById('so-ship').value);
+  const days = trNum(document.getElementById('so-days').value);
+  const results = document.getElementById('so-results');
+  const empty = document.getElementById('so-empty');
+
+  if (!isFinite(sell) || sell <= 0) {
+    results.style.display = 'none';
+    empty.style.display = 'block';
+    empty.classList.toggle('warn', !!fromButton);
+    empty.textContent = fromButton
+      ? 'Enter what you can sell it for first — everything else works back from that.'
+      : 'Enter what you can sell it for — that is the only number this needs.';
+    return;
+  }
+  empty.style.display = 'none';
+  empty.classList.remove('warn');
+
+  const fee = feeByName(platform, sell);
+  const wantProfit = sell * margin;
+  const breakeven = sell - fee - refurb - ship;     // pay this and you make exactly nothing
+  const maxPay = breakeven - wantProfit;
+
+  const head = document.getElementById('so-max');
+  const roiEl = document.getElementById('so-roi');
+  if (maxPay <= 0) {
+    head.textContent = 'Walk away';
+    head.classList.add('bad');
+    roiEl.textContent = breakeven > 0
+      ? 'At ' + money(sell) + ' there is no price that leaves ' + Math.round(margin * 100) +
+        '% profit. You would have to buy it for under ' + money(breakeven) + ' just to break even.'
+      : 'Fees and costs alone come to more than the sale price. This one loses money at any buy price.';
+  } else {
+    head.textContent = money(maxPay);
+    head.classList.remove('bad');
+    const roi = Math.round((wantProfit / maxPay) * 100);
+    roiEl.textContent = 'Buy at that and you make ' + money(wantProfit) + ' — a ' + roi + '% return on what you put in.';
+  }
+
+  // The Copy button reads this element's textContent, so each line is a label and a
+  // figure and nothing else.
+  const line = (label, val, cls) =>
+    '<div class="so-line' + (cls ? ' ' + cls : '') + '">' +
+      '<span>' + escHtml(label) + '</span>' +
+      '<span class="tnum">' + escHtml(val) + '</span>' +
+    '</div>';
+  document.getElementById('so-lines').innerHTML =
+    line('Sells for', money(sell)) +
+    line(platform + ' fees', '\u2212' + money(fee)) +
+    (refurb ? line('Parts and repair', '\u2212' + money(refurb)) : '') +
+    (ship ? line('Shipping and fuel', '\u2212' + money(ship)) : '') +
+    line('Break-even buy price', money(breakeven), 'sub') +
+    line('Profit you asked for (' + Math.round(margin * 100) + '%)', '\u2212' + money(wantProfit)) +
+    line('Most you can pay', maxPay > 0 ? money(maxPay) : '\u2014', 'total');
+
+  document.getElementById('so-walk').innerHTML = ic('triangle-alert') + ' ' + escHtml(
+    'Anything over ' + money(breakeven) + ' and you are paying for the privilege of storing it.');
+
+  // What the money earns while it is tied up in this thing rather than the next one.
+  const vel = document.getElementById('so-velocity');
+  if (days > 0 && maxPay > 0) {
+    const perMonth = wantProfit * (30 / days);
+    const turns = 365 / days;
+    vel.innerHTML = ic('repeat') + ' ' + escHtml(
+      'Sitting ' + Math.round(days) + ' days, that is ' + money(perMonth) + ' of profit per month of ' +
+      'capital, and about ' + turns.toFixed(1) + ' turns a year. A thinner margin that sells in a week ' +
+      'usually beats a fat one that sits.');
+    vel.style.display = 'flex';
+  } else {
+    vel.style.display = 'none';
+  }
+
+  results.style.display = 'block';
+}
+
+function resetSourcing() {
+  ['so-sell','so-refurb','so-ship','so-days'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('so-platform').selectedIndex = 0;
+  document.getElementById('so-margin').value = '0.40';
+  document.getElementById('so-results').style.display = 'none';
+  const empty = document.getElementById('so-empty');
+  empty.style.display = 'block';
+  empty.classList.remove('warn');
+  empty.textContent = 'Enter what you can sell it for — that is the only number this needs.';
+  saveLS('so');
+}
+
+// Log the buy straight into the tracker, with the max offer as the cost basis, so
+// the decision and the outcome end up in the same place.
+function sourcingToTracker() {
+  const sell = parseFloat(document.getElementById('so-sell').value);
+  if (!isFinite(sell) || sell <= 0) return;
+  const margin = parseFloat(document.getElementById('so-margin').value) || 0.4;
+  const platform = document.getElementById('so-platform').value;
+  const fee = feeByName(platform, sell);
+  const maxPay = sell - fee - trNum(document.getElementById('so-refurb').value)
+                      - trNum(document.getElementById('so-ship').value) - sell * margin;
+  if (maxPay <= 0) { alert('This deal does not work at any buy price, so there is nothing worth logging.'); return; }
+
+  const it = activeItem();
+  const name = (it && it.name) || prompt('What is it?') || '';
+  if (!name.trim()) return;
+
+  // The sourcing platform names are FEE_TABLE rows; the tracker uses its own list.
+  const TO_TRACKER = { 'Local cash': 'Facebook', 'Facebook shipping': 'Facebook',
+                       'Mercari': 'Mercari', 'eBay': 'eBay', 'Poshmark': 'Other' };
+  const items = loadTracker();
+  items.unshift({
+    id: Date.now(),
+    name: name.trim(),
+    platform: TO_TRACKER[platform] || 'Other',
+    category: (it && it.category) ? (CAT_TO_TR[it.category] || 'Other') : 'Other',
+    listedPrice: Math.round(sell),
+    cost: Math.round(maxPay * 100) / 100,
+    shipping: 0,
+    fees: 0,
+    soldPrice: null,
+    status: 'listed',
+    dateAdded: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  });
+  saveTracker(items);
+  renderTracker();
+  showPanel('tracker');
+}
+
+// ════════════════════════════════
+// Inventory Aging (business licence)
+// ════════════════════════════════
+// Dead stock is the quiet killer: cash sitting in something nobody wants at that
+// price. The tracker knows when each item was listed, so this is only a matter of
+// saying it out loud and attaching the action each age deserves.
+const AGE_BANDS = [
+  { max: 30,       key: 'fresh', label: 'Under 30 days', tone: 'ok',
+    act: 'Still fresh. Leave the price alone and keep answering fast.' },
+  { max: 60,       key: 'warm',  label: '31–60 days', tone: 'warn',
+    act: 'Past its best window. Re-shoot the lead photo and cut about 10%.' },
+  { max: 90,       key: 'cold',  label: '61–90 days', tone: 'bad',
+    act: 'Stale. Cut 20%, rewrite the title, and re-post it as a new listing.' },
+  { max: Infinity, key: 'dead',  label: 'Over 90 days', tone: 'dead',
+    act: 'Dead stock. Take the best offer, bundle it, or write it off — it is costing you space.' }
+];
+
+// The tracker row id is Date.now() at creation, which is also when it was listed.
+function daysListed(it) {
+  if (!it || !it.id) return 0;
+  return Math.max(0, Math.floor((Date.now() - it.id) / 86400000));
+}
+function ageBand(days) { return AGE_BANDS.find(b => days <= b.max) || AGE_BANDS[AGE_BANDS.length - 1]; }
+
+function renderAging() {
+  const listed = loadTracker().filter(i => i.status === 'listed');
+  const tbody = document.getElementById('aging-tbody');
+  const empty = document.getElementById('aging-empty');
+  const buckets = document.getElementById('aging-buckets');
+  if (!tbody || !buckets) return;
+
+  const counts = {};
+  AGE_BANDS.forEach(b => { counts[b.key] = { n: 0, capital: 0 }; });
+  listed.forEach(i => {
+    const b = ageBand(daysListed(i));
+    counts[b.key].n++;
+    counts[b.key].capital += trNum(i.cost);
+  });
+
+  buckets.innerHTML = AGE_BANDS.map(b =>
+    '<div class="age-bucket ' + b.tone + '">' +
+      '<div class="age-n tnum">' + counts[b.key].n + '</div>' +
+      '<div class="age-label">' + escHtml(b.label) + '</div>' +
+      '<div class="age-capital tnum">' +
+        (counts[b.key].capital ? money(counts[b.key].capital) + ' tied up' : '&nbsp;') +
+      '</div>' +
+    '</div>').join('');
+
+  if (!listed.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = listed
+    .slice()
+    .sort((a, b) => daysListed(b) - daysListed(a))
+    .map(i => {
+      const d = daysListed(i);
+      const b = ageBand(d);
+      return '<tr>' +
+        '<td><strong>' + escHtml(i.name) + '</strong><br><span style="font-size:.72rem;color:var(--gray-500)">' + escHtml(i.category || '') + '</span></td>' +
+        '<td>' + escHtml(i.platform || '') + '</td>' +
+        '<td class="tnum">' + money(i.listedPrice || 0) + '</td>' +
+        '<td class="tnum">' + (trNum(i.cost) ? money(i.cost) : '—') + '</td>' +
+        '<td><span class="age-pill ' + b.tone + ' tnum">' + d + ' days</span></td>' +
+        '<td class="age-act">' + escHtml(b.act) + '</td>' +
+        '<td><button class="tracker-action-btn btn-mark-sold" onclick="showPanel(\'tracker\')">Open</button></td>' +
+      '</tr>';
+    }).join('');
+}
+
+function exportAgingCSV() {
+  const listed = loadTracker().filter(i => i.status === 'listed');
+  if (!listed.length) { alert('Nothing is listed right now, so there is nothing to age.'); return; }
+  const esc = v => {
+    const t = v === null || v === undefined ? '' : String(v);
+    return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+  };
+  const header = ['Item','Platform','Category','Listed Price','Cost','Days Listed','Band','Recommended Action'];
+  const rows = listed
+    .slice()
+    .sort((a, b) => daysListed(b) - daysListed(a))
+    .map(i => {
+      const d = daysListed(i);
+      const b = ageBand(d);
+      return [i.name, i.platform, i.category, i.listedPrice, trNum(i.cost) || '', d, b.label, b.act].map(esc).join(',');
+    });
+  const today = new Date().toISOString().split('T')[0];
+  downloadFile('sellerkit-aging-' + today + '.csv', 'text/csv;charset=utf-8',
+               [header.join(','), ...rows].join('\r\n'));
+}
+
+// ════════════════════════════════
+// Bulk Tools (business licence)
+// ════════════════════════════════
+// A CSV parser rather than a split on commas: a description containing a comma, or
+// a quoted name, is the normal case in exported inventory, not the exotic one.
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQ = false;
+  const src = String(text || '').replace(/\r\n?/g, '\n');
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i];
+    if (inQ) {
+      if (c === '"') {
+        if (src[i + 1] === '"') { field += '"'; i++; }   // "" is a literal quote
+        else inQ = false;
+      } else field += c;
+    } else if (c === '"') inQ = true;
+    else if (c === ',') { row.push(field); field = ''; }
+    else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+    else field += c;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => r.some(v => String(v).trim() !== ''));
+}
+
+// Header names people actually use, folded onto the item model's own fields.
+const BK_ALIASES = {
+  name: 'name', item: 'name', title: 'name', 'item name': 'name', product: 'name',
+  brand: 'brand', make: 'brand', manufacturer: 'brand',
+  model: 'model', 'model number': 'model', sku: 'model',
+  category: 'category', type: 'category',
+  condition: 'condition',
+  retail: 'retail', 'retail price': 'retail', msrp: 'retail', 'original price': 'retail',
+  asking: 'asking', 'asking price': 'asking', price: 'asking', 'list price': 'asking'
+};
+
+let _bkRows = null;
+
+function bulkLoadFile(input) {
+  const file = (input.files || [])[0];
+  input.value = '';
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => { document.getElementById('bk-csv').value = reader.result; bulkPreview(); };
+  reader.onerror = () => bkNote('That file could not be read.', true);
+  reader.readAsText(file);
+}
+
+function bkNote(msg, isErr, which) {
+  const el = document.getElementById(which || 'bk-note');
+  if (!el) return;
+  el.className = 'backup-note ' + (isErr ? 'err' : 'ok');
+  el.innerHTML = (isErr ? ic('triangle-alert') : ic('circle-check')) + ' ' + escHtml(msg);
+  el.style.display = 'flex';
+}
+
+function bulkPreview() {
+  const rows = parseCSV(document.getElementById('bk-csv').value);
+  document.getElementById('bk-preview').style.display = 'none';
+  _bkRows = null;
+  if (rows.length < 2) {
+    bkNote('That needs a header row and at least one row of items under it.', true);
+    return;
+  }
+  const head = rows[0].map(h => BK_ALIASES[String(h).trim().toLowerCase()] || null);
+  if (head.indexOf('name') === -1) {
+    bkNote('No "name" column found. The header row needs one — name, item or title all work.', true);
+    return;
+  }
+  const parsed = rows.slice(1).map(r => {
+    const o = {};
+    head.forEach((field, i) => { if (field) o[field] = String(r[i] == null ? '' : r[i]).trim(); });
+    // Condition arrives as a word and has to become the multiplier the tools use.
+    if (o.condition) {
+      const key = o.condition.toLowerCase().replace(/[\s_]+/g, '-');
+      o.condition = IDP_CONDITIONS[key] || '';
+    }
+    if (o.category) {
+      const cat = o.category.toLowerCase().trim();
+      o.category = IDP_CATEGORIES.indexOf(cat) !== -1 ? cat : '';
+    }
+    ['retail','asking'].forEach(k => {
+      if (o[k]) {
+        const n = parseFloat(String(o[k]).replace(/[^0-9.\-]/g, ''));
+        o[k] = isFinite(n) && n > 0 ? String(Math.round(n)) : '';
+      }
+    });
+    return o;
+  }).filter(o => o.name);
+
+  if (!parsed.length) { bkNote('Every row was missing a name, so there is nothing to import.', true); return; }
+  _bkRows = parsed;
+
+  document.getElementById('bk-preview-body').innerHTML = parsed.slice(0, 25).map(o =>
+    '<tr>' +
+      '<td><strong>' + escHtml(o.name) + '</strong></td>' +
+      '<td>' + escHtml(o.brand || '—') + '</td>' +
+      '<td>' + escHtml(o.model || '—') + '</td>' +
+      '<td>' + escHtml(o.category ? (IDP_CAT_LABEL[o.category] || o.category) : '—') + '</td>' +
+      '<td>' + escHtml(o.condition ? (IDP_COND_LABEL[o.condition] || o.condition) : '—') + '</td>' +
+      '<td class="tnum">' + (o.retail ? money(Number(o.retail)) : '—') + '</td>' +
+    '</tr>').join('');
+  document.getElementById('bk-preview').style.display = 'block';
+  bkNote(parsed.length + ' row' + (parsed.length === 1 ? '' : 's') + ' read' +
+         (parsed.length > 25 ? ' — showing the first 25' : '') + '. Check them, then import.', false);
+}
+
+function bulkImport() {
+  if (!_bkRows || !_bkRows.length) return;
+  const items = loadItems();
+  const stamp = Date.now();
+  _bkRows.forEach((o, n) => {
+    items.unshift({
+      id: 'itm_' + (stamp + n) + '_' + Math.random().toString(36).slice(2, 7),
+      name: o.name, category: o.category || '', brand: o.brand || '', model: o.model || '',
+      condition: o.condition || '', retail: o.retail || '', asking: o.asking || '',
+      createdAt: stamp + n,
+      tools: {}, photos: {}, measurements: {}
+    });
+  });
+  saveItems(items);
+  const n = _bkRows.length;
+  _bkRows = null;
+  document.getElementById('bk-preview').style.display = 'none';
+  document.getElementById('bk-csv').value = '';
+  renderItemList(); renderItemBar();
+  bkNote('Imported ' + n + ' item' + (n === 1 ? '' : 's') + '. They are all in My Items now.', false);
+}
+
+// Build a title and a starter description straight off the item model, so this does
+// not depend on which tool panel happens to be filled in on screen.
+function bulkTitleFor(it) {
+  const cond = it.condition ? (COND_TO_TG[it.condition] || '') : '';
+  const base = [it.brand, it.model, it.name].filter(Boolean).join(' ') || it.name || '';
+  return (cond ? base + ' | ' + cond : base).substring(0, 80);
+}
+function bulkDescFor(it) {
+  const out = [];
+  const base = [it.brand, it.model, it.name].filter(Boolean).join(' ') || it.name || 'Item';
+  out.push(base + ' for sale.');
+  if (it.condition) out.push('Condition: ' + (COND_TO_DB[it.condition] || '').replace(/^[a-z]/, c => c.toUpperCase()) + '.');
+  const feats = ((it.tools || {}).db || {})['db-features'];
+  if (feats) out.push(feats);
+  const includes = ((it.tools || {}).db || {})['db-includes'];
+  if (includes) out.push('Includes: ' + includes);
+  if (it.retail) out.push('Retails new for about $' + Number(it.retail).toLocaleString() + '.');
+  if (it.asking) out.push('Asking $' + Number(it.asking).toLocaleString() + '.');
+  out.push('Cash on pickup. Message me if you have questions.');
+  return out.join(' ');
+}
+
+function bulkGenerate() {
+  const items = loadItems();
+  if (!items.length) { bkNote('There are no items yet. Import a CSV above, or add one in My Items.', true, 'bk-gen-note'); return; }
+  const esc = v => {
+    const t = v === null || v === undefined ? '' : String(v);
+    return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+  };
+  const header = ['Item','Brand','Model','Category','Condition','Suggested Title','Title Length','Description','Asking Price'];
+  const rows = items.map(it => {
+    const title = bulkTitleFor(it);
+    return [
+      it.name, it.brand || '', it.model || '',
+      it.category ? (IDP_CAT_LABEL[it.category] || it.category) : '',
+      it.condition ? (COND_TO_TG[it.condition] || '') : '',
+      title, title.length, bulkDescFor(it), it.asking || ''
+    ].map(esc).join(',');
+  });
+  const today = new Date().toISOString().split('T')[0];
+  downloadFile('sellerkit-listings-' + today + '.csv', 'text/csv;charset=utf-8',
+               [header.join(','), ...rows].join('\r\n'));
+  bkNote('Wrote ' + items.length + ' listing' + (items.length === 1 ? '' : 's') +
+         ' to a CSV. Titles are capped at the 80 characters most platforms allow.', false, 'bk-gen-note');
+}
+
 function loadTracker() {
   try { return JSON.parse(localStorage.getItem('sk_tracker') || '[]'); } catch(e) { return []; }
 }

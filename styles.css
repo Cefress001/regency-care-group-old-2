@@ -1664,3 +1664,82 @@ h1 > .ic, h2 > .ic, h3 > .ic, h4 > .ic { width: .85em; height: .85em; opacity: .
 .tr-soldform-note {
   margin-top: .6rem; font-size: .78rem; color: var(--text-subtle);
 }
+
+/* ── Max Offer ───────────────────────────────────────────────────────────
+   The headline is the whole answer, so it gets the weight. The lines under it
+   are the arithmetic that produced it, readable top to bottom like a receipt. */
+.so-headline {
+  margin: 1.2rem 0 1rem; padding: 1.1rem 1.2rem;
+  background: var(--green-light); border: 1px solid var(--line); border-radius: var(--radius);
+  text-align: center;
+}
+.so-headline-label {
+  font-size: .78rem; font-weight: 600; letter-spacing: .03em;
+  text-transform: uppercase; color: var(--green-dark);
+}
+.so-headline-val {
+  margin: .15rem 0 .35rem;
+  font-size: clamp(2rem, 5vw, 2.6rem); font-weight: 600; letter-spacing: -.028em;
+  color: var(--green-dark); line-height: 1.1;
+}
+.so-headline-val.bad { color: var(--red); font-size: clamp(1.4rem, 3.5vw, 1.8rem); }
+.so-headline-sub {
+  font-size: .8438rem; line-height: 1.5; color: var(--text-muted);
+  max-width: 46ch; margin: 0 auto;
+}
+
+.so-lines { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.so-line {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  padding: .5rem .75rem; font-size: .8438rem;
+  border-bottom: 1px solid var(--line-subtle);
+}
+.so-line:last-child { border-bottom: none; }
+.so-line span:first-child { color: var(--text-muted); }
+.so-line span:last-child { font-weight: 600; color: var(--text); }
+.so-line.sub { background: var(--surface-sunken); }
+.so-line.total { background: var(--surface-raised); }
+.so-line.total span { font-weight: 600; color: var(--text); }
+
+.so-walk, .so-velocity {
+  display: flex; align-items: flex-start; gap: .45rem;
+  margin-top: .8rem; padding: .6rem .75rem;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  font-size: .8125rem; line-height: 1.55;
+}
+.so-walk { background: var(--orange-light); color: #92400E; }
+.so-velocity { background: var(--blue-light); color: var(--blue-dark); }
+.so-walk .ic, .so-velocity .ic { flex: none; margin-top: .15em; }
+
+/* ── Inventory aging ─────────────────────────────────────────────────────
+   The four bands are a traffic light on cash: how many listings sit in each age,
+   and how much money is parked in them. */
+.aging-buckets {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; margin-bottom: 1.1rem;
+}
+.age-bucket {
+  padding: .85rem .9rem; border-radius: var(--radius);
+  border: 1px solid var(--line); background: var(--surface);
+}
+.age-bucket.ok   { background: var(--green-light);  border-color: var(--line); }
+.age-bucket.warn { background: var(--orange-light); }
+.age-bucket.bad  { background: var(--red-light); }
+.age-bucket.dead { background: var(--slate-3); }
+.age-n { font-size: 1.6rem; font-weight: 600; letter-spacing: -.02em; color: var(--text); line-height: 1.1; }
+.age-label { font-size: .78rem; font-weight: 500; color: var(--text-muted); margin-top: .1rem; }
+.age-capital { font-size: .72rem; color: var(--text-subtle); margin-top: .25rem; }
+
+.age-pill {
+  display: inline-block; padding: .12rem .4rem; border-radius: var(--radius-xs);
+  font-size: .75rem; font-weight: 600; white-space: nowrap;
+  background: var(--surface-raised); color: var(--text-muted); border: 1px solid var(--line);
+}
+.age-pill.ok   { background: var(--green-light);  color: var(--green-dark); }
+.age-pill.warn { background: var(--orange-light); color: #92400E; }
+.age-pill.bad  { background: var(--red-light);    color: var(--red); }
+.age-pill.dead { background: var(--slate-12);     color: var(--white); border-color: transparent; }
+.age-act { font-size: .8rem; color: var(--text-muted); line-height: 1.45; min-width: 16rem; }
+
+@media (max-width: 760px) {
+  .aging-buckets { grid-template-columns: repeat(2, 1fr); }
+}
