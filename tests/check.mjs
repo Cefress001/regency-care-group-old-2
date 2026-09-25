@@ -93,9 +93,15 @@ function staticChecks() {
     if (/^\.|\.(mjs|json|yml)$/.test(f) || (f.endsWith('.md') && f !== 'NOTICE.md')) fail('.vercelignore', `ships ${f}, which is internal`);
   }
   for (const page of PAGES) if (!SHIPPED.has(page)) fail('.vercelignore', `${page} is not shipped`);
-  const REF = /["'(]([A-Za-z0-9_.-]+\.(?:html|css|js|png|webp|svg|woff2|txt|md|json|ico))(?=[?#"')])/g;
+  // Relative references, plus absolute ones to our own origin (og:image is only ever the
+  // latter). The origin comes from index.html's canonical link, so a domain move follows.
+  const origin = (read('index.html').match(/rel="canonical" href="(https?:\/\/[^/"]+)\//) || [])[1];
+  if (!origin) fail('index.html', 'no canonical link to read the site origin from');
+  const own = origin ? '|' + origin.replace(/[.]/g, '\\.') + '/' : '';
+  const REF = new RegExp(`(?:["'(]${own})([A-Za-z0-9_.-]+\\.(?:html|css|js|png|webp|svg|woff2|txt|md|json|ico))(?=[?#"')])`, 'g');
   for (const f of [...SHIPPED].filter(f => /\.(html|css|js)$/.test(f) && f !== 'sentry.min.js' && existsSync(join(ROOT, f)))) {
-    for (const m of read(f).matchAll(REF)) if (!SHIPPED.has(m[1])) fail(f, `references ${m[1]}, which .vercelignore does not ship`);
+    for (const r of new Set([...read(f).matchAll(REF)].map(m => m[1])))
+      if (!SHIPPED.has(r)) fail(f, `references ${r}, which .vercelignore does not ship`);
   }
 
   // Secret keys must never be committed; only publishable keys are allowed.
