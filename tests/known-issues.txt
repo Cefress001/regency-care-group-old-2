@@ -1,0 +1,8 @@
+# Pre-existing problems the check reports as warnings instead of failures.
+# One per line, matched against the start of a failure line. Delete a line once fixed —
+# the check tells you when one no longer reproduces. Never add a line to get a new change green.
+
+# Found 2026-09-25: on a 390px phone the Sale Tracker and Inventory Aging panels are
+# wider than the screen (content cut off on the right). Not yet fixed.
+toolkit.html [mobile] panel tracker: page scrolls horizontally
+toolkit.html [mobile] panel aging: page scrolls horizontally

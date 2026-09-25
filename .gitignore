@@ -1,0 +1,6 @@
+# Check output (screenshots) — regenerated on every run
+.checks/
+node_modules/
+package-lock.json
+# Personal, untracked Claude Code settings
+.claude/settings.local.json

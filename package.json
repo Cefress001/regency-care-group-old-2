@@ -1,0 +1,12 @@
+{
+  "name": "sellerkit-site",
+  "private": true,
+  "description": "No build step. This file only exists to run the checks.",
+  "scripts": {
+    "check": "node tests/check.mjs",
+    "check:static": "node tests/check.mjs --static"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}
