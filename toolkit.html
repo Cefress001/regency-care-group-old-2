@@ -182,6 +182,10 @@
   };
 })();
 </script>
+  <!-- Error reporting (Sentry, errors only, secrets scrubbed) — see sentry-init.js.
+       Synchronous and before the page scripts, so their errors are caught too. -->
+  <script src="sentry.min.js"></script>
+  <script src="sentry-init.js"></script>
 </head>
 <body>
 <!-- Lucide icon sprite (ISC License, Lucide Icons and Contributors) -->

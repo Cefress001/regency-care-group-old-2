@@ -80,6 +80,10 @@
   .reveal, .reveal.is-in { opacity: 1; transform: none; transition: none; }
 }
 </style>
+  <!-- Error reporting (Sentry, errors only, secrets scrubbed) — see sentry-init.js.
+       Synchronous and before the page scripts, so their errors are caught too. -->
+  <script src="sentry.min.js"></script>
+  <script src="sentry-init.js"></script>
 </head>
 <body>
 <!-- Lucide icon sprite (ISC License, Lucide Icons and Contributors) -->
