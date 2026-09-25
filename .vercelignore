@@ -1,0 +1,36 @@
+# Vercel publishes the repo root as-is (there is no build), so without this file anyone could
+# open /CLAUDE.md, /docs/ROADMAP.md, /.claude/…, /tests/… or /package.json on the live domain.
+#
+# Allowlist: ignore everything at the root, then re-include each site file by name. A new
+# page or asset must be added here or it 404s in production. tests/check.mjs enforces that:
+# the static check fails on any page reference not listed, and the browser check serves
+# only these files.
+/*
+
+# Pages
+!/index.html
+!/toolkit.html
+!/checkout.html
+!/success.html
+!/terms.html
+!/privacy.html
+!/refund.html
+
+# Styles, scripts, font
+!/styles.css
+!/legal.css
+!/sentry.min.js
+!/sentry-init.js
+!/inter-var-latin.woff2
+
+# Images
+!/favicon.svg
+!/apple-touch-icon.png
+!/og-image.png
+!/screen-start.webp
+!/screen-pricing.webp
+!/screen-playbook.webp
+
+# Crawlers and licences
+!/robots.txt
+!/NOTICE.md

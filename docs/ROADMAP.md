@@ -16,7 +16,7 @@ holds the decisions and the order. Close the issue and update this file in the s
 
 | Stage | Issues | Notes |
 | --- | --- | --- |
-| Launch blockers | #3 price · #4 privacy/AI disclosure · #5 `.vercelignore` · #6 phone overflow · #9 calculation tests | Product-ready means these are closed |
+| Launch blockers | #3 price · #4 privacy/AI disclosure · ~~#5 `.vercelignore`~~ · #6 phone overflow · #9 calculation tests | Product-ready means these are closed |
 | Owner tasks | #7 Vercel plan (Hobby is non-commercial) · #8 Sentry cleanup + live test | Only the owner can do these |
 | Phase 0 | #10 analytics · #11 installable/offline (PWA) · #12 axe + Lighthouse | Find out why visitors don't buy |
 | Process | #13 `/retro` skill | Lessons become checks, not more prose |

@@ -28,6 +28,11 @@ const failures = [];
 const fail = (where, msg) => failures.push(`${where}: ${msg}`);
 const read = f => readFileSync(join(ROOT, f), 'utf8');
 
+// What Vercel deploys: .vercelignore ignores the whole root (`/*`), then re-includes each
+// site file with `!/name`. Anything else (CLAUDE.md, .claude/, tests/ …) is not published.
+const VERCELIGNORE = existsSync(join(ROOT, '.vercelignore')) ? read('.vercelignore') : '';
+const SHIPPED = new Set([...VERCELIGNORE.matchAll(/^!\/([^\s/]+)$/gm)].map(m => m[1]));
+
 // ─── Static checks ────────────────────────────────────────────────────────────
 
 function staticChecks() {
@@ -80,6 +85,19 @@ function staticChecks() {
     catch (e) { fail(f, `does not parse: ${e.message}`); }
   }
 
+  // Deploy allowlist: every page and every file a shipped file references must be published,
+  // and nothing internal may be. Otherwise it is a 404, or a leak, that only shows up live.
+  if (!/^\/\*$/m.test(VERCELIGNORE)) fail('.vercelignore', 'missing, or no `/*` rule — the whole repo would be published');
+  for (const f of SHIPPED) {
+    if (!existsSync(join(ROOT, f))) fail('.vercelignore', `ships ${f}, which does not exist`);
+    if (/^\.|\.(mjs|json|yml)$/.test(f) || (f.endsWith('.md') && f !== 'NOTICE.md')) fail('.vercelignore', `ships ${f}, which is internal`);
+  }
+  for (const page of PAGES) if (!SHIPPED.has(page)) fail('.vercelignore', `${page} is not shipped`);
+  const REF = /["'(]([A-Za-z0-9_.-]+\.(?:html|css|js|png|webp|svg|woff2|txt|md|json|ico))(?=[?#"')])/g;
+  for (const f of [...SHIPPED].filter(f => /\.(html|css|js)$/.test(f) && f !== 'sentry.min.js' && existsSync(join(ROOT, f)))) {
+    for (const m of read(f).matchAll(REF)) if (!SHIPPED.has(m[1])) fail(f, `references ${m[1]}, which .vercelignore does not ship`);
+  }
+
   // Secret keys must never be committed; only publishable keys are allowed.
   for (const f of textTargets) {
     if (/\b(sk|rk)_(live|test)_[A-Za-z0-9]{10,}/.test(read(f))) fail(f, 'contains a Stripe secret/restricted key');
@@ -105,7 +123,8 @@ function serve() {
     const srv = createServer((req, rsp) => {
       const p = decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html';
       const file = join(ROOT, p);
-      if (!file.startsWith(ROOT) || !existsSync(file)) { rsp.writeHead(404); return rsp.end(); }
+      // Serve only what Vercel publishes, so a file missing from .vercelignore 404s here too.
+      if (!SHIPPED.has(p) || !existsSync(file)) { rsp.writeHead(404); return rsp.end(); }
       rsp.writeHead(200, { 'content-type': MIME[extname(file)] || 'application/octet-stream' });
       rsp.end(readFileSync(file));
     }).listen(0, '127.0.0.1', () => res(srv));
