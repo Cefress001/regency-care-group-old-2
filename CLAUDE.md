@@ -52,6 +52,15 @@ assertion does not mean the layout looks right. `tests/known-issues.txt` lists p
 which print as warnings. CI runs the same script (`.github/workflows/check.yml`). Playwright resolves
 from `node_modules` or the global install; in the cloud sandbox it uses `/opt/pw-browsers/chromium`.
 
+**Browser control (Playwright MCP).** `.mcp.json` registers a `playwright` MCP server
+(`.claude/mcp/playwright.sh`, pinned `@playwright/mcp@0.0.82`, headless, isolated profile, output
+to `.checks/mcp/`). It gives Claude `browser_navigate`, `browser_click`, `browser_type`,
+`browser_snapshot`, `browser_take_screenshot`, `browser_console_messages` and similar tools, for driving a flow by hand while designing or
+debugging: clicking through a playbook, filling the pricing form, checking a copy button. It
+complements `tests/check.mjs`, which is repeatable and the one that gates. In the cloud sandbox the
+script points at `/opt/pw-browsers/chromium` with `--no-sandbox` (the container runs as root);
+elsewhere run `npx playwright install chromium` once. Serve the site first (`python3 -m http.server 8000`).
+
 The toolkit is gated — open it locally at `http://localhost:8000/toolkit.html?access=199400` (free) or `?access=SKPRO500` (Pro), or you will only see the unlock overlay.
 
 ## Architecture

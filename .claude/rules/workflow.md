@@ -44,7 +44,9 @@ here), say so in the brainstorm rather than silently widening the build.
   Read tool). The script checks what can be asserted; the screenshot is how layout, spacing
   and hierarchy get reviewed. Say what you looked at.
 - For behaviour the script does not cover (a calculator's numbers, a copy button), exercise
-  it with Playwright or state plainly that it was not verified.
+  it with the Playwright MCP browser tools (`browser_navigate`, `browser_click`,
+  `browser_type`, `browser_snapshot`, `browser_console_messages`) against a local server, or
+  state plainly that it was not verified.
 - If a check reveals a bug outside the task, report it; add it to `known-issues.txt` only
   with the user's agreement.
 
