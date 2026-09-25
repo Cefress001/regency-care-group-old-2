@@ -22,6 +22,8 @@ const STATIC_ONLY = args.includes('--static');
 const onlyFiles = args.filter(a => !a.startsWith('--')).map(f => basename(f));
 
 const PAGES = readdirSync(ROOT).filter(f => f.endsWith('.html')).sort();
+// Pages that report errors to Sentry. checkout.html is deliberately excluded (Stripe's page).
+const SENTRY_PAGES = ['index.html', 'success.html', 'toolkit.html'];
 const failures = [];
 const fail = (where, msg) => failures.push(`${where}: ${msg}`);
 const read = f => readFileSync(join(ROOT, f), 'utf8');
@@ -57,6 +59,25 @@ function staticChecks() {
     const ids = [...src.replace(/<script[\s\S]*?<\/script>/g, '').matchAll(/\sid="([^"]+)"/g)].map(m => m[1]);
     const seen = new Set();
     for (const id of ids) { if (seen.has(id)) fail(page, `duplicate id="${id}"`); seen.add(id); }
+  }
+
+  // Error reporting is wired on exactly these pages, library first, before any page script.
+  for (const page of htmlTargets) {
+    const src = read(page);
+    const lib = src.indexOf('<script src="sentry.min.js"></script>');
+    const init = src.indexOf('<script src="sentry-init.js"></script>');
+    if (SENTRY_PAGES.includes(page)) {
+      if (lib < 0 || init < 0) fail(page, 'missing the sentry.min.js / sentry-init.js tags');
+      else if (init < lib || init > src.indexOf('</head>')) fail(page, 'sentry-init.js must follow sentry.min.js inside <head>');
+    } else if (/sentry/i.test(src.replace(/<!--[\s\S]*?-->/g, '')) && page !== 'privacy.html') {
+      fail(page, 'loads Sentry, but it is only meant for ' + SENTRY_PAGES.join(', '));
+    }
+  }
+
+  // Standalone scripts must parse.
+  for (const f of readdirSync(ROOT).filter(f => f.endsWith('.js'))) {
+    try { new vm.Script(read(f), { filename: f }); }
+    catch (e) { fail(f, `does not parse: ${e.message}`); }
   }
 
   // Secret keys must never be committed; only publishable keys are allowed.
@@ -121,6 +142,8 @@ async function browserChecks() {
       if (/net::ERR_FAILED|ERR_BLOCKED/.test(m.text())) return;
       errs.push(`console.error: ${m.text()}`);
     });
+    // On 127.0.0.1 sentry-init.js disables sending; a request here means that guard broke.
+    page.on('request', r => { if (/sentry\.io/.test(r.url())) errs.push(`request to Sentry from a local page: ${r.url().slice(0, 80)}`); });
     page.on('response', r => { if (r.url().startsWith(base) && r.status() >= 400) errs.push(`${r.status()} ${r.url().slice(base.length)}`); });
     await page.goto(base + path, { waitUntil: 'load' });
     await page.waitForTimeout(250);
@@ -139,6 +162,15 @@ async function browserChecks() {
       const where = `${file} [${vp}]`;
       await noHorizontalScroll(page, where);
       await page.screenshot({ path: join(shots, `${file.replace('.html', '')}-${vp}.png`), fullPage: file !== 'toolkit.html' });
+
+      if (SENTRY_PAGES.includes(file) && vp === 'desktop') {
+        const st = await page.evaluate(() => {
+          const c = window.Sentry && Sentry.getClient && Sentry.getClient();
+          return { client: !!c, enabled: c ? c.getOptions().enabled : null, local: window.skSentry && skSentry.local };
+        });
+        if (!st.client) fail(where, 'Sentry did not initialise');
+        else if (st.enabled !== false || st.local !== true) fail(where, 'Sentry is not disabled on a local server');
+      }
 
       if (file === 'toolkit.html') {
         if (await page.evaluate(() => document.documentElement.classList.contains('sk-locked')))
@@ -174,6 +206,8 @@ async function browserChecks() {
     }
   }
 
+  await sentryEndToEnd(pw, launch, srv.address().port);
+
   // The gate must actually gate.
   {
     const { ctx, page, errs } = await open('toolkit.html?lock=1', 'desktop');
@@ -186,6 +220,43 @@ async function browserChecks() {
 
   await browser.close();
   srv.close();
+}
+
+// Serve the toolkit under a hostname that is not local, so sentry-init.js really sends,
+// then intercept the envelope before it leaves the machine and read it. This checks the
+// scrubbing on what the real SDK produces, not on a hand-built event.
+async function sentryEndToEnd(pw, launch, port) {
+  const where = 'sentry end-to-end';
+  const HOST = 'sellerkit.test';
+  const SECRETS = ['SKPRO500', 'AIzaSyTEST0000000000000000000000000000', 'sk-ant-api03-TESTTESTTESTTESTTEST'];
+  const browser = await pw.chromium.launch({ ...launch, args: [`--host-resolver-rules=MAP ${HOST} 127.0.0.1`] });
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  const envelopes = [];
+  await page.route('**/*', r => {
+    const u = r.request().url();
+    if (/ingest\.(us\.)?sentry\.io/.test(u)) { envelopes.push(r.request().postData() || ''); return r.fulfill({ status: 200, body: '{}' }); }
+    return new URL(u).hostname === HOST ? r.continue() : r.abort();
+  });
+  try {
+    await page.goto(`http://${HOST}:${port}/toolkit.html?access=SKPRO500`, { waitUntil: 'load' });
+    const enabled = await page.evaluate(() => Sentry.getClient().getOptions().enabled);
+    if (!enabled) { fail(where, 'Sentry did not enable on a public hostname'); return; }
+    await page.evaluate(([gk, ak]) => {
+      // The AI layer's Google call carries the user's key in the URL.
+      fetch('https://generativelanguage.googleapis.com/v1beta/models/m:streamGenerateContent?alt=sse&key=' + gk).catch(() => {});
+      history.pushState({}, '', location.pathname + '?access=SKPRO500&lock=1');
+      setTimeout(() => { throw new Error('check-e2e boom key=' + gk + ' ' + ak); }, 50);
+    }, [SECRETS[1], SECRETS[2]]);
+    for (let i = 0; i < 40 && !envelopes.some(e => e.includes('check-e2e boom')); i++) await page.waitForTimeout(100);
+    const sent = envelopes.find(e => e.includes('check-e2e boom'));
+    if (!sent) { fail(where, 'no error envelope was sent for a thrown error'); return; }
+    for (const s of SECRETS) if (sent.includes(s)) fail(where, `secret leaked into the error report: ${s.slice(0, 12)}…`);
+    if (/generativelanguage/.test(sent)) fail(where, 'AI provider request was recorded as a breadcrumb');
+    if (!sent.includes('[redacted]')) fail(where, 'expected [redacted] markers in the report');
+  } finally {
+    await browser.close();
+  }
 }
 
 // ─── Run ──────────────────────────────────────────────────────────────────────

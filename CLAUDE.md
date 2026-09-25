@@ -65,7 +65,7 @@ The toolkit is gated — open it locally at `http://localhost:8000/toolkit.html?
 
 ## Architecture
 
-Seven pages, no shared JS. Each page carries its own `<script>` at the bottom; there is no module system, bundler, or framework.
+Seven pages, and no shared application JS: each page carries its own `<script>` at the bottom; there is no module system, bundler, or framework. The one shared script is error reporting (`sentry.min.js` + `sentry-init.js`), which is infrastructure, not app code.
 
 | File | Role |
 | --- | --- |
@@ -82,12 +82,26 @@ Seven pages, no shared JS. Each page carries its own `<script>` at the bottom; t
 | `og-image.png` | 1200×630 social share card, referenced by absolute URL in the `og:image` / `twitter:image` tags. |
 | `screen-*.webp` | Real 2× toolkit screenshots used by the "Inside the Toolkit" section on `index.html`. |
 | `inter-var-latin.woff2` | Vendored Inter variable font (latin, 100–900, 48KB). Shared by all four styling worlds. |
-| `NOTICE.md` | Third-party license text for the vendored Lucide icons, Inter and Radix Colors. |
+| `NOTICE.md` | Third-party license text for the vendored Lucide icons, Inter, Radix Colors and the Sentry SDK. |
+| `sentry.min.js` | Vendored Sentry browser SDK (errors only, ~30KB gzip). **Generated**: rebuild with `npm run vendor:sentry` from `tools/sentry/entry.js`; never hand-edit. |
+| `sentry-init.js` | Sentry config: the DSN, the scrubbing, and the local-server off switch. Loaded on `index.html`, `toolkit.html`, `success.html`. |
+| `tools/sentry/entry.js` | The exports the vendored bundle keeps. Add one here before using a new Sentry API in `sentry-init.js`. |
 
 Three styling worlds coexist deliberately: `index.html` and `toolkit.html` share `styles.css` and its `:root` custom properties (`--blue`, `--gray-600`, `--radius`, …); `checkout.html` and `success.html` are standalone with hardcoded colors and the Inter webfont; the legal pages share `legal.css`, which defines its own tokens. Editing a token in `styles.css` will not reach the checkout flow or the legal pages.
 
 ## Gotchas
 
+- **Error reports must never carry a secret.** Sentry (project `rx-peptides-co-m5/sellerkit-web`,
+  errors only, rate-limited to 300 events a day on the key) records page URLs, stack frames and
+  fetch/navigation breadcrumbs, and two secrets travel in URLs here: the access codes
+  (`?access=`, `?lock=`) and the user's Google AI key (`&key=` in `aiRequest`). `sentry-init.js`
+  therefore scrubs the **whole serialised event**, not chosen fields, and drops every breadcrumb for
+  an AI-provider request. `tests/check.mjs` proves it end to end: it serves the toolkit under a
+  non-local hostname so the SDK really sends, intercepts the envelope, and fails if a planted secret
+  survives. A new secret-bearing URL parameter or key format goes in `URL_SECRET` / `KEY_SHAPES`.
+  Sending is disabled on localhost/127.0.0.1/`file:`, so development and the checks report nothing.
+  `checkout.html` is deliberately excluded (Stripe's page), and the static check enforces the page
+  list. `privacy.html` section 5 describes exactly what is sent, so keep it in step with any change.
 - **Stripe is live.** `checkout.html` carries a real `<stripe-buy-button>` with a `pk_live_` publishable key. Only publishable keys belong in this repo — a `sk_live_`/`sk_test_` secret key must never be committed. The buy button's success URL is configured on the Stripe Dashboard, not here, and it must point at `success.html` or buyers never receive toolkit access.
 - **The toolkit is gated.** `toolkit.html` hides itself behind an access code (`199400`), checked by an inline `<head>` script that adds `.sk-locked` to `<html>`. Access is granted by `success.html` (sets `sk_access` in `localStorage`), by `?access=<code>`, by typing the code into the overlay, or by the username/password sign-in on the overlay's second view. `?lock=1` clears `sk_access` and `sk_plan` and puts the gate back, which is the only way to re-test the locked state and the purchase flow once access has stuck on a device. This is **interim and trivially bypassed** — the whole block sits between the `interim access gate` comment markers in `toolkit.html` and is meant to be deleted wholesale when Firebase Auth lands. Keep the gate CSS/JS inline in `<head>`: moving it to `styles.css` reintroduces a flash of unlocked content.
 - **Gate sign-in is browser-side, so the source carries a digest, not a password.** `LOGINS` maps a username to `{ h: PBKDF2-SHA256(user + ':' + pass, 'sellerkit-gate-v1', 150000) as hex, plan }`. There is no server to check a credential against, so this only raises the cost from reading the source to running an offline attack — pair it with a passphrase long enough that the attack is not worth running, and never treat it as real authentication. Add or rotate one with `node -e "console.log(require('crypto').pbkdf2Sync('user:password','sellerkit-gate-v1',150000,32,'sha256').toString('hex'))"`. `crypto.subtle` needs a secure context, so sign-in works on https and localhost but not `file://`; the access-code path stays as the fallback.
