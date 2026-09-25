@@ -11,7 +11,7 @@
 (function () {
   if (!window.Sentry || !Sentry.init) return;
 
-  var DSN = 'https://5e5fd904e49fcafc3660ff145f79d552@o4512083551911936.ingest.us.sentry.io/4512145047879680';
+  var DSN = 'https://819abee3a015ce2356cc5307556148f5@o4512083551911936.ingest.us.sentry.io/4512145041522688';
 
   var URL_SECRET = /([?&#](?:key|access|lock|code|token|api[_-]?key|password|pass)=)[^&#\s"'\\]*/gi;
   // Provider key shapes, in case one turns up in an error message rather than a URL.

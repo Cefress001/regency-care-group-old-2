@@ -91,7 +91,7 @@ Three styling worlds coexist deliberately: `index.html` and `toolkit.html` share
 
 ## Gotchas
 
-- **Error reports must never carry a secret.** Sentry (project `rx-peptides-co-m5/sellerkit-web`,
+- **Error reports must never carry a secret.** Sentry (project `rx-peptides-co-m5/claude-app1`,
   errors only, rate-limited to 300 events a day on the key) records page URLs, stack frames and
   fetch/navigation breadcrumbs, and two secrets travel in URLs here: the access codes
   (`?access=`, `?lock=`) and the user's Google AI key (`&key=` in `aiRequest`). `sentry-init.js`
