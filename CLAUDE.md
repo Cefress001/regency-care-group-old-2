@@ -81,6 +81,7 @@ Seven pages, and no shared application JS: each page carries its own `<script>` 
 | `styles.css` | Design system + landing-page styles (lines 1–313) + toolkit styles (line 315 onward). |
 | `legal.css` | Styles for the three legal pages only. Own tokens — does not read `styles.css`. |
 | `robots.txt` | Keeps `toolkit.html` and `success.html` out of search results. |
+| `.vercelignore` | **Deploy allowlist.** Vercel publishes only the files named here (`!/name`); everything else — this file, `.claude/`, `docs/`, `tests/`, `package.json` — stays off the live domain. A new page or asset must be added or it 404s in production; the static check fails on a reference to an unlisted file, and the browser check serves only listed files. |
 | `favicon.svg` | Linked from every page. |
 | `apple-touch-icon.png` | 180×180 home-screen icon, linked from every page. |
 | `og-image.png` | 1200×630 social share card, referenced by absolute URL in the `og:image` / `twitter:image` tags. |

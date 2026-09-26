@@ -151,10 +151,33 @@ Two bases produce the three prices, and `#pc-basis` says which one ran.
   flip — with **no multiplier invented anywhere** on that path. Enough comps also make
   retail, condition and demand optional, because someone pricing a trade-in has no
   idea what it cost new.
+- **One odd sale does not set the floor.** From `COMPS_OUTLIER_MIN` (5) comps, `compStats`
+  sets aside values beyond the 1.5 × IQR fences (fence at least 10% of the median, so a
+  tight cluster keeps its near-identical values), and the median, low and high come from
+  the rest. Nothing is set aside if that would leave fewer than `COMPS_MIN` or under half
+  the comps — that is two different items mixed, which the spread warning covers.
+  Outliers still show, as dimmed chips.
 - **`parseComps` is deliberately not "find every number".** "Sold Sep 12 · $45" holds
   two numbers and one price. When the text carries any `$`, only `$`-prefixed numbers
-  count; otherwise the last number on each line wins. Everything parsed is echoed back
-  as chips so a misread is visible *before* it reaches the price.
+  count, and `parseCompsDetailed` skips an amount that is an extra cost or an old price
+  (a word from `COMP_SKIP_BEFORE`/`COMP_SKIP_AFTER` right next to it, or a leading `+`),
+  the top of a range (`$40 to $60` keeps $40) or the old half of a price cut (`$150$200`,
+  Facebook's display, keeps $150; only with nothing between them, so a typed
+  `$45 $52` list still counts). Without a `$`, the last number on each line wins unless
+  the line is a shipping/old-price line. Everything parsed is echoed back as chips —
+  skipped ones struck through with the reason — so a misread is visible *before* it
+  reaches the price. The cases are pinned in `tests/check.mjs`; add one there with any
+  new rule.
+- **Where to find comps.** `COMP_SOURCES` drives two rows in the comps card: sold
+  searches (eBay, Mercari, Poshmark — paste these) and asking-price sites (Facebook
+  Marketplace, OfferUp — the competition, never pasted, because asking prices run high).
+  The marketplace chosen in `pc-platform` goes first in its row. The `pc-comp-q` search
+  box follows `pc-name` until edited; `dataset.base` holds the name the edit was made
+  for, so a rename or item switch starts from the new name. It is not saved, and is not
+  in `TOOL_FIELDS`. The sold-filter URL parameters are each site's own and can change
+  without notice: when one stops filtering, relabel it or move it to the asking row.
+  The results panel's `#pc-comp-link` only jumps to the card, and only shows while the
+  formula is pricing.
 - **Sell-time needs condition and demand**, so it hides on the comps-only path rather
   than printing a number with nothing behind it.
 - **A price is not what you get.** `pc-platform` drives a net line under all three

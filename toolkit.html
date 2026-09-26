@@ -786,7 +786,7 @@
         <div class="form-grid">
           <div class="form-row">
             <label>Item Name</label>
-            <input type="text" id="pc-name" placeholder="e.g. Samsung 65″ TV" oninput="calcPrice(); saveLS('pc')">
+            <input type="text" id="pc-name" placeholder="e.g. Samsung 65″ TV" oninput="calcPrice(); renderCompSearch(); saveLS('pc')">
           </div>
           <div class="form-row">
             <label>Original Retail Price ($)</label>
@@ -818,7 +818,7 @@
         <div class="form-grid">
           <div class="form-row">
             <label>Where you'll sell it <span style="font-weight:400;color:var(--gray-400)">— sets what you actually keep</span></label>
-            <select id="pc-platform" onchange="calcPrice(); calcPriceDrop(); saveLS('pc')">
+            <select id="pc-platform" onchange="calcPrice(); calcPriceDrop(); renderCompSearch(); saveLS('pc')">
               <option value="Local cash">Local cash — Facebook / OfferUp / Craigslist</option>
               <option value="Facebook shipping">Facebook shipping — 5%</option>
               <option value="Mercari">Mercari — 10%</option>
@@ -889,7 +889,7 @@
             <div class="sell-time-note" id="pc-st-note"></div>
           </div>
           <div id="pc-comparables" style="display:none;margin-top:.5rem;">
-            <a class="comparables-link" id="pc-comp-link" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> Research comparable sold listings on eBay →</a>
+            <button type="button" class="comparables-link" id="pc-comp-link" onclick="jumpToComps()"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg> Find sold comps for this item ↓</button>
           </div>
 
           <div class="fee-block" id="pc-fees">
@@ -906,14 +906,27 @@
         </div>
       </div>
 
-      <div class="tk-card">
+      <div class="tk-card" id="pc-comps-card">
         <h3><svg class="ic" aria-hidden="true"><use href="#i-search-check"/></svg> Sold comps — what it actually sold for</h3>
         <p class="card-lede">
-          The calculator above is a formula. This is data. Search your platform for the same item,
-          filter to <strong>sold</strong> listings, and paste the prices in — one per line, or with a
-          $ in front of each. Three or more and they take over the pricing, because what similar
-          items really sold for beats any multiplier.
+          The calculator above is a formula. This is data. Search for the same item, filter to
+          <strong>sold</strong>, copy the results and paste them below — the whole block is fine,
+          shipping costs and old prices are skipped. Three or more and they take over the pricing,
+          because what similar items really sold for beats any multiplier.
         </p>
+        <div class="form-row">
+          <label for="pc-comp-q">Search for <span style="font-weight:400;color:var(--gray-400)">— a model number beats a description</span></label>
+          <input type="text" id="pc-comp-q" enterkeyhint="search" autocomplete="off" placeholder="Enter the item name above, or type a search" oninput="compQueryEdited()">
+        </div>
+        <div class="comp-src-group">
+          <div class="comp-src-head"><strong>Sold prices</strong> — paste these below</div>
+          <div class="comp-src-btns" id="pc-src-sold"></div>
+        </div>
+        <div class="comp-src-group">
+          <div class="comp-src-head"><strong>What you're up against</strong> — asking prices, don't paste these</div>
+          <div class="comp-src-btns" id="pc-src-ask"></div>
+          <p class="comp-src-hint">If the cheapest listing in the same condition is under your Quick Flip price, price near it.</p>
+        </div>
         <div class="form-row">
           <label>Sold prices <span style="font-weight:400;color:var(--gray-400)">— paste as many as you can find, in similar condition</span></label>
           <textarea id="pc-comps" rows="4" placeholder="$45&#10;$52&#10;$48&#10;$60" oninput="calcComps(); saveLS('pc')"></textarea>
@@ -2859,6 +2872,7 @@ function clearAllTools() {
   if (compsOut) compsOut.style.display = 'none';
   const soOut = document.getElementById('so-results');
   if (soOut) soOut.style.display = 'none';
+  renderCompSearch();
   calcPrice();
   calcPriceDrop();
 }
@@ -3605,62 +3619,201 @@ function migrateLegacyItem() {
 // no multiplier invented anywhere.
 const COMPS_MIN = 3;          // below this the sample is too thin to price off
 
-// People paste messy text: "Sold Sep 12 · $45", "45.00", "2 bids  $60".
-// Taking every number would read dates and bid counts as prices, so:
-//   - if the text carries any $, only $-prefixed numbers count;
-//   - otherwise take the LAST number on each line, which is where a price sits.
-// Whatever is parsed is echoed back as chips, so a misread is visible rather than
-// silently folded into the price.
-function parseComps(text) {
-  const raw = String(text || '');
-  if (!raw.trim()) return [];
-  const out = [];
-  const num = tok => parseFloat(String(tok).replace(/[$,\s]/g, ''));
-  if (raw.indexOf('$') !== -1) {
-    (raw.match(/\$\s*\d[\d,]*(?:\.\d+)?/g) || []).forEach(t => out.push(num(t)));
-  } else {
-    raw.split(/[\n;]+/).forEach(line => {
-      const hits = line.match(/\d[\d,]*(?:\.\d+)?/g);
-      if (hits && hits.length) out.push(num(hits[hits.length - 1]));
-    });
-  }
-  return out.filter(n => isFinite(n) && n > 0 && n < 1000000).sort((a, b) => a - b);
+// People paste messy text: a whole eBay results block, "Sold Sep 12 · $45", "45.00",
+// "2 bids  $60", "+$12.99 delivery". Taking every number would read dates, bid counts
+// and shipping as prices, so:
+//   - if the text carries any $, only $-prefixed amounts count, and of those an amount
+//     is skipped when it is an extra cost or an old price (see compSkipReason), the top
+//     of a range ("$40 to $60" keeps $40), or the old half of a price cut ("$150$200",
+//     Facebook's reduced-price display, keeps $150);
+//   - otherwise take the LAST number on each line, unless the line is a shipping/old-
+//     price line.
+// Everything parsed comes back as chips, skipped amounts struck through with the
+// reason, so a misread or a wrong skip is visible rather than silently folded in.
+const COMP_SKIP_BEFORE = /\b(shipping|delivery|postage|tax|was|list price|orig(?:inal)?\.?(?: price)?|retail|msrp|est\.?|estimated|save)\s*[:\-]?\s*(?:US|C|AU)?\s*$/i;
+const COMP_SKIP_AFTER  = /^\s*(shipping|delivery|postage|tax|off)\b/i;
+const COMP_SKIP_LINE   = /\b(shipping|delivery|postage|tax|was|msrp|retail|list price)\b/i;
+const COMP_RANGE_GAP   = /^\s*(?:to|-|–|—)\s*(?:US|C|AU)?\s*$/i;
+
+function compSkipLabel(word) {
+  const w = word.toLowerCase();
+  if (/^(was|orig)/.test(w)) return 'old price';
+  if (/^(list|retail|msrp)/.test(w)) return 'list price';
+  if (/^est/.test(w)) return 'estimate';
+  if (w === 'save' || w === 'off') return 'discount';
+  return w;                                   // shipping, delivery, postage, tax
 }
 
-function compStats(values) {
-  if (!values.length) return null;
+function parseCompsDetailed(text) {
+  const raw = String(text || '');
+  const kept = [], skipped = [];
+  if (!raw.trim()) return { kept, skipped };
+  const num = tok => parseFloat(String(tok).replace(/[$,\s]/g, ''));
+  const ok = n => isFinite(n) && n > 0 && n < 1000000;
+  const lines = raw.split(/[\n;]+/);
+  if (raw.indexOf('$') !== -1) {
+    lines.forEach(line => {
+      const re = /\$\s*\d[\d,]*(?:\.\d+)?/g;
+      let m, prevEnd = 0, prevKept = false, first = true;
+      while ((m = re.exec(line))) {
+        const value = num(m[0]);
+        const before = line.slice(prevEnd, m.index);
+        const after = line.slice(m.index + m[0].length);
+        let reason = '';
+        const b = before.match(COMP_SKIP_BEFORE), a = after.match(COMP_SKIP_AFTER);
+        if (b) reason = compSkipLabel(b[1]);
+        else if (a) reason = compSkipLabel(a[1]);
+        else if (/\+\s*$/.test(before)) reason = 'extra cost';
+        else if (!first && prevKept && COMP_RANGE_GAP.test(before)) reason = 'top of range';
+        else if (!first && prevKept && before === '') reason = 'earlier price';
+        if (ok(value)) (reason ? skipped.push({ value, reason }) : kept.push(value));
+        prevKept = !reason; prevEnd = m.index + m[0].length; first = false;
+      }
+    });
+  } else {
+    lines.forEach(line => {
+      const hits = line.match(/\d[\d,]*(?:\.\d+)?/g);
+      if (!hits || !hits.length) return;
+      const value = num(hits[hits.length - 1]);
+      if (!ok(value)) return;
+      const w = line.match(COMP_SKIP_LINE);
+      w ? skipped.push({ value, reason: compSkipLabel(w[1]) }) : kept.push(value);
+    });
+  }
+  kept.sort((x, y) => x - y);
+  return { kept, skipped };
+}
+
+function parseComps(text) { return parseCompsDetailed(text).kept; }
+
+// One odd sale should not set the floor: a $15 "for parts" sale among $200 ones would.
+// From COMPS_OUTLIER_MIN comps up, values beyond the usual 1.5 x IQR fences are set
+// aside and everything (median included) comes from the rest. The fence is at least
+// 10% of the median, so a tight cluster (four $100s and a $101) does not flag the
+// $101. Nothing is set aside if that would leave fewer than COMPS_MIN or under half
+// the comps: that is two different items mixed together, which the spread warning
+// covers, not an outlier.
+const COMPS_OUTLIER_MIN = 5;
+
+function quantile(sorted, p) {
+  const i = (sorted.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i);
+  return sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
+}
+
+function compStats(all) {
+  if (!all.length) return null;
+  let values = all, outliers = [];
+  if (all.length >= COMPS_OUTLIER_MIN) {
+    const q1 = quantile(all, .25), q3 = quantile(all, .75);
+    const fence = Math.max(1.5 * (q3 - q1), .1 * quantile(all, .5));
+    const inside = all.filter(v => v >= q1 - fence && v <= q3 + fence);
+    if (inside.length < all.length && inside.length >= Math.max(COMPS_MIN, Math.ceil(all.length / 2))) {
+      values = inside;
+      outliers = all.filter(v => v < q1 - fence || v > q3 + fence);
+    }
+  }
   const mid = Math.floor(values.length / 2);
   const median = values.length % 2 ? values[mid] : (values[mid - 1] + values[mid]) / 2;
-  return { n: values.length, low: values[0], high: values[values.length - 1], median: median, values: values };
+  return { n: values.length, low: values[0], high: values[values.length - 1], median: median,
+           values: values, outliers: outliers };
 }
 
 const money = n => '$' + Math.round(n).toLocaleString();
+const moneyExact = n => '$' + n.toLocaleString(undefined, { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+
+// ── Where to find comps ──
+// Sold searches feed the comps box; asking-price sites only show the competition,
+// and pasting them would price high, so they sit in their own row. The sold-filter
+// parameters are each site's own URL filters and can change without notice: when
+// one stops filtering, relabel it or move it to the asking row.
+const COMP_SOURCES = [
+  { name: 'eBay', kind: 'sold', sells: ['eBay'], note: 'sign in to see sold',
+    url: q => 'https://www.ebay.com/sch/i.html?_nkw=' + q + '&LH_Sold=1&LH_Complete=1' },
+  { name: 'Mercari', kind: 'sold', sells: ['Mercari'],
+    url: q => 'https://www.mercari.com/search/?keyword=' + q + '&itemStatuses=2' },
+  { name: 'Poshmark', kind: 'sold', sells: ['Poshmark'],
+    url: q => 'https://poshmark.com/search?query=' + q + '&availability=sold_out' },
+  { name: 'Facebook Marketplace', kind: 'ask', sells: ['Local cash', 'Facebook shipping'],
+    url: q => 'https://www.facebook.com/marketplace/search/?query=' + q },
+  { name: 'OfferUp', kind: 'ask', sells: ['Local cash'],
+    url: q => 'https://offerup.com/search?q=' + q },
+];
+
+// The search box follows the item name until the user edits it; the edit sticks
+// while the name stays the same (dataset.base remembers which name it was made for),
+// so switching items or renaming one starts from the new name again.
+function compQueryEdited() {
+  const q = document.getElementById('pc-comp-q');
+  q.dataset.base = document.getElementById('pc-name').value.trim();
+  renderCompSearch();
+}
+
+function renderCompSearch() {
+  const qEl = document.getElementById('pc-comp-q');
+  const nameEl = document.getElementById('pc-name');
+  if (!qEl || !nameEl) return;
+  const name = nameEl.value.trim();
+  if (qEl.dataset.base !== name) { qEl.value = name; delete qEl.dataset.base; }
+  const q = qEl.value.trim();
+  const platform = document.getElementById('pc-platform').value;
+  const mine = s => s.sells.indexOf(platform) !== -1;
+  [['sold', 'pc-src-sold'], ['ask', 'pc-src-ask']].forEach(([kind, id]) => {
+    const list = COMP_SOURCES.filter(s => s.kind === kind).sort((a, b) => mine(b) - mine(a));
+    document.getElementById(id).innerHTML = list.map(s => {
+      const label = escHtml(s.name) + (s.note ? ' <span class="comp-src-note">' + escHtml(s.note) + '</span>' : '');
+      const cls = 'btn btn-neutral btn-sm comp-src' + (mine(s) ? ' mine' : '');
+      return q
+        ? '<a class="' + cls + '" href="' + escHtml(s.url(encodeURIComponent(q))) + '" target="_blank" rel="noopener"' +
+          (mine(s) ? ' title="Where you sell"' : '') + '>' + label + ' ' + ic('external-link') + '</a>'
+        : '<span class="' + cls + '" aria-disabled="true">' + label + '</span>';
+    }).join('');
+  });
+}
+
+function jumpToComps() {
+  const card = document.getElementById('pc-comps-card');
+  if (!card) return;
+  const still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  card.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+}
 
 function calcComps() {
+  renderCompSearch();
   const el = document.getElementById('pc-comps');
   const out = document.getElementById('pc-comps-out');
   if (!el || !out) return null;
-  const st = compStats(parseComps(el.value));
-  if (!st) { out.style.display = 'none'; calcPrice(); return null; }
+  const parsed = parseCompsDetailed(el.value);
+  const st = compStats(parsed.kept);
+  if (!st && !parsed.skipped.length) { out.style.display = 'none'; calcPrice(); return null; }
 
   document.getElementById('pc-comps-chips').innerHTML =
-    st.values.map(v => '<span class="comp-chip tnum">' + money(v) + '</span>').join('');
-  document.getElementById('pc-comps-low').textContent  = money(st.low);
-  document.getElementById('pc-comps-med').textContent  = money(st.median);
-  document.getElementById('pc-comps-high').textContent = money(st.high);
-  document.getElementById('pc-comps-n').textContent    = st.n;
+    (st ? st.values.map(v => '<span class="comp-chip tnum">' + money(v) + '</span>').join('') +
+          st.outliers.map(v => '<span class="comp-chip out tnum" title="Set aside: far from the rest">' +
+            money(v) + ' <small>outlier</small></span>').join('') : '') +
+    parsed.skipped.map(x => '<span class="comp-chip skip tnum" title="Not counted: ' + escHtml(x.reason) + '"><s>' +
+      escHtml(moneyExact(x.value)) + '</s> <small>' + escHtml(x.reason) + '</small></span>').join('');
+  document.getElementById('pc-comps-low').textContent  = st ? money(st.low) : '—';
+  document.getElementById('pc-comps-med').textContent  = st ? money(st.median) : '—';
+  document.getElementById('pc-comps-high').textContent = st ? money(st.high) : '—';
+  document.getElementById('pc-comps-n').textContent    = st ? st.n : 0;
+
+  const extras = [];
+  if (st && st.outliers.length) extras.push(st.outliers.length + ' set aside as outlier' + (st.outliers.length === 1 ? '' : 's'));
+  if (parsed.skipped.length) extras.push(parsed.skipped.length + ' skipped (shipping, old prices and the like)');
+  const tail = extras.length ? ' ' + extras.join('; ') + '.' : '';
 
   const note = document.getElementById('pc-comps-note');
-  if (st.n < COMPS_MIN) {
+  const n = st ? st.n : 0;
+  if (n < COMPS_MIN) {
     note.className = 'comps-note thin';
     note.innerHTML = ic('info') + ' ' + escHtml(
-      st.n + ' comp' + (st.n === 1 ? '' : 's') + ' is too thin to price off — find at least ' +
-      COMPS_MIN + '. Until then the formula above sets your price.');
+      n + ' comp' + (n === 1 ? '' : 's') + ' is too thin to price off — find at least ' +
+      COMPS_MIN + '. Until then the formula above sets your price.' + tail);
   } else {
     const spread = st.low > 0 ? Math.round(((st.high - st.low) / st.low) * 100) : 0;
     note.className = 'comps-note';
     note.innerHTML = ic('circle-check') + ' ' + escHtml(
-      'Pricing from these ' + st.n + ' comps.' +
+      'Pricing from these ' + st.n + ' comps.' + tail +
       (spread > 80
         ? ' They are spread ' + spread + '% apart, so condition or model probably differs between them — drop the ones that are not really your item.'
         : ' Ask sits at the median, the floor at the lowest one that actually sold.'));
@@ -3719,7 +3872,9 @@ function calcPrice(fromButton) {
   if (basis) {
     basis.className = 'price-basis' + (byComps ? ' from-comps' : '');
     basis.innerHTML = byComps
-      ? ic('search-check') + ' <strong>From ' + comps.n + ' sold comps</strong> — median ' +
+      ? ic('search-check') + ' <strong>From ' + comps.n + ' sold comps</strong>' +
+        (comps.outliers.length ? ' (' + comps.outliers.length + ' outlier' + (comps.outliers.length === 1 ? '' : 's') + ' set aside)' : '') +
+        ' — median ' +
         escHtml(money(comps.median)) + ', range ' + escHtml(money(comps.low)) + '–' + escHtml(money(comps.high))
       : ic('info') + ' <strong>From the formula</strong> — retail x condition x demand. ' +
         'Paste ' + COMPS_MIN + ' sold comps below to price off real sales instead.';
@@ -3789,11 +3944,8 @@ function calcPrice(fromButton) {
   }
   // Comparables link
   const itemName = document.getElementById('pc-name').value.trim();
-  if (itemName) {
-    const query = encodeURIComponent(itemName);
-    document.getElementById('pc-comp-link').href = `https://www.ebay.com/sch/i.html?_nkw=${query}&LH_Sold=1&LH_Complete=1`;
-    document.getElementById('pc-comparables').style.display = 'block';
-  }
+  // Only offered while the formula is pricing: once comps rule there is nothing to find.
+  document.getElementById('pc-comparables').style.display = itemName && !byComps ? 'block' : 'none';
   // Auto-fill offer floor
   document.getElementById('pc-offer-floor').placeholder = '$' + floor.toLocaleString() + ' (from calculator)';
 
@@ -3841,6 +3993,8 @@ function resetPricing() {
   document.getElementById('pc-results').style.display = 'none';
   document.getElementById('pc-offer-result').style.display = 'none';
   document.getElementById('pc-comps-out').style.display = 'none';
+  delete document.getElementById('pc-comp-q').dataset.base;
+  renderCompSearch();
   const empty = document.getElementById('pc-empty');
   empty.style.display = 'block';
   empty.classList.remove('warn');
@@ -6352,6 +6506,7 @@ document.addEventListener('DOMContentLoaded', () => {
     calcPrice();
     calcPriceDrop();
   }
+  renderCompSearch();   // with no item, nothing above reaches calcComps
   renderItemBar();
   renderItemList();
   renderItemForm();

@@ -28,6 +28,11 @@ const failures = [];
 const fail = (where, msg) => failures.push(`${where}: ${msg}`);
 const read = f => readFileSync(join(ROOT, f), 'utf8');
 
+// What Vercel deploys: .vercelignore ignores the whole root (`/*`), then re-includes each
+// site file with `!/name`. Anything else (CLAUDE.md, .claude/, tests/ …) is not published.
+const VERCELIGNORE = existsSync(join(ROOT, '.vercelignore')) ? read('.vercelignore') : '';
+const SHIPPED = new Set([...VERCELIGNORE.matchAll(/^!\/([^\s/]+)$/gm)].map(m => m[1]));
+
 // ─── Static checks ────────────────────────────────────────────────────────────
 
 function staticChecks() {
@@ -80,6 +85,25 @@ function staticChecks() {
     catch (e) { fail(f, `does not parse: ${e.message}`); }
   }
 
+  // Deploy allowlist: every page and every file a shipped file references must be published,
+  // and nothing internal may be. Otherwise it is a 404, or a leak, that only shows up live.
+  if (!/^\/\*$/m.test(VERCELIGNORE)) fail('.vercelignore', 'missing, or no `/*` rule — the whole repo would be published');
+  for (const f of SHIPPED) {
+    if (!existsSync(join(ROOT, f))) fail('.vercelignore', `ships ${f}, which does not exist`);
+    if (/^\.|\.(mjs|json|yml)$/.test(f) || (f.endsWith('.md') && f !== 'NOTICE.md')) fail('.vercelignore', `ships ${f}, which is internal`);
+  }
+  for (const page of PAGES) if (!SHIPPED.has(page)) fail('.vercelignore', `${page} is not shipped`);
+  // Relative references, plus absolute ones to our own origin (og:image is only ever the
+  // latter). The origin comes from index.html's canonical link, so a domain move follows.
+  const origin = (read('index.html').match(/rel="canonical" href="(https?:\/\/[^/"]+)\//) || [])[1];
+  if (!origin) fail('index.html', 'no canonical link to read the site origin from');
+  const own = origin ? '|' + origin.replace(/[.]/g, '\\.') + '/' : '';
+  const REF = new RegExp(`(?:["'(]${own})([A-Za-z0-9_.-]+\\.(?:html|css|js|png|webp|svg|woff2|txt|md|json|ico))(?=[?#"')])`, 'g');
+  for (const f of [...SHIPPED].filter(f => /\.(html|css|js)$/.test(f) && f !== 'sentry.min.js' && existsSync(join(ROOT, f)))) {
+    for (const r of new Set([...read(f).matchAll(REF)].map(m => m[1])))
+      if (!SHIPPED.has(r)) fail(f, `references ${r}, which .vercelignore does not ship`);
+  }
+
   // Secret keys must never be committed; only publishable keys are allowed.
   for (const f of textTargets) {
     if (/\b(sk|rk)_(live|test)_[A-Za-z0-9]{10,}/.test(read(f))) fail(f, 'contains a Stripe secret/restricted key');
@@ -105,7 +129,8 @@ function serve() {
     const srv = createServer((req, rsp) => {
       const p = decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html';
       const file = join(ROOT, p);
-      if (!file.startsWith(ROOT) || !existsSync(file)) { rsp.writeHead(404); return rsp.end(); }
+      // Serve only what Vercel publishes, so a file missing from .vercelignore 404s here too.
+      if (!SHIPPED.has(p) || !existsSync(file)) { rsp.writeHead(404); return rsp.end(); }
       rsp.writeHead(200, { 'content-type': MIME[extname(file)] || 'application/octet-stream' });
       rsp.end(readFileSync(file));
     }).listen(0, '127.0.0.1', () => res(srv));
@@ -216,6 +241,91 @@ async function browserChecks() {
     await page.screenshot({ path: join(shots, 'toolkit-locked.png') });
     for (const e of errs) fail('toolkit.html ?lock=1', e);
     await ctx.close();
+  }
+
+  // Sold comps: the parser and the outlier rule set the three prices, so their cases are
+  // pinned here, then one real paste is driven through the page at both widths.
+  {
+    const EBAY_BLOCK = [
+      'Nintendo Switch OLED White 64GB', 'Pre-Owned', 'Sold  Sep 12, 2026', '$245.00', 'or Best Offer',
+      '+$15.00 delivery', 'Located in United States',
+      'Nintendo Switch OLED Neon', 'Sold  Sep 10, 2026', '$260.00', 'Free delivery',
+      'Switch OLED bundle', 'Sold  Sep 9, 2026', '$239.99', 'Was: $299.99', '+$12.99 shipping',
+      'Switch OLED', '$250.00 to $270.00', 'Switch OLED for parts', '$40.00', '$255.00',
+    ].join('\n');
+    const CASES = [
+      // [label, text, kept values, skipped reasons]
+      ['eBay block', EBAY_BLOCK, [40, 239.99, 245, 250, 255, 260], ['delivery', 'old price', 'shipping', 'top of range']],
+      ['Facebook price cut', '$150$200\n$160\n$170', [150, 160, 170], ['earlier price']],
+      ['no $, last number per line', 'Sold Sep 12 45\n2 bids 60\n48.50\nshipping 9', [45, 48.5, 60], ['shipping']],
+      ['discount and extra cost', '$80 $20 off\nSave $10\n$90\n+$5', [80, 90], ['discount', 'discount', 'extra cost']],
+      ['typed list with commas', '$45, $52, $48', [45, 48, 52], []],
+    ];
+    const STATS = [
+      // [label, values, median, low, outliers]
+      ['one $15 parts sale among $200s', [15, 195, 200, 205, 210, 220], 205, 195, [15]],
+      ['three comps: nothing set aside', [15, 200, 210], 200, 15, []],
+      ['tight cluster keeps the $101', [100, 100, 100, 100, 101], 100, 100, []],
+      ['two items mixed: nothing set aside', [50, 55, 60, 200, 210, 220], 130, 50, []],
+    ];
+    const { ctx, page, errs } = await open('toolkit.html?access=SKPRO500', 'desktop');
+    const where = 'toolkit.html comps';
+    const got = await page.evaluate(([cases, stats]) => ({
+      parse: cases.map(([, t]) => { const r = parseCompsDetailed(t); return [r.kept, r.skipped.map(x => x.reason)]; }),
+      stats: stats.map(([, v]) => { const s = compStats(v); return [s.median, s.low, s.outliers]; }),
+    }), [CASES, STATS]);
+    const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    CASES.forEach(([label, , kept, reasons], i) => {
+      if (!same(got.parse[i][0], kept)) fail(where, `parse "${label}": kept ${JSON.stringify(got.parse[i][0])}, want ${JSON.stringify(kept)}`);
+      if (!same(got.parse[i][1].slice().sort(), reasons.slice().sort())) fail(where, `parse "${label}": skipped ${JSON.stringify(got.parse[i][1])}, want ${JSON.stringify(reasons)}`);
+    });
+    STATS.forEach(([label, , median, low, outliers], i) => {
+      if (!same(got.stats[i], [median, low, outliers])) fail(where, `stats "${label}": got median/low/outliers ${JSON.stringify(got.stats[i])}, want ${JSON.stringify([median, low, outliers])}`);
+    });
+    await ctx.close();
+
+    for (const vp of Object.keys(VIEWPORTS)) {
+      const { ctx, page, errs } = await open('toolkit.html?access=SKPRO500', vp);
+      const w = `${where} [${vp}]`;
+      await page.evaluate(() => showPanel('pricing'));
+      // A fresh device has no item, so nothing but startup renders the source rows.
+      const idle = await page.$$eval('#pc-comps-card .comp-src[aria-disabled="true"]', els => els.length);
+      if (idle !== 5) fail(w, `with no item name, expected 5 disabled search buttons, got ${idle}`);
+      await page.fill('#pc-name', 'Nintendo Switch OLED');
+      await page.selectOption('#pc-platform', 'eBay');
+      const links = await page.$$eval('#pc-src-sold a, #pc-src-ask a', as => as.map(a => a.href));
+      if (links.length !== 5) fail(w, `expected 5 search links, got ${links.length}`);
+      if (!/ebay\.com.*_nkw=Nintendo%20Switch%20OLED.*LH_Sold=1/.test(links[0] || '')) fail(w, `first sold link is not eBay sold for the item: ${links[0]}`);
+      await page.fill('#pc-comp-q', 'Switch OLED HEG-001');
+      await page.fill('#pc-name', 'Nintendo Switch OLED');     // same name: the edit sticks
+      if ((await page.inputValue('#pc-comp-q')) !== 'Switch OLED HEG-001') fail(w, 'edited search was overwritten by the same item name');
+      await page.fill('#pc-comps', EBAY_BLOCK);
+      const r = await page.evaluate(() => ({
+        med: document.getElementById('pc-comps-med').textContent,
+        low: document.getElementById('pc-comps-low').textContent,
+        ask: document.getElementById('pc-ideal').textContent,
+        floor: document.getElementById('pc-floor').textContent,
+        struck: document.querySelectorAll('#pc-comps-chips .comp-chip.skip').length,
+        outl: document.querySelectorAll('#pc-comps-chips .comp-chip.out').length,
+      }));
+      // Kept 239.99–260 plus the $40 parts sale, which is set aside: median 250, floor 240.
+      if (r.med !== '$250' || r.low !== '$240' || r.ask !== '$250' || r.floor !== '$240' || r.struck !== 4 || r.outl !== 1)
+        fail(w, `pasted eBay block priced wrong: ${JSON.stringify(r)}`);
+      await noHorizontalScroll(page, w);
+      // "Find sold comps" must land with the card's heading below the sticky top bars.
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.evaluate(() => jumpToComps());
+      await page.waitForTimeout(100);
+      const land = await page.evaluate(() => ({
+        card: Math.round(document.getElementById('pc-comps-card').getBoundingClientRect().top),
+        bars: Math.round(document.querySelector('.tk-topbars').getBoundingClientRect().bottom),
+      }));
+      if (land.card < land.bars || land.card > land.bars + 120) fail(w, `jump to comps landed at ${land.card}px, top bars end at ${land.bars}px`);
+      await page.screenshot({ path: join(shots, `toolkit-comps-${vp}.png`) });
+      for (const e of errs) fail(w, e);
+      await ctx.close();
+    }
+    for (const e of errs) fail(where, e);
   }
 
   await browser.close();
