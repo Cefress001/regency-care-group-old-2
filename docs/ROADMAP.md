@@ -11,6 +11,13 @@ holds the decisions and the order. Close the issue and update this file in the s
 - Auth plan changed: **Supabase, not Firebase** (#14). Postgres suits sales reporting, row-level
   security isolates users, and it has an MCP server. `toolkit.html` comments still say Firebase;
   they go when the interim gate is deleted.
+- **Comps, step 1 done (2026-09-26):** the comps card searches eBay/Mercari/Poshmark sold and
+  Facebook/OfferUp asking prices, reads a whole pasted results block, and sets outliers
+  aside. **Step 2 is next:** eBay Browse API through a Vercel Function (current listings,
+  shown as asking prices, never as comps), with caching and a daily cap. Needs the owner's free eBay
+  developer keys (in Vercel env, never the repo), `/api` in `.vercelignore`, and #7.
+  Scraping eBay/Facebook was rejected: sold results need sign-in since 2026-07-22, data-centre
+  IPs get blocked, and both sites' terms forbid it.
 
 ## Order
 
